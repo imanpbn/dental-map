@@ -59,6 +59,7 @@ import {
   SiteSettings
 } from './types';
 import { CmsStorageService, defaultSiteSettings } from './utils/cmsStorage';
+import { SupabaseSyncService } from './utils/supabaseClient';
 
 // App Wrapper to use Router hooks
 const AppContent: React.FC = () => {
@@ -85,6 +86,49 @@ const AppContent: React.FC = () => {
   const [teethPassport, setTeethPassport] = useState<ToothPassportRecord[]>(initial32TeethPassport);
   const [leadValuations, setLeadValuations] = useState<Record<number, LeadValuationRecord>>(initialLeadValuations);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Supabase Remote Sync on Mount
+  useEffect(() => {
+    let isMounted = true;
+    const loadRemoteData = async () => {
+      try {
+        const remote = await SupabaseSyncService.fetchRemoteData();
+        if (!isMounted || !remote) return;
+
+        if (remote.doctors && remote.doctors.length > 0) {
+          setDoctors(remote.doctors);
+          CmsStorageService.saveDoctors(remote.doctors);
+        }
+        if (remote.clinics && remote.clinics.length > 0) {
+          setClinics(remote.clinics);
+          CmsStorageService.saveClinics(remote.clinics);
+        }
+        if (remote.components && remote.components.length > 0) {
+          setComponents(remote.components);
+          CmsStorageService.saveComponents(remote.components);
+        }
+        if (remote.blogPosts && remote.blogPosts.length > 0) {
+          setBlogPosts(remote.blogPosts);
+          CmsStorageService.saveBlogPosts(remote.blogPosts);
+        }
+        if (remote.packages && remote.packages.length > 0) {
+          setPackages(remote.packages);
+          CmsStorageService.savePackages(remote.packages);
+        }
+        if (remote.settings) {
+          setSiteSettings(remote.settings);
+          CmsStorageService.saveSettings(remote.settings);
+        }
+      } catch (err) {
+        console.warn('Initial remote sync skipped:', err);
+      }
+    };
+
+    loadRemoteData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Lead Valuation Engine: newValuation = leads * 350,000 Toman
   const handleRecordLead = (clinicId: number, doctorId?: number) => {

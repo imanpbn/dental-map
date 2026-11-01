@@ -94,6 +94,11 @@ CREATE TABLE doctors (
     patient_age_group age_group_enum NOT NULL DEFAULT 'adults',
     passport_committed BOOLEAN NOT NULL DEFAULT TRUE,
     bio TEXT,
+    rating NUMERIC(3,2) DEFAULT 4.9,
+    reviews_count INT DEFAULT 0,
+    experience_years INT DEFAULT 10,
+    avatar TEXT,
+    verified BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -114,6 +119,7 @@ CREATE TABLE clinics (
     is_24_7 BOOLEAN NOT NULL DEFAULT FALSE,
     working_hours JSONB DEFAULT '{}'::jsonb, -- {"saturday_to_wednesday": "09:00-21:00", "thursday": "09:00-14:00", "friday": "closed"}
     is_free_tariff_only BOOLEAN NOT NULL DEFAULT FALSE,
+    image TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -146,6 +152,96 @@ CREATE TABLE doctor_implant_types (
     doctor_id INT NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
     implant_type_id INT NOT NULL REFERENCES implant_types(id) ON DELETE CASCADE,
     PRIMARY KEY (doctor_id, implant_type_id)
+);
+
+-- ==========================================
+-- 5. COMPONENTS & CLINICAL PACKAGES DOMAIN
+-- ==========================================
+CREATE TYPE component_category AS ENUM (
+    'fixture',
+    'abutment',
+    'healing',
+    'impression_coping',
+    'analog',
+    'surgical_kit',
+    'scan_body',
+    'digital_analog'
+);
+
+CREATE TABLE components (
+    id SERIAL PRIMARY KEY,
+    brand_id INT REFERENCES implant_brands(id) ON DELETE SET NULL,
+    category component_category NOT NULL,
+    ref_code VARCHAR(100) UNIQUE NOT NULL,
+    lot_number VARCHAR(100) NOT NULL,
+    name_fa VARCHAR(255) NOT NULL,
+    name_en VARCHAR(255) NOT NULL,
+    description TEXT,
+    material VARCHAR(150),
+    platform_size VARCHAR(100),
+    hex_size VARCHAR(100),
+    morse_taper_angle VARCHAR(100),
+    surface VARCHAR(150),
+    torque_ncm NUMERIC(6,2),
+    compatibility VARCHAR(255),
+    price_toman BIGINT NOT NULL DEFAULT 0,
+    in_stock BOOLEAN DEFAULT TRUE,
+    image_url TEXT,
+    is_critical BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE clinical_packages (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    brand_name VARCHAR(150) NOT NULL,
+    fixture_ref VARCHAR(100),
+    abutment_ref VARCHAR(100),
+    healing_ref VARCHAR(100),
+    impression_ref VARCHAR(100),
+    price_toman BIGINT NOT NULL,
+    description TEXT,
+    badge VARCHAR(100),
+    items_included JSONB DEFAULT '[]'::jsonb
+);
+
+-- ==========================================
+-- 6. CMS & HEADLESS BLOG DOMAIN
+-- ==========================================
+CREATE TABLE blog_posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    excerpt TEXT NOT NULL,
+    content TEXT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    author VARCHAR(150) NOT NULL,
+    read_time_minutes INT DEFAULT 5,
+    featured_image TEXT,
+    published_at VARCHAR(100) NOT NULL,
+    meta_robots VARCHAR(50) DEFAULT 'index, follow',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE site_settings (
+    id SERIAL PRIMARY KEY,
+    hotline VARCHAR(50) DEFAULT '021-88001144',
+    site_title VARCHAR(255) NOT NULL,
+    announcement TEXT,
+    meta_description TEXT,
+    canonical_domain VARCHAR(255) DEFAULT 'https://dentalmap.ir',
+    is_lead_engine_active BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE lead_valuations (
+    id SERIAL PRIMARY KEY,
+    clinic_id INT NOT NULL REFERENCES clinics(id) ON DELETE CASCADE,
+    doctor_id INT REFERENCES doctors(id) ON DELETE SET NULL,
+    lead_count INT DEFAULT 0,
+    total_valuation_toman BIGINT DEFAULT 0,
+    last_lead_at VARCHAR(100),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ==========================================
@@ -208,3 +304,28 @@ INSERT INTO insurances (name, slug, insurance_type) VALUES
 ('بیمه البرز', 'alborz', 'supplementary'),
 ('بیمه ایران', 'iran', 'supplementary'),
 ('تأمین اجتماعی', 'tamin', 'basic');
+
+-- ==========================================
+-- 9. ROW LEVEL SECURITY (RLS) POLICIES
+-- ==========================================
+-- By default in Supabase, tables need permissions granted to 'anon' role
+ALTER TABLE provinces DISABLE ROW LEVEL SECURITY;
+ALTER TABLE cities DISABLE ROW LEVEL SECURITY;
+ALTER TABLE districts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE specialties DISABLE ROW LEVEL SECURITY;
+ALTER TABLE manufacturers DISABLE ROW LEVEL SECURITY;
+ALTER TABLE implant_brands DISABLE ROW LEVEL SECURITY;
+ALTER TABLE implant_types DISABLE ROW LEVEL SECURITY;
+ALTER TABLE doctors DISABLE ROW LEVEL SECURITY;
+ALTER TABLE clinics DISABLE ROW LEVEL SECURITY;
+ALTER TABLE insurances DISABLE ROW LEVEL SECURITY;
+ALTER TABLE clinic_insurances DISABLE ROW LEVEL SECURITY;
+ALTER TABLE clinic_doctors DISABLE ROW LEVEL SECURITY;
+ALTER TABLE doctor_implant_types DISABLE ROW LEVEL SECURITY;
+ALTER TABLE components DISABLE ROW LEVEL SECURITY;
+ALTER TABLE clinical_packages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_posts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE site_settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE lead_valuations DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users DISABLE ROW LEVEL SECURITY;
+

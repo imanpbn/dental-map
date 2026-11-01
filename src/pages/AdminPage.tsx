@@ -37,7 +37,10 @@ import {
   Link2,
   Sparkles,
   PhoneCall,
-  UserPlus
+  UserPlus,
+  Database,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 import {
   Doctor,
@@ -56,6 +59,7 @@ import {
 } from '../types';
 import { AdminAuthService, AdminAccountRecord } from '../utils/auth';
 import { CmsStorageService, defaultSiteSettings } from '../utils/cmsStorage';
+import { SupabaseSyncService, isSupabaseConfigured, getSupabaseConfig } from '../utils/supabaseClient';
 
 type AdminSection =
   | 'dashboard'
@@ -159,6 +163,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   const [accountsList, setAccountsList] = useState<AdminAccountRecord[]>(() =>
     AdminAuthService.getAccounts()
   );
+
+  // Supabase Cloud State
+  const [supabaseTestResult, setSupabaseTestResult] = useState<{ success?: boolean; message?: string } | null>(null);
+  const [isTestingSupabase, setIsTestingSupabase] = useState(false);
+  const [isSyncingSupabase, setIsSyncingSupabase] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [pwMessage, setPwMessage] = useState<{ text: string; isError: boolean } | null>(null);
@@ -1006,6 +1015,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                   const updated = blogPosts.filter((p) => p.id !== post.id);
                                   setBlogPosts(updated);
                                   CmsStorageService.saveBlogPosts(updated);
+                                  SupabaseSyncService.deleteBlogPost(post.id);
                                   showToast('نوشته با موفقیت حذف گردید.');
                                 }
                               }}
@@ -1152,6 +1162,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                   const updated = doctors.filter((d) => d.id !== doc.id);
                                   setDoctors(updated);
                                   CmsStorageService.saveDoctors(updated);
+                                  SupabaseSyncService.deleteDoctor(doc.id);
                                   showToast('پزشک حذف شد.');
                                 }
                               }}
@@ -1277,6 +1288,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                     const updated = clinics.filter((c) => c.id !== clinic.id);
                                     setClinics(updated);
                                     CmsStorageService.saveClinics(updated);
+                                    SupabaseSyncService.deleteClinic(clinic.id);
                                     showToast('مرکز درمانی با موفقیت حذف شد.');
                                   }
                                 }}
@@ -1384,6 +1396,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                   const updated = components.filter((c) => c.id !== part.id);
                                   setComponents(updated);
                                   CmsStorageService.saveComponents(updated);
+                                  SupabaseSyncService.deleteComponent(part.id);
                                   showToast('قطعه ایمپلنت با موفقیت حذف شد.');
                                 }
                               }}
@@ -1587,6 +1600,145 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           {/* SECTION: SITE SETTINGS (تنظیمات عمومی سایت) */}
           {/* ---------------------------------------------------------------- */}
           {activeSection === 'settings' && (
+            <div className="space-y-6">
+              {/* SUPABASE CLOUD DATABASE INTEGRATION CARD */}
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-700/80 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-700/60">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-inner">
+                      <Database className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-base font-black text-white">
+                          پایگاه‌داده رابطه‌ای ابری Supabase PostgreSQL
+                        </h2>
+                        {isSupabaseConfigured() ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            متصل به Vercel & Supabase
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            حالت لوکال (آفلاین)
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                        یکپارچه‌سازی سرورلس با پایگاه‌داده PostgreSQL سوپابیس و هاستینگ Vercel برای ذخیره و همگام‌سازی ابری اطلاعات
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <button
+                      type="button"
+                      disabled={isTestingSupabase}
+                      onClick={async () => {
+                        setIsTestingSupabase(true);
+                        setSupabaseTestResult(null);
+                        try {
+                          const res = await SupabaseSyncService.testConnection();
+                          setSupabaseTestResult(res);
+                        } finally {
+                          setIsTestingSupabase(false);
+                        }
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isTestingSupabase ? "animate-spin text-emerald-400" : ""}`} />
+                      <span>{isTestingSupabase ? 'در حال تست...' : 'تست اتصال به سوپابیس'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isSyncingSupabase}
+                      onClick={async () => {
+                        if (!window.confirm('آیا مایلید تمامی اطلاعات فعلی (پزشکان، کلینیک‌ها، قطعات، مقالات و پکیج‌ها) در دیتابیس Supabase ثبت شوند؟')) {
+                          return;
+                        }
+                        setIsSyncingSupabase(true);
+                        try {
+                          const res = await SupabaseSyncService.syncAllLocalToSupabase({
+                            doctors,
+                            clinics,
+                            components,
+                            blogPosts,
+                            packages,
+                            settings: siteSettings
+                          });
+                          if (res.success) {
+                            showToast('همگام‌سازی ابری با موفقیت انجام شد!');
+                            setSupabaseTestResult({
+                              success: true,
+                              message: `با موفقیت همگام‌سازی شد: ${res.counts.doctors} پزشک، ${res.counts.clinics} کلینیک، ${res.counts.components} قطعه، ${res.counts.blogPosts} مقاله.`
+                            });
+                          } else {
+                            setSupabaseTestResult({
+                              success: false,
+                              message: res.message
+                            });
+                          }
+                        } finally {
+                          setIsSyncingSupabase(false);
+                        }
+                      }}
+                      className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                    >
+                      <Cloud className={`w-4 h-4 ${isSyncingSupabase ? "animate-bounce" : ""}`} />
+                      <span>{isSyncingSupabase ? 'در حال همگام‌سازی...' : 'همگام‌سازی کلیه اطلاعات به دیتابیس ابری'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Connection Test / Status Result Alert */}
+                {supabaseTestResult && (
+                  <div
+                    className={`p-4 rounded-2xl text-xs flex items-start gap-3 border ${
+                      supabaseTestResult.success
+                        ? 'bg-emerald-950/60 border-emerald-500/30 text-emerald-200'
+                        : 'bg-rose-950/60 border-rose-500/30 text-rose-200'
+                    }`}
+                  >
+                    {supabaseTestResult.success ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    )}
+                    <div className="space-y-1">
+                      <p className="font-bold">{supabaseTestResult.message}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Configuration Specs Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+                    <span className="text-slate-400 text-[11px] block mb-1">وضعیت شناسایی متغیرهای محیطی:</span>
+                    <span className="font-bold font-mono text-emerald-400">
+                      {isSupabaseConfigured() ? 'NEXT_PUBLIC_ / SUPABASE_* شناسایی شد' : 'متغیرهای محیطی تنظیم نشده‌اند'}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+                    <span className="text-slate-400 text-[11px] block mb-1">آدرس دامنه پایگاه‌داده:</span>
+                    <span className="font-bold font-mono text-slate-200 dir-ltr text-right block">
+                      {getSupabaseConfig().url}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+                    <span className="text-slate-400 text-[11px] block mb-1">موتور ذخیره‌سازی دوگانه:</span>
+                    <span className="font-bold text-slate-200">
+                      PostgreSQL ابری + LocalStorage آفلاین
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 text-[11px] text-slate-400 leading-relaxed flex items-center justify-between">
+                  <span>
+                    راهنما: برای ایجاد جداول در سوپابیس برای اولین بار، وارد پنل Supabase شده و محتوای فایل <code className="text-emerald-300 font-mono">database/schema.sql</code> را در بخش SQL Editor کپی و روی Run کلیک کنید.
+                  </span>
+                </div>
+              </div>
             <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
               <div className="flex items-center justify-between pb-4 border-b">
                 <div>
@@ -1674,7 +1826,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({
               <div className="pt-4 border-t flex justify-end">
                 <button
                   type="button"
-                  onClick={() => showToast('تنظیمات عمومی با موفقیت ذخیره شد.')}
+                  onClick={() => {
+                    SupabaseSyncService.syncSettings(siteSettings);
+                    showToast('تنظیمات عمومی با موفقیت در فضای ابری و محلی ذخیره شد.');
+                  }}
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm"
                 >
                   <Save className="w-4 h-4" />
@@ -1682,6 +1837,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                 </button>
               </div>
             </div>
+          </div>
           )}
 
           {/* ---------------------------------------------------------------- */}
@@ -1813,6 +1969,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   );
                   setBlogPosts(updated);
                   CmsStorageService.saveBlogPosts(updated);
+                  const target = updated.find((p) => p.id === editingPost.id);
+                  if (target) SupabaseSyncService.syncBlogPost(target);
                   showToast('نوشته با موفقیت بروزرسانی شد.');
                 } else {
                   const newPost: WordPressBlogPost = {
@@ -1831,6 +1989,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   const updated = [newPost, ...blogPosts];
                   setBlogPosts(updated);
                   CmsStorageService.saveBlogPosts(updated);
+                  SupabaseSyncService.syncBlogPost(newPost);
                   showToast('نوشته تازه منتشر شد.');
                 }
                 setIsPostModalOpen(false);
@@ -1996,6 +2155,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   );
                   setDoctors(updated);
                   CmsStorageService.saveDoctors(updated);
+                  const target = updated.find((d) => d.id === editingDoctor.id);
+                  if (target) SupabaseSyncService.syncDoctor(target);
                   showToast('مشخصات پزشک با موفقیت بروزرسانی شد.');
                 } else {
                   const newDoc: Doctor = {
@@ -2020,6 +2181,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   const updated = [newDoc, ...doctors];
                   setDoctors(updated);
                   CmsStorageService.saveDoctors(updated);
+                  SupabaseSyncService.syncDoctor(newDoc);
                   showToast('پزشک جدید افزوده شد.');
                 }
                 setIsDoctorModalOpen(false);
@@ -2193,6 +2355,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   );
                   setComponents(updated);
                   CmsStorageService.saveComponents(updated);
+                  const target = updated.find((c) => c.id === editingComponent.id);
+                  if (target) SupabaseSyncService.syncComponent(target);
                   showToast('مشخصات قطعه بروزرسانی شد.');
                 } else {
                   const newComp: DentalComponent = {
@@ -2215,6 +2379,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   const updated = [newComp, ...components];
                   setComponents(updated);
                   CmsStorageService.saveComponents(updated);
+                  SupabaseSyncService.syncComponent(newComp);
                   showToast('قطعه ایمپلنت جدید اضافه شد.');
                 }
                 setIsComponentModalOpen(false);
@@ -2380,6 +2545,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   );
                   setClinics(updated);
                   CmsStorageService.saveClinics(updated);
+                  const target = updated.find((c) => c.id === editingClinic.id);
+                  if (target) SupabaseSyncService.syncClinic(target);
                   showToast('اطلاعات کلینیک بروزرسانی شد.');
                 } else {
                   const newClinic: Clinic = {
@@ -2399,6 +2566,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   const updated = [newClinic, ...clinics];
                   setClinics(updated);
                   CmsStorageService.saveClinics(updated);
+                  SupabaseSyncService.syncClinic(newClinic);
                   showToast('مرکز درمانی جدید افزوده شد.');
                 }
                 setIsClinicModalOpen(false);
