@@ -52,8 +52,13 @@ import {
   DentalComponent,
   ToothPassportRecord,
   LeadValuationRecord,
-  ClinicInsurance
+  ClinicInsurance,
+  WordPressBlogPost,
+  ClinicalPackage,
+  ImplantBrand,
+  SiteSettings
 } from './types';
+import { CmsStorageService, defaultSiteSettings } from './utils/cmsStorage';
 
 // App Wrapper to use Router hooks
 const AppContent: React.FC = () => {
@@ -67,10 +72,15 @@ const AppContent: React.FC = () => {
     document.body.classList.add(`font-${currentFont}`);
   }, [currentFont]);
 
-  // 2. Data States
-  const [components] = useState<DentalComponent[]>(initialComponents);
-  const [doctors, setDoctors] = useState<Doctor[]>(initialDoctors);
-  const [clinics] = useState<Clinic[]>(initialClinics);
+  // 2. CMS-Managed Data States with localStorage persistence
+  const [components, setComponents] = useState<DentalComponent[]>(() => CmsStorageService.getComponents());
+  const [doctors, setDoctors] = useState<Doctor[]>(() => CmsStorageService.getDoctors());
+  const [clinics, setClinics] = useState<Clinic[]>(() => CmsStorageService.getClinics());
+  const [blogPosts, setBlogPosts] = useState<WordPressBlogPost[]>(() => CmsStorageService.getBlogPosts());
+  const [packages, setPackages] = useState<ClinicalPackage[]>(() => CmsStorageService.getPackages());
+  const [brands, setBrands] = useState<ImplantBrand[]>(() => CmsStorageService.getBrands());
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => CmsStorageService.getSettings());
+
   const [clinicInsurances, setClinicInsurances] = useState<ClinicInsurance[]>(initialClinicInsurances);
   const [teethPassport, setTeethPassport] = useState<ToothPassportRecord[]>(initial32TeethPassport);
   const [leadValuations, setLeadValuations] = useState<Record<number, LeadValuationRecord>>(initialLeadValuations);
@@ -173,12 +183,12 @@ const AppContent: React.FC = () => {
                 cities={initialCities}
                 districts={initialDistricts}
                 insurances={initialInsurances}
-                brands={initialBrands}
+                brands={brands}
                 implantTypes={initialImplantTypes}
                 clinicDoctors={initialClinicDoctors}
                 clinicInsurances={clinicInsurances}
                 doctorImplantTypes={initialDoctorImplantTypes}
-                packages={initialClinicalPackages}
+                packages={packages}
                 teethPassport={teethPassport}
                 leadValuations={leadValuations}
                 selectedCategory={selectedCategory}
@@ -538,25 +548,37 @@ const AppContent: React.FC = () => {
           {/* Headless WordPress Blog on /blog Subfolder */}
           <Route
             path="/blog"
-            element={<BlogPage posts={initialBlogPosts} />}
+            element={<BlogPage posts={blogPosts} />}
           />
           <Route
             path="/blog/:postSlug"
-            element={<BlogPage posts={initialBlogPosts} />}
+            element={<BlogPage posts={blogPosts} />}
           />
 
-          {/* Admin Panel */}
+          {/* WordPress-style CMS Admin Panel */}
           <Route
             path="/admin"
             element={
               <AdminPage
                 doctors={doctors}
+                setDoctors={setDoctors}
                 clinics={clinics}
+                setClinics={setClinics}
+                components={components}
+                setComponents={setComponents}
+                blogPosts={blogPosts}
+                setBlogPosts={setBlogPosts}
+                packages={packages}
+                setPackages={setPackages}
+                brands={brands}
+                setBrands={setBrands}
                 insurances={initialInsurances}
                 clinicInsurances={clinicInsurances}
                 leadValuations={leadValuations}
                 onToggleDoctorVerification={handleToggleDoctorVerification}
                 onToggleClinicInsurance={handleToggleClinicInsurance}
+                siteSettings={siteSettings}
+                setSiteSettings={setSiteSettings}
               />
             }
           />

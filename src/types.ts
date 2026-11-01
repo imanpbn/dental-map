@@ -276,3 +276,13 @@ export interface AdminUser {
   last_login_at?: string;
   avatar?: string;
 }
+
+// Global Site Settings for WordPress-style CMS
+export interface SiteSettings {
+  hotline: string;
+  site_title: string;
+  announcement: string;
+  meta_description: string;
+  canonical_domain: string;
+  is_lead_engine_active: boolean;
+}
