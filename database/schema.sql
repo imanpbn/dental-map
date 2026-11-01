@@ -149,6 +149,26 @@ CREATE TABLE doctor_implant_types (
 );
 
 -- ==========================================
+-- 6.5. ADMIN & AUTHENTICATION DOMAIN
+-- ==========================================
+CREATE TYPE admin_role AS ENUM ('super_admin', 'moderator', 'analyst');
+
+CREATE TABLE admin_users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(150) NOT NULL,
+    role admin_role DEFAULT 'super_admin',
+    is_active BOOLEAN DEFAULT TRUE,
+    last_login_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_admin_users_username ON admin_users(username);
+CREATE INDEX idx_admin_users_email ON admin_users(email);
+
+-- ==========================================
 -- 7. PERFORMANCE & SEO ROUTING INDEXES
 -- ==========================================
 CREATE INDEX idx_clinics_location ON clinics(city_id, district_id);

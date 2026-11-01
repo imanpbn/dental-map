@@ -261,3 +261,18 @@ export interface DirectoryFilterState {
   passportCommittedOnly: boolean;
   minLifespanYears: number;
 }
+
+// Admin Authentication & User Management
+export type AdminRole = 'super_admin' | 'moderator' | 'analyst';
+
+export interface AdminUser {
+  id: number;
+  username: string;
+  email: string;
+  full_name: string;
+  role: AdminRole;
+  is_active: boolean;
+  created_at: string;
+  last_login_at?: string;
+  avatar?: string;
+}
