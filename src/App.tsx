@@ -21,6 +21,7 @@ import { BrandComparisonPage } from './pages/BrandComparisonPage';
 import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
+import { CustomPageView } from './pages/CustomPageView';
 
 import { DentalMapRoutes } from './utils/urlBuilder';
 
@@ -44,7 +45,8 @@ import {
   initialClinicalPackages,
   initial32TeethPassport,
   initialLeadValuations,
-  initialBlogPosts
+  initialBlogPosts,
+  initialPages
 } from './initialData';
 
 import {
@@ -55,6 +57,7 @@ import {
   LeadValuationRecord,
   ClinicInsurance,
   WordPressBlogPost,
+  WordPressPage,
   ClinicalPackage,
   ImplantBrand,
   SiteSettings
@@ -71,6 +74,7 @@ const AppContent: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>(() => CmsStorageService.getDoctors());
   const [clinics, setClinics] = useState<Clinic[]>(() => CmsStorageService.getClinics());
   const [blogPosts, setBlogPosts] = useState<WordPressBlogPost[]>(() => CmsStorageService.getBlogPosts());
+  const [pages, setPages] = useState<WordPressPage[]>(() => CmsStorageService.getPages());
   const [packages, setPackages] = useState<ClinicalPackage[]>(() => CmsStorageService.getPackages());
   const [brands, setBrands] = useState<ImplantBrand[]>(() => CmsStorageService.getBrands());
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => CmsStorageService.getSettings());
@@ -596,6 +600,12 @@ const AppContent: React.FC = () => {
             element={<BlogPage posts={blogPosts} />}
           />
 
+          {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا) */}
+          <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
+          <Route path="/about-us" element={<CustomPageView pages={pages} />} />
+          <Route path="/terms" element={<CustomPageView pages={pages} />} />
+          <Route path="/contact" element={<CustomPageView pages={pages} />} />
+
           {/* WordPress-style CMS Admin Panel */}
           <Route
             path="/admin"
@@ -609,6 +619,8 @@ const AppContent: React.FC = () => {
                 setComponents={setComponents}
                 blogPosts={blogPosts}
                 setBlogPosts={setBlogPosts}
+                pages={pages}
+                setPages={setPages}
                 packages={packages}
                 setPackages={setPackages}
                 brands={brands}

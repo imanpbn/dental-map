@@ -43,13 +43,15 @@ import {
   RefreshCw,
   Send,
   MessageSquare,
-  Smartphone
+  Smartphone,
+  FileCode
 } from 'lucide-react';
 import {
   Doctor,
   Clinic,
   DentalComponent,
   WordPressBlogPost,
+  WordPressPage,
   ClinicalPackage,
   ImplantBrand,
   Insurance,
@@ -68,6 +70,7 @@ import { SmsService } from '../utils/smsService';
 type AdminSection =
   | 'dashboard'
   | 'posts'
+  | 'pages'
   | 'doctors'
   | 'clinics'
   | 'components'
@@ -88,6 +91,8 @@ interface AdminPageProps {
   setComponents: React.Dispatch<React.SetStateAction<DentalComponent[]>>;
   blogPosts: WordPressBlogPost[];
   setBlogPosts: React.Dispatch<React.SetStateAction<WordPressBlogPost[]>>;
+  pages: WordPressPage[];
+  setPages: React.Dispatch<React.SetStateAction<WordPressPage[]>>;
   packages: ClinicalPackage[];
   setPackages: React.Dispatch<React.SetStateAction<ClinicalPackage[]>>;
   brands: ImplantBrand[];
@@ -110,6 +115,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   setComponents,
   blogPosts,
   setBlogPosts,
+  pages,
+  setPages,
   packages,
   setPackages,
   brands,
@@ -154,6 +161,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Modals for CRUD operations
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<WordPressBlogPost | null>(null);
+
+  const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+  const [editingPage, setEditingPage] = useState<WordPressPage | null>(null);
 
   const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
@@ -703,7 +713,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({
               </span>
             </button>
 
-            {/* 3. Doctors */}
+            {/* 3. Pages (برگه‌ها / صفحات ایستا) */}
+            <button
+              onClick={() => setActiveSection('pages')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition-all ${
+                activeSection === 'pages'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'hover:bg-slate-800/80 text-slate-300'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <FileCode className="w-4 h-4 text-emerald-400" />
+                <span>برگه‌ها (صفحات)</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] text-teal-400 font-mono">
+                {pages.length}
+              </span>
+            </button>
+
+            {/* 4. Doctors */}
             <button
               onClick={() => setActiveSection('doctors')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition-all ${
@@ -1097,6 +1125,125 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                               }}
                               className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors"
                               title="حذف نوشته"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ---------------------------------------------------------------- */}
+          {/* SECTION: PAGES (برگه‌ها / صفحات ایستا) */}
+          {/* ---------------------------------------------------------------- */}
+          {activeSection === 'pages' && (
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                  <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
+                    <FileCode className="w-5 h-5 text-emerald-600" />
+                    <span>مدیریت برگه‌ها (صفحات ایستا و لندینگ‌ها)</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    افزودن، ویرایش، حذف و انتشار صفحات مستقل سایت (درباره ما، شرایط و قوانین، تماس، صفحات فرود)
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setEditingPage(null);
+                    setIsPageModalOpen(true);
+                  }}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>افزودن برگه تازه</span>
+                </button>
+              </div>
+
+              {/* Table of Pages */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-100 text-slate-400 font-bold">
+                      <th className="pb-3 pr-2">عنوان برگه</th>
+                      <th className="pb-3">پیوند یکتا (Slug)</th>
+                      <th className="pb-3">نویسنده</th>
+                      <th className="pb-3">قالب برگه</th>
+                      <th className="pb-3">وضعیت</th>
+                      <th className="pb-3">تاریخ</th>
+                      <th className="pb-3 text-center">عملیات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                    {pages.map((page) => (
+                      <tr key={page.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-3.5 pr-2 font-bold text-slate-900">
+                          <div className="flex items-center gap-2">
+                            <FileCode className="w-4 h-4 text-slate-400" />
+                            <span>{page.title}</span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 font-mono text-emerald-700 dir-ltr text-right">
+                          /page/{page.slug}
+                        </td>
+                        <td className="py-3.5 text-slate-600">{page.author}</td>
+                        <td className="py-3.5">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-medium">
+                            {page.template === 'fullwidth' ? 'تمام‌عرض' : page.template === 'narrow' ? 'تک‌ستونه' : 'پیش‌فرض'}
+                          </span>
+                        </td>
+                        <td className="py-3.5">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              page.status === 'publish'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            }`}
+                          >
+                            {page.status === 'publish' ? 'منتشرشده' : 'پیش‌نویس'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-slate-500 font-mono text-[11px]">
+                          {page.published_at}
+                        </td>
+                        <td className="py-3.5 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <a
+                              href={`/page/${page.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                              title="مشاهده برگه در سایت"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                            <button
+                              onClick={() => {
+                                setEditingPage(page);
+                                setIsPageModalOpen(true);
+                              }}
+                              className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors cursor-pointer"
+                              title="ویرایش برگه"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`آیا از حذف برگه «${page.title}» مطمئن هستید؟`)) {
+                                  const updated = pages.filter((p) => p.id !== page.id);
+                                  setPages(updated);
+                                  CmsStorageService.savePages(updated);
+                                  showToast('برگه با موفقیت حذف گردید.');
+                                }
+                              }}
+                              className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors cursor-pointer"
+                              title="حذف برگه"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -2519,6 +2666,193 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
                 >
                   {editingPost ? 'ذخیره تغییرات' : 'انتشار در سایت'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------------ */}
+      {/* MODAL: ADD / EDIT PAGE (فرم افزودن و ویرایش برگه) */}
+      {/* ------------------------------------------------------------------ */}
+      {isPageModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b">
+              <h3 className="font-black text-slate-900 text-base">
+                {editingPage ? 'ویرایش برگه (صفحه ایستا)' : 'افزودن برگه تازه به سامانه'}
+              </h3>
+              <button
+                onClick={() => setIsPageModalOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const title = (form.elements.namedItem('pageTitle') as HTMLInputElement).value;
+                const slug = (form.elements.namedItem('pageSlug') as HTMLInputElement).value;
+                const template = (form.elements.namedItem('pageTemplate') as HTMLSelectElement).value as any;
+                const excerpt = (form.elements.namedItem('pageExcerpt') as HTMLTextAreaElement).value;
+                const content = (form.elements.namedItem('pageContent') as HTMLTextAreaElement).value;
+                const author = (form.elements.namedItem('pageAuthor') as HTMLInputElement).value;
+                const status = (form.elements.namedItem('pageStatus') as HTMLSelectElement).value as any;
+                const image = (form.elements.namedItem('pageImage') as HTMLInputElement).value;
+
+                if (editingPage) {
+                  const updated = pages.map((p) =>
+                    p.id === editingPage.id
+                      ? {
+                          ...p,
+                          title,
+                          slug,
+                          template,
+                          excerpt,
+                          content,
+                          author,
+                          status,
+                          featured_image: image
+                        }
+                      : p
+                  );
+                  setPages(updated);
+                  CmsStorageService.savePages(updated);
+                  showToast('برگه با موفقیت بروزرسانی شد.');
+                } else {
+                  const newPage: WordPressPage = {
+                    id: Date.now(),
+                    title,
+                    slug,
+                    template,
+                    excerpt,
+                    content,
+                    author: author || currentUser.full_name,
+                    status,
+                    published_at: new Date().toLocaleDateString('fa-IR'),
+                    featured_image: image || 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=800',
+                    meta_robots: 'index, follow'
+                  };
+                  const updated = [newPage, ...pages];
+                  setPages(updated);
+                  CmsStorageService.savePages(updated);
+                  showToast('برگه تازه با موفقیت ایجاد و منتشر گردید.');
+                }
+                setIsPageModalOpen(false);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">عنوان برگه:</label>
+                  <input
+                    name="pageTitle"
+                    defaultValue={editingPage?.title || ''}
+                    placeholder="مثلاً: درباره پلتفرم دنتال‌مپ"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">نامک / پیوند یکتا (Slug):</label>
+                  <input
+                    name="pageSlug"
+                    defaultValue={editingPage?.slug || ''}
+                    placeholder="about-dentalmap"
+                    dir="ltr"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">قالب برگه (Template):</label>
+                  <select
+                    name="pageTemplate"
+                    defaultValue={editingPage?.template || 'default'}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs"
+                  >
+                    <option value="default">قالب استاندارد و مقاله‌ای</option>
+                    <option value="fullwidth">قالب تمام‌عرض (Full Width)</option>
+                    <option value="narrow">قالب متمرکز و تک‌ستونه</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">وضعیت انتشار:</label>
+                  <select
+                    name="pageStatus"
+                    defaultValue={editingPage?.status || 'publish'}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs"
+                  >
+                    <option value="publish">منتشر شده (عمومی)</option>
+                    <option value="draft">پیش‌نویس (خصوصی)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">خلاصه برگه (Excerpt - برای سئو):</label>
+                <textarea
+                  name="pageExcerpt"
+                  defaultValue={editingPage?.excerpt || ''}
+                  rows={2}
+                  className="w-full border border-slate-200 rounded-xl p-3 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">محتوا و متن کامل برگه (HTML یا متن):</label>
+                <textarea
+                  name="pageContent"
+                  defaultValue={editingPage?.content || ''}
+                  rows={7}
+                  placeholder="محتوا و پاراگراف‌های برگه را وارد فرمایید..."
+                  className="w-full border border-slate-200 rounded-xl p-3 text-xs font-mono"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">نویسنده برگه:</label>
+                  <input
+                    name="pageAuthor"
+                    defaultValue={editingPage?.author || currentUser.full_name}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">آدرس تصویر شاخص (Featured Image):</label>
+                  <input
+                    name="pageImage"
+                    defaultValue={editingPage?.featured_image || ''}
+                    placeholder="https://..."
+                    dir="ltr"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPageModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer"
+                >
+                  انصراف
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer shadow-md"
+                >
+                  {editingPage ? 'ذخیره تغییرات برگه' : 'انتشار برگه در سایت'}
                 </button>
               </div>
             </form>

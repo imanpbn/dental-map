@@ -242,6 +242,21 @@ export interface WordPressBlogPost {
   meta_robots: 'index, follow';
 }
 
+// Headless WordPress Page Model (برگه‌ها / صفحات ایستا)
+export interface WordPressPage {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  author: string;
+  status: 'publish' | 'draft';
+  template?: 'default' | 'narrow' | 'fullwidth';
+  published_at: string;
+  featured_image?: string;
+  meta_robots?: 'index, follow' | 'noindex, nofollow';
+}
+
 // Filter State for Doctor/Clinic Directory
 export interface DirectoryFilterState {
   searchQuery: string;

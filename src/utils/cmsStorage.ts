@@ -3,6 +3,7 @@ import {
   Clinic,
   DentalComponent,
   WordPressBlogPost,
+  WordPressPage,
   ClinicalPackage,
   ImplantBrand,
   SiteSettings
@@ -13,6 +14,7 @@ import {
   initialClinics,
   initialComponents,
   initialBlogPosts,
+  initialPages,
   initialClinicalPackages,
   initialBrands
 } from '../initialData';
@@ -22,6 +24,7 @@ const KEYS = {
   CLINICS: 'dentalmap_cms_clinics_v1',
   COMPONENTS: 'dentalmap_cms_components_v1',
   BLOG_POSTS: 'dentalmap_cms_blog_posts_v1',
+  PAGES: 'dentalmap_cms_pages_v1',
   PACKAGES: 'dentalmap_cms_packages_v1',
   BRANDS: 'dentalmap_cms_brands_v1',
   SETTINGS: 'dentalmap_cms_settings_v1'
@@ -87,6 +90,19 @@ export const CmsStorageService = {
   },
   saveBlogPosts(posts: WordPressBlogPost[]): void {
     localStorage.setItem(KEYS.BLOG_POSTS, JSON.stringify(posts));
+  },
+
+  // WordPress Pages (برگه‌ها / صفحات ایستا)
+  getPages(): WordPressPage[] {
+    try {
+      const data = localStorage.getItem(KEYS.PAGES);
+      return data ? JSON.parse(data) : initialPages;
+    } catch {
+      return initialPages;
+    }
+  },
+  savePages(pages: WordPressPage[]): void {
+    localStorage.setItem(KEYS.PAGES, JSON.stringify(pages));
   },
 
   // Packages
