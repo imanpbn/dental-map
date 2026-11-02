@@ -20,6 +20,7 @@ import { PartCategoryPage } from './pages/PartCategoryPage';
 import { BrandComparisonPage } from './pages/BrandComparisonPage';
 import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
+import { ImplantTestPage } from './pages/ImplantTestPage';
 
 import { DentalMapRoutes } from './utils/urlBuilder';
 
@@ -577,6 +578,12 @@ const AppContent: React.FC = () => {
             path="/naxis-guide"
             element={<NaxisGuidePage components={components} />}
           />
+
+          {/* Interactive Implant Diagnosis Quiz / Test */}
+          <Route path="/quiz" element={<ImplantTestPage />} />
+          <Route path="/test" element={<ImplantTestPage />} />
+          <Route path="/test-2" element={<ImplantTestPage />} />
+          <Route path="/implant-test" element={<ImplantTestPage />} />
 
           {/* FDI 32-Tooth Passport Simulator */}
           <Route

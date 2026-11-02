@@ -302,6 +302,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>وبلاگ و دانشنامه</span>
             </a>
 
+            {/* Implant Diagnostic Test / Quiz */}
+            <a
+              href="/quiz"
+              className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-500/20 transition-all hover:scale-105"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-100" />
+              <span>آزمون ایمپلنت</span>
+            </a>
+
             <a
               href="/passport"
               className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:shadow-lg"
@@ -328,20 +337,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Category Strip */}
       <div className="bg-slate-100/70 border-t border-slate-200 overflow-x-auto scrollbar-none py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 text-xs">
-          <span className="text-slate-400 font-medium whitespace-nowrap pl-2 flex items-center gap-1">
-            <LayoutGrid className="w-3.5 h-3.5" />
-            دسته‌بندی‌های ۸ گانه:
-          </span>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => onSelectCategory(cat.id)}
-              className="px-2.5 py-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors whitespace-nowrap text-xs font-medium"
-            >
-              {cat.name}
-            </button>
-          ))}
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-medium whitespace-nowrap pl-2 flex items-center gap-1">
+              <LayoutGrid className="w-3.5 h-3.5" />
+              دسته‌بندی‌های ۸ گانه:
+            </span>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => onSelectCategory(cat.id)}
+                className="px-2.5 py-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors whitespace-nowrap text-xs font-medium"
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          <a
+            href="/quiz"
+            className="hidden sm:inline-flex items-center gap-1.5 text-amber-700 hover:text-amber-800 font-bold bg-amber-100/80 hover:bg-amber-100 px-3 py-1 rounded-lg text-xs whitespace-nowrap transition-colors"
+          >
+            <span>🎮 آزمون هوشمند ایمپلنت</span>
+            <span className="font-mono text-[10px]">←</span>
+          </a>
         </div>
       </div>
     </header>
