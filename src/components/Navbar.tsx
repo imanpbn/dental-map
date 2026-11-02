@@ -3,7 +3,6 @@ import {
   PhoneCall,
   Search,
   ShieldCheck,
-  Type,
   LayoutGrid,
   FileCheck2,
   Stethoscope,
@@ -17,8 +16,6 @@ import {
 import { DentalComponent, Doctor, ImplantBrand } from '../types';
 
 interface NavbarProps {
-  currentFont: 'vazirmatn' | 'estedad';
-  onFontChange: (font: 'vazirmatn' | 'estedad') => void;
   isAdminOpen: boolean;
   onToggleAdmin: () => void;
   onOpenNaxisGuide: () => void;
@@ -31,8 +28,6 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  currentFont,
-  onFontChange,
   isAdminOpen,
   onToggleAdmin,
   onOpenNaxisGuide,
@@ -115,32 +110,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Font Switcher */}
-            <div className="flex items-center gap-1.5 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">
-              <Type className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-[11px] text-slate-300">قلم:</span>
-              <button
-                onClick={() => onFontChange('vazirmatn')}
-                className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-colors ${
-                  currentFont === 'vazirmatn'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                وزیرمتن
-              </button>
-              <button
-                onClick={() => onFontChange('estedad')}
-                className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-colors ${
-                  currentFont === 'estedad'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                استعداد
-              </button>
-            </div>
-
             {/* Hotline */}
             <a
               href="tel:02188001144"

@@ -66,15 +66,7 @@ import { SupabaseSyncService } from './utils/supabaseClient';
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
 
-  // 1. Font Switcher state
-  const [currentFont, setCurrentFont] = useState<'vazirmatn' | 'estedad'>('vazirmatn');
-
-  useEffect(() => {
-    document.body.classList.remove('font-vazirmatn', 'font-estedad');
-    document.body.classList.add(`font-${currentFont}`);
-  }, [currentFont]);
-
-  // 2. CMS-Managed Data States with localStorage persistence
+  // CMS-Managed Data States with localStorage persistence
   const [components, setComponents] = useState<DentalComponent[]>(() => CmsStorageService.getComponents());
   const [doctors, setDoctors] = useState<Doctor[]>(() => CmsStorageService.getDoctors());
   const [clinics, setClinics] = useState<Clinic[]>(() => CmsStorageService.getClinics());
@@ -197,8 +189,6 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-500 selection:text-white">
       {/* 1. Global Navbar with live URL routing */}
       <Navbar
-        currentFont={currentFont}
-        onFontChange={setCurrentFont}
         isAdminOpen={false}
         onToggleAdmin={() => navigate('/admin')}
         onOpenNaxisGuide={() => navigate('/naxis-guide')}
