@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Clinic, Doctor, Specialty, Insurance, ClinicInsurance, ClinicDoctor } from '../types';
 import { DentalMapRoutes } from '../utils/urlBuilder';
+import { SmsService } from '../utils/smsService';
 
 interface ClinicProfilePageProps {
   clinics: Clinic[];
@@ -135,6 +136,17 @@ export const ClinicProfilePage: React.FC<ClinicProfilePageProps> = ({
     if (!patientName || !patientPhone) return;
 
     onRecordLead(clinic.id);
+
+    // Send instant SMS notification via MeliPayamak
+    SmsService.sendAppointmentNotification({
+      patientMobile: patientPhone,
+      patientName: patientName,
+      doctorName: `پزشک منتخب کلینیک`,
+      clinicName: clinic.name,
+      date: 'به زودی جهت هماهنگی',
+      time: 'تماس کارشناس پذیرش'
+    });
+
     const tracking = `CLN-${Math.floor(100000 + Math.random() * 900000)}`;
     setBookingSuccessCode(tracking);
   };

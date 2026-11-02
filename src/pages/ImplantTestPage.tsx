@@ -15,8 +15,11 @@ import {
   Stethoscope,
   Share2,
   AlertTriangle,
-  Info
+  Info,
+  Send,
+  Phone
 } from 'lucide-react';
+import { SmsService } from '../utils/smsService';
 
 const faNum = (n: number | string) =>
   String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
@@ -362,6 +365,35 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
 مشاهده دایرکتوری پزشکان و استعلام قطعه: https://dentalmap.ir`;
     navigator.clipboard.writeText(text);
     showToast('خلاصه نتیجه برای ارائه به دندانپزشک کپی شد ✓');
+  };
+
+  const [smsPhoneInput, setSmsPhoneInput] = useState('');
+  const [isSendingSmsResult, setIsSendingSmsResult] = useState(false);
+  const [smsSentSuccess, setSmsSentSuccess] = useState(false);
+
+  const handleSendSmsToMe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!smsPhoneInput || smsPhoneInput.length < 10) {
+      alert('لطفاً شماره تلفن همراه ۱۱ رقمی خود را وارد فرمایید.');
+      return;
+    }
+
+    setIsSendingSmsResult(true);
+    const profile = PROFILES[calculatedProfile];
+
+    const res = await SmsService.sendQuizResultNotification({
+      mobile: smsPhoneInput,
+      score: normScore,
+      profileTitle: profile.t
+    });
+
+    setIsSendingSmsResult(false);
+    if (res.success) {
+      setSmsSentSuccess(true);
+      showToast('پیامک نتیجه و چک‌لیست برای شما ارسال شد ✓');
+    } else {
+      alert(res.message);
+    }
   };
 
   return (
@@ -942,6 +974,62 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* SMS Delivery Card */}
+            <div className="bg-gradient-to-r from-teal-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 border border-teal-500/30 shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300">
+                    <Send className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-bold text-white">
+                      ارسال چک‌لیست و خلاصه کارنامه به موبایل شما (پیامک رایگان)
+                    </h4>
+                    <p className="text-xs text-teal-200/80 mt-0.5">
+                      شماره خود را وارد کنید تا سوالات جلسه مشاوره با دندانپزشک فوراً برایتان پیامک شود.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {smsSentSuccess ? (
+                <div className="p-4 bg-teal-800/50 border border-teal-400/40 rounded-2xl text-xs sm:text-sm text-teal-100 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                  <span>پیامک کارنامه با موفقیت برای شماره {smsPhoneInput} ارسال شد. در مطب همراه داشته باشید!</span>
+                </div>
+              ) : (
+                <form onSubmit={handleSendSmsToMe} className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+                  <div className="relative w-full sm:w-72">
+                    <input
+                      type="text"
+                      value={smsPhoneInput}
+                      onChange={(e) => setSmsPhoneInput(e.target.value)}
+                      placeholder="0912*******"
+                      dir="ltr"
+                      className="w-full bg-slate-900/80 border border-teal-500/40 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-teal-300/40 font-mono focus:outline-none focus:border-teal-400"
+                      required
+                    />
+                    <Phone className="w-4 h-4 text-teal-400 absolute right-3 top-3" />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSendingSmsResult}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    {isSendingSmsResult ? (
+                      <span>در حال ارسال پیامک…</span>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>ارسال پیامک چک‌لیست</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Final Action Buttons */}

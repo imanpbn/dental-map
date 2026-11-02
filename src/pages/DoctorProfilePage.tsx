@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Doctor, Specialty, Clinic, ImplantBrand, ClinicDoctor } from '../types';
 import { DentalMapRoutes } from '../utils/urlBuilder';
+import { SmsService } from '../utils/smsService';
 
 interface DoctorProfilePageProps {
   doctors: Doctor[];
@@ -183,6 +184,16 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
 
     const cId = selectedClinicId || primaryClinic?.id || 1;
     onRecordLead(cId, doctor.id);
+
+    // Send instant SMS notification via MeliPayamak
+    SmsService.sendAppointmentNotification({
+      patientMobile: patientPhone,
+      patientName: patientName,
+      doctorName: `دکتر ${doctor.first_name} ${doctor.last_name}`,
+      clinicName: primaryClinic?.name,
+      date: preferredDate,
+      time: preferredTime
+    });
 
     const tracking = `DM-${Math.floor(100000 + Math.random() * 900000)}`;
     setBookingSuccessCode(tracking);

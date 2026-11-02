@@ -277,6 +277,26 @@ export interface AdminUser {
   avatar?: string;
 }
 
+// SMS Gateway & MeliPayamak Configuration
+export interface SmsSettings {
+  apiKey: string;
+  senderNumber: string;
+  patternAppointment: string;
+  patternPassport: string;
+  patternQuiz: string;
+  isSmsActive: boolean;
+}
+
+export interface SmsLogRecord {
+  id: string;
+  to: string;
+  text: string;
+  type: 'appointment' | 'passport' | 'quiz' | 'test' | 'lead';
+  status: 'sent' | 'failed' | 'pending';
+  recId?: string;
+  created_at: string;
+}
+
 // Global Site Settings for WordPress-style CMS
 export interface SiteSettings {
   hotline: string;
@@ -285,4 +305,5 @@ export interface SiteSettings {
   meta_description: string;
   canonical_domain: string;
   is_lead_engine_active: boolean;
+  sms_settings?: SmsSettings;
 }

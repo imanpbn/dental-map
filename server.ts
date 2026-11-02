@@ -23,6 +23,48 @@ async function startServer() {
     });
   });
 
+  // MeliPayamak SMS Integration Proxy
+  app.post('/api/sms/send', async (req, res) => {
+    try {
+      const { apiKey, from, to, text, bodyId, args } = req.body;
+      const key = (apiKey || 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6').trim();
+
+      const endpoint = bodyId
+        ? `https://console.melipayamak.com/api/send/shared/${key}`
+        : `https://console.melipayamak.com/api/send/simple/${key}`;
+
+      const payload = bodyId
+        ? { to, bodyId: Number(bodyId), args: args || [text] }
+        : { from: from || '50004001', to, text };
+
+      const meliRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await meliRes.json().catch(() => ({}));
+      res.json({
+        success: meliRes.ok,
+        data,
+        recId: (data as any)?.recId || (data as any)?.Value || 'sim-' + Date.now()
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.get('/api/sms/status', async (req, res) => {
+    try {
+      const key = (req.query.apiKey as string || 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6').trim();
+      const checkRes = await fetch(`https://console.melipayamak.com/api/receive/credit/${key}`);
+      const data = await checkRes.json().catch(() => ({}));
+      res.json({ success: checkRes.ok, data });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // Headless WordPress API on subfolder /blog for unified domain authority
   app.get('/wp-json/wp/v2/posts', (_req, res) => {
     res.json([
