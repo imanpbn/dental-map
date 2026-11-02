@@ -41,10 +41,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [isBrandsMenuOpen, setIsBrandsMenuOpen] = useState(false);
   const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const categoryMenuRef = useRef<HTMLDivElement>(null);
+  const brandsMenuRef = useRef<HTMLDivElement>(null);
   const servicesMenuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on click outside
@@ -55,6 +57,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       }
       if (categoryMenuRef.current && !categoryMenuRef.current.contains(event.target as Node)) {
         setIsCategoryMenuOpen(false);
+      }
+      if (brandsMenuRef.current && !brandsMenuRef.current.contains(event.target as Node)) {
+        setIsBrandsMenuOpen(false);
       }
       if (servicesMenuRef.current && !servicesMenuRef.current.contains(event.target as Node)) {
         setIsServicesMenuOpen(false);
@@ -267,30 +272,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Quick Nav Actions */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={onOpenNaxisGuide}
-              className="hidden lg:flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors border border-slate-200"
-            >
-              <span>🇩🇪 راهنمای ناکسیس آلمان</span>
-            </button>
-
-            <a
-              href="/blog"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors border border-slate-200"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-              <span>وبلاگ و دانشنامه</span>
-            </a>
-
-            {/* Implant Diagnostic Test / Quiz */}
-            <a
-              href="/quiz"
-              className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-500/20 transition-all hover:scale-105"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-100" />
-              <span>آزمون ایمپلنت</span>
-            </a>
-
             <a
               href="/passport"
               className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:shadow-lg"
@@ -365,6 +346,77 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
+            {/* 2. برندها (منوی آبشاری شامل راهنمای ناکسیس آلمان در زیر برندها) */}
+            <div
+              className="relative"
+              ref={brandsMenuRef}
+              onMouseEnter={() => setIsBrandsMenuOpen(true)}
+              onMouseLeave={() => setIsBrandsMenuOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setIsBrandsMenuOpen(!isBrandsMenuOpen)}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                  isBrandsMenuOpen
+                    ? 'text-emerald-700 bg-emerald-50 font-bold shadow-xs'
+                    : 'text-slate-800 hover:text-emerald-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>برندها</span>
+                <span className="text-[10px] text-slate-400 font-mono">▼</span>
+              </button>
+
+              {/* منوی بازشونده زیر برندها */}
+              {isBrandsMenuOpen && (
+                <div className="absolute right-0 top-full mt-0.5 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                  {/* راهنمای ناکسیس آلمان زیر منوی برندها */}
+                  <a
+                    href="/naxis-guide"
+                    onClick={(e) => {
+                      setIsBrandsMenuOpen(false);
+                      onOpenNaxisGuide();
+                    }}
+                    className="block px-5 py-3 text-xs sm:text-sm bg-emerald-50/70 hover:bg-emerald-100/70 text-emerald-950 transition-colors group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="font-bold flex items-center gap-2 text-emerald-900 group-hover:text-emerald-700">
+                        <span className="text-base">🇩🇪</span>
+                        <span>راهنمای ناکسیس آلمان</span>
+                      </div>
+                      <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">
+                        کاتالوگ کامل
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-600 block leading-relaxed">
+                      تایتانیوم گرید ۴، استانداردهای صنعتی و جدول قطعات
+                    </span>
+                  </a>
+
+                  {/* فهرست برندهای همکار */}
+                  {brands && brands.length > 0 && brands.map((brand) => (
+                    <div
+                      key={brand.id}
+                      onClick={() => {
+                        if (brand.slug === 'naxis' || brand.name.toLowerCase().includes('naxis')) {
+                          onOpenNaxisGuide();
+                        }
+                        setIsBrandsMenuOpen(false);
+                      }}
+                      className="w-full text-right px-5 py-2.5 text-xs sm:text-sm font-medium text-slate-800 hover:text-emerald-700 hover:bg-slate-50 transition-colors flex items-center justify-between group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{brand.logo || '🦷'}</span>
+                        <span className="font-medium">{brand.name}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 group-hover:text-emerald-600">
+                        {brand.warranty_description ? 'گارانتی رسمی' : 'اورجینال'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* 2. خدمات و ابزارها (منوی آبشاری دوم با فلش ▼) */}
             <div
               className="relative"
@@ -415,19 +467,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       ارزیابی استخوان و چک‌لیست سوال از متخصص
                     </span>
                   </a>
-
-                  <button
-                    onClick={() => {
-                      onOpenNaxisGuide();
-                      setIsServicesMenuOpen(false);
-                    }}
-                    className="w-full text-right px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
-                  >
-                    <div className="font-bold">🇩🇪 راهنمای جامع قطعات ناکسیس آلمان</div>
-                    <span className="text-[11px] text-slate-500 block mt-0.5">
-                      تایتانیوم گرید ۴ و استانداردهای صنعتی
-                    </span>
-                  </button>
                 </div>
               )}
             </div>
