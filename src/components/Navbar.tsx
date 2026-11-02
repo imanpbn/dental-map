@@ -40,13 +40,24 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
 
-  // Close search dropdown on click outside
+  const searchRef = useRef<HTMLDivElement>(null);
+  const categoryMenuRef = useRef<HTMLDivElement>(null);
+  const servicesMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsSearchOpen(false);
+      }
+      if (categoryMenuRef.current && !categoryMenuRef.current.contains(event.target as Node)) {
+        setIsCategoryMenuOpen(false);
+      }
+      if (servicesMenuRef.current && !servicesMenuRef.current.contains(event.target as Node)) {
+        setIsServicesMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -304,34 +315,169 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Category Strip */}
-      <div className="bg-slate-100/70 border-t border-slate-200 overflow-x-auto scrollbar-none py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 font-medium whitespace-nowrap pl-2 flex items-center gap-1">
-              <LayoutGrid className="w-3.5 h-3.5" />
-              دسته‌بندی‌های ۸ گانه:
-            </span>
-            {categories.map((cat) => (
+      {/* Navigation Menu Bar with Dropdowns (مشابه تصویر ارسالی کاربر) */}
+      <nav className="bg-white border-t border-slate-200 text-xs sm:text-sm font-semibold">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center gap-1 sm:gap-2 py-1 relative">
+            {/* 1. دسته‌بندی‌های ۸ گانه قطعات (منوی بازشونده زیر هم مطابق عکس) */}
+            <div
+              className="relative"
+              ref={categoryMenuRef}
+              onMouseEnter={() => setIsCategoryMenuOpen(true)}
+              onMouseLeave={() => setIsCategoryMenuOpen(false)}
+            >
               <button
-                key={cat.id}
-                onClick={() => onSelectCategory(cat.id)}
-                className="px-2.5 py-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors whitespace-nowrap text-xs font-medium"
+                type="button"
+                onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                  isCategoryMenuOpen
+                    ? 'text-emerald-700 bg-emerald-50 font-bold shadow-xs'
+                    : 'text-slate-800 hover:text-emerald-700 hover:bg-slate-50'
+                }`}
               >
-                {cat.name}
+                <LayoutGrid className="w-4 h-4 text-emerald-600" />
+                <span>دسته‌بندی قطعات</span>
+                <span className="text-[10px] text-slate-400 font-mono">▼</span>
               </button>
-            ))}
+
+              {/* منوی آبشاری عمودی زیر هم (مطابق با عکس ارسالی) */}
+              {isCategoryMenuOpen && (
+                <div className="absolute right-0 top-full mt-0.5 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                  {categories.map((cat, idx) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        onSelectCategory(cat.id);
+                        setIsCategoryMenuOpen(false);
+                      }}
+                      className="w-full text-right px-5 py-3 text-xs sm:text-sm font-medium text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors flex items-center justify-between group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-emerald-500 transition-colors" />
+                        <span>{cat.name}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono group-hover:text-emerald-600 transition-colors">
+                        #۰{idx + 1}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 2. خدمات و ابزارها (منوی آبشاری دوم با فلش ▼) */}
+            <div
+              className="relative"
+              ref={servicesMenuRef}
+              onMouseEnter={() => setIsServicesMenuOpen(true)}
+              onMouseLeave={() => setIsServicesMenuOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setIsServicesMenuOpen(!isServicesMenuOpen)}
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                  isServicesMenuOpen
+                    ? 'text-emerald-700 bg-emerald-50 font-bold shadow-xs'
+                    : 'text-slate-800 hover:text-emerald-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>خدمات و ابزارها</span>
+                <span className="text-[10px] text-slate-400 font-mono">▼</span>
+              </button>
+
+              {/* زیرمنوی آبشاری عمودی */}
+              {isServicesMenuOpen && (
+                <div className="absolute right-0 top-full mt-0.5 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                  <a
+                    href="/passport"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                  >
+                    <div className="font-bold flex items-center gap-2">
+                      <FileCheck2 className="w-4 h-4 text-emerald-600" />
+                      <span>پاسپورت سلامت ۳۲ دندان (FDI)</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      ثبت شماره لات، سریال و نسخه چاپی PDF
+                    </span>
+                  </a>
+
+                  <a
+                    href="/quiz"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-amber-700 hover:bg-amber-50/60 transition-colors"
+                  >
+                    <div className="font-bold flex items-center gap-2 text-amber-900">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>آزمون هوشمند انتخاب ایمپلنت</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      ارزیابی استخوان و چک‌لیست سوال از متخصص
+                    </span>
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      onOpenNaxisGuide();
+                      setIsServicesMenuOpen(false);
+                    }}
+                    className="w-full text-right px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
+                  >
+                    <div className="font-bold">🇩🇪 راهنمای جامع قطعات ناکسیس آلمان</div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      تایتانیوم گرید ۴ و استانداردهای صنعتی
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 3. دانشنامه و وبلاگ */}
+            <a
+              href="/blog"
+              className="px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-1.5"
+            >
+              <BookOpen className="w-4 h-4 text-emerald-600" />
+              <span>مقالات و دانشنامه</span>
+            </a>
+
+            {/* 4. درباره دنتال‌مپ */}
+            <a
+              href="/about-us"
+              className="hidden md:inline-flex px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              درباره ما
+            </a>
+
+            {/* 5. قوانین و مقررات */}
+            <a
+              href="/terms"
+              className="hidden lg:inline-flex px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              قوانین
+            </a>
+
+            {/* 6. تماس با ما */}
+            <a
+              href="/contact"
+              className="hidden lg:inline-flex px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              تماس با ما
+            </a>
           </div>
 
-          <a
-            href="/quiz"
-            className="hidden sm:inline-flex items-center gap-1.5 text-amber-700 hover:text-amber-800 font-bold bg-amber-100/80 hover:bg-amber-100 px-3 py-1 rounded-lg text-xs whitespace-nowrap transition-colors"
-          >
-            <span>🎮 آزمون هوشمند ایمپلنت</span>
-            <span className="font-mono text-[10px]">←</span>
-          </a>
+          {/* سمت چپ نوار ناوبری: دکمه هدایت سریع به آزمون یا استعلام */}
+          <div className="flex items-center gap-2">
+            <a
+              href="/quiz"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>آزمون هوشمند ایمپلنت</span>
+            </a>
+          </div>
         </div>
-      </div>
+      </nav>
     </header>
   );
 };
