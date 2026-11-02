@@ -184,6 +184,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   const [testSmsMessage, setTestSmsMessage] = useState('سلام، این یک پیامک آزمایشی از سامانه استعلام و پاسپورت ایمپلنت دنتال‌مپ است.');
   const [isSendingTestSms, setIsSendingTestSms] = useState(false);
   const [testSmsResult, setTestSmsResult] = useState<{ success: boolean; message: string; recId?: string } | null>(null);
+  const [smsCredit, setSmsCredit] = useState<{ amount?: number; status?: string } | null>(null);
+
+  useEffect(() => {
+    if (activeSection === 'sms') {
+      SmsService.getCredit().then((data) => setSmsCredit(data)).catch(() => {});
+    }
+  }, [activeSection]);
 
   const handleSaveSmsSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -2011,14 +2018,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="flex h-2.5 w-2.5 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-xs font-bold text-emerald-400 font-mono">
-                    توکن فعال: {smsConfig.apiKey ? `${smsConfig.apiKey.substring(0, 8)}...` : 'تنظیم نشده'}
-                  </span>
+                <div className="flex items-center gap-3">
+                  {smsCredit && typeof smsCredit.amount === 'number' && (
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-xl text-center">
+                      <div className="text-[10px] text-slate-400">اعتبار حساب ملی‌پیامک:</div>
+                      <div className="text-sm font-black text-emerald-400 font-mono">
+                        {Math.floor(smsCredit.amount).toLocaleString('fa-IR')} پیامک
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2.5 w-2.5 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400 font-mono">
+                      توکن فعال: {smsConfig.apiKey ? `${smsConfig.apiKey.substring(0, 8)}...` : 'تنظیم نشده'}
+                    </span>
+                  </div>
                 </div>
               </div>
 

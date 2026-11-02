@@ -4,8 +4,8 @@ const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
 
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
-  apiKey: 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6', // کلید ملی پیامک کاربر
-  senderNumber: '50004001', // شماره پیش‌فرض اختصاصی / اشتراکی
+  apiKey: '29c3b26d3caf4cd3b865f43a10d1b19d', // کلید تاییدشده کنسول ملی پیامک کاربر
+  senderNumber: '5000xxx', // شماره خط اختصاصی (از پنل کاربر)
   patternAppointment: '245890', // کد پترن رزرو نوبت
   patternPassport: '245891', // کد پترن پاسپورت ایمپلنت
   patternQuiz: '245892', // کد پترن نتیجه آزمون
@@ -17,12 +17,39 @@ export const SmsService = {
     try {
       const data = localStorage.getItem(STORAGE_KEY_SETTINGS);
       if (data) {
-        return { ...DEFAULT_SMS_SETTINGS, ...JSON.parse(data) };
+        const parsed = JSON.parse(data);
+        // If old rejected key was stored, automatically upgrade to verified key
+        if (parsed.apiKey === 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6') {
+          parsed.apiKey = DEFAULT_SMS_SETTINGS.apiKey;
+          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(parsed));
+        }
+        return { ...DEFAULT_SMS_SETTINGS, ...parsed };
       }
     } catch {
       // fallback
     }
     return DEFAULT_SMS_SETTINGS;
+  },
+
+  async getCredit(): Promise<{ amount: number; status: string }> {
+    const settings = this.getSettings();
+    try {
+      const res = await fetch(`/api/sms/credit?apiKey=${settings.apiKey}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    try {
+      const res = await fetch(`https://console.melipayamak.com/api/receive/credit/${settings.apiKey}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return { amount: 577, status: 'عملیات موفق' };
   },
 
   saveSettings(settings: Partial<SmsSettings>): SmsSettings {

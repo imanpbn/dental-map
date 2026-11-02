@@ -7,7 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { apiKey, from, to, text, bodyId, args } = req.body;
-    const key = (apiKey || process.env.MELIPAYAMAK_API_KEY || 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6').trim();
+    const key = (apiKey || process.env.MELIPAYAMAK_API_KEY || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
 
     const endpoint = bodyId
       ? `https://console.melipayamak.com/api/send/shared/${key}`
@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const payload = bodyId
       ? { to, bodyId: Number(bodyId), args: args || [text] }
-      : { from: from || '50004001', to, text };
+      : { from: from || '5000xxx', to, text };
 
     const meliRes = await fetch(endpoint, {
       method: 'POST',
