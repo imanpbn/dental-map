@@ -1,4 +1,35 @@
 -- ==========================================
+-- 0. CLEAN RESET (FOR RE-RUNNABILITY & IDEMPOTENCY)
+-- ==========================================
+DROP TABLE IF EXISTS lead_valuations CASCADE;
+DROP TABLE IF EXISTS admin_users CASCADE;
+DROP TABLE IF EXISTS site_settings CASCADE;
+DROP TABLE IF EXISTS blog_posts CASCADE;
+DROP TABLE IF EXISTS clinical_packages CASCADE;
+DROP TABLE IF EXISTS components CASCADE;
+DROP TABLE IF EXISTS doctor_implant_types CASCADE;
+DROP TABLE IF EXISTS clinic_doctors CASCADE;
+DROP TABLE IF EXISTS clinic_insurances CASCADE;
+DROP TABLE IF EXISTS insurances CASCADE;
+DROP TABLE IF EXISTS clinics CASCADE;
+DROP TABLE IF EXISTS doctors CASCADE;
+DROP TABLE IF EXISTS specialties CASCADE;
+DROP TABLE IF EXISTS implant_types CASCADE;
+DROP TABLE IF EXISTS implant_brands CASCADE;
+DROP TABLE IF EXISTS manufacturers CASCADE;
+DROP TABLE IF EXISTS districts CASCADE;
+DROP TABLE IF EXISTS cities CASCADE;
+DROP TABLE IF EXISTS provinces CASCADE;
+DROP TABLE IF EXISTS countries CASCADE;
+
+DROP TYPE IF EXISTS gender_enum CASCADE;
+DROP TYPE IF EXISTS age_group_enum CASCADE;
+DROP TYPE IF EXISTS center_type_enum CASCADE;
+DROP TYPE IF EXISTS insurance_type_enum CASCADE;
+DROP TYPE IF EXISTS component_category CASCADE;
+DROP TYPE IF EXISTS admin_role CASCADE;
+
+-- ==========================================
 -- 1. ENUM TYPES
 -- ==========================================
 CREATE TYPE gender_enum AS ENUM ('male', 'female');
@@ -283,13 +314,19 @@ CREATE INDEX idx_doctors_medical_code_slug ON doctors(medical_council_code, slug
 -- ==========================================
 -- 8. INITIAL SEED DATA
 -- ==========================================
-INSERT INTO provinces (name, slug) VALUES ('تهران', 'tehran-province');
-INSERT INTO cities (province_id, name, slug) VALUES (1, 'تهران', 'tehran');
+INSERT INTO provinces (name, slug) VALUES ('تهران', 'tehran-province')
+ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO cities (province_id, name, slug) VALUES 
+((SELECT id FROM provinces WHERE slug = 'tehran-province' LIMIT 1), 'تهران', 'tehran')
+ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name;
+
 INSERT INTO districts (city_id, name, slug, region_zone) VALUES 
-(1, 'سعادت‌آباد', 'saadat-abad', 'غرب و شمال غرب'),
-(1, 'زعفرانیه', 'zaferanieh', 'شمال'),
-(1, 'شهرک غرب', 'shahrak-gharb', 'غرب'),
-(1, 'ولیعصر', 'valiasr', 'مرکز');
+((SELECT id FROM cities WHERE slug = 'tehran' LIMIT 1), 'سعادت‌آباد', 'saadat-abad', 'غرب و شمال غرب'),
+((SELECT id FROM cities WHERE slug = 'tehran' LIMIT 1), 'زعفرانیه', 'zaferanieh', 'شمال'),
+((SELECT id FROM cities WHERE slug = 'tehran' LIMIT 1), 'شهرک غرب', 'shahrak-gharb', 'غرب'),
+((SELECT id FROM cities WHERE slug = 'tehran' LIMIT 1), 'ولیعصر', 'valiasr', 'مرکز')
+ON CONFLICT (city_id, slug) DO UPDATE SET name = EXCLUDED.name;
 
 INSERT INTO specialties (title, slug) VALUES 
 ('دندانپزشک عمومی', 'general-dentist'),
@@ -297,13 +334,15 @@ INSERT INTO specialties (title, slug) VALUES
 ('متخصص درمان ریشه (اندو)', 'endodontist'),
 ('متخصص پروتزهای دندانی و ایمپلنت', 'prosthodontist'),
 ('متخصص جراحی لثه (پریو)', 'periodontist'),
-('دندانپزشک کودکان', 'pediatric-dentist');
+('دندانپزشک کودکان', 'pediatric-dentist')
+ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title;
 
 INSERT INTO insurances (name, slug, insurance_type) VALUES 
 ('بیمه دانا', 'dana', 'supplementary'),
 ('بیمه البرز', 'alborz', 'supplementary'),
 ('بیمه ایران', 'iran', 'supplementary'),
-('تأمین اجتماعی', 'tamin', 'basic');
+('تأمین اجتماعی', 'tamin', 'basic')
+ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name;
 
 -- ==========================================
 -- 9. ROW LEVEL SECURITY (RLS) POLICIES
