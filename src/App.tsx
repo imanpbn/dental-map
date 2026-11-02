@@ -349,7 +349,7 @@ const AppContent: React.FC = () => {
                 doctors={doctors}
                 specialties={initialSpecialties}
                 clinics={clinics}
-                brands={initialBrands}
+                brands={brands}
                 clinicDoctors={initialClinicDoctors}
                 onRecordLead={handleRecordLead}
               />
@@ -554,9 +554,9 @@ const AppContent: React.FC = () => {
           <Route
             path="/parts/ref/:refCode"
             element={
-              <PartCategoryPage
+              <ComponentDetailPage
                 components={components}
-                brands={initialBrands}
+                brands={brands}
               />
             }
           />
@@ -633,7 +633,7 @@ const AppContent: React.FC = () => {
             element={
               <ComponentDetailPage
                 components={components}
-                brands={initialBrands}
+                brands={brands}
               />
             }
           />
