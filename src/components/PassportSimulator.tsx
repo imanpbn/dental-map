@@ -13,9 +13,12 @@ import {
   X,
   Edit3,
   Check,
-  RotateCcw
+  RotateCcw,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import { ToothPassportRecord } from '../types';
+import { InteractiveJawChart } from './InteractiveJawChart';
 
 interface PassportSimulatorProps {
   teeth: ToothPassportRecord[];
@@ -27,6 +30,7 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
   onUpdateTooth
 }) => {
   const [selectedToothNum, setSelectedToothNum] = useState<number>(16);
+  const [chartViewMode, setChartViewMode] = useState<'jaw' | 'grid'>('jaw');
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -111,11 +115,17 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
 
   const implantedTeethCount = teeth.filter((t) => t.is_implanted).length;
 
+  // All 32 teeth in circular arch order for bidirectional stepping
+  const allTeethInOrder = [...q1, ...q2, ...q3, ...q4];
+  const currentIndex = allTeethInOrder.findIndex((t) => t.tooth_number === selectedToothNum);
+  const prevTooth = currentIndex > 0 ? allTeethInOrder[currentIndex - 1] : allTeethInOrder[allTeethInOrder.length - 1];
+  const nextTooth = currentIndex < allTeethInOrder.length - 1 ? allTeethInOrder[currentIndex + 1] : allTeethInOrder[0];
+
   return (
     <section id="passport-section" className="py-16 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold mb-2">
               <FileCheck2 className="w-3.5 h-3.5" />
@@ -125,7 +135,7 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
               شناسنامه دیجیتال فک ۳۲ دندان (Digital Implant Passport)
             </h2>
             <p className="text-slate-600 text-sm mt-1">
-              کلیک روی هر دندان برای مشاهده کد رفرنس فیکسچر، شماره لات استریل، تورک پیچ اباتمنت و صدور گواهی PDF
+              انتخاب متقابل دندان از روی تصویر آناتومیک فک یا کادر مشخصات جهت مشاهده کد رفرنس، شماره لات استریل و چاپ گواهی
             </p>
           </div>
 
@@ -136,7 +146,7 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
             </span>
             <button
               onClick={() => setIsPrintModalOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
+              className="px-4 py-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
             >
               <Printer className="w-4 h-4" />
               <span>چاپ و دانلود شناسنامه رسمی (PDF)</span>
@@ -144,148 +154,265 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
           </div>
         </div>
 
-        {/* 32 Tooth Chart Container */}
-        <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-8 mb-8 shadow-xs">
-          <div className="text-center mb-6">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-              نقشه دندانی فک بالا و پایین (Maxilla & Mandible Chart)
-            </span>
+        {/* View Mode Switcher: Graphic Jaw Arch vs Matrix Grid */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setChartViewMode('jaw')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                chartViewMode === 'jaw'
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+            >
+              <span>🦷 نمای آناتومیک فک (گرافیکی)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setChartViewMode('grid')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                chartViewMode === 'grid'
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+            >
+              <span>📊 چارت ماتریسی ربع‌ها</span>
+            </button>
           </div>
 
-          {/* Upper Jaw (Maxilla): Q1 (Right) | Q2 (Left) */}
-          <div className="mb-4">
-            <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
-              قوس فک بالا (Maxillary Arch)
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
-              {/* Q1: 18 to 11 */}
-              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
-                {q1.map((t) => (
-                  <button
-                    key={t.tooth_number}
-                    onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
-                      selectedToothNum === t.tooth_number
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
-                        : t.is_implanted
-                        ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
-                    <span className="text-[10px]">
-                      {t.is_implanted ? '🔩' : '🦷'}
-                    </span>
-                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
-                      {t.is_implanted ? 'کاشت' : 'طبیعی'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Q2: 21 to 28 */}
-              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
-                {q2.map((t) => (
-                  <button
-                    key={t.tooth_number}
-                    onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
-                      selectedToothNum === t.tooth_number
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
-                        : t.is_implanted
-                        ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
-                    <span className="text-[10px]">
-                      {t.is_implanted ? '🔩' : '🦷'}
-                    </span>
-                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
-                      {t.is_implanted ? 'کاشت' : 'طبیعی'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Lower Jaw (Mandible): Q4 (Right) | Q3 (Left) */}
-          <div>
-            <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
-              قوس فک پایین (Mandibular Arch)
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
-              {/* Q4: 48 to 41 */}
-              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
-                {q4.map((t) => (
-                  <button
-                    key={t.tooth_number}
-                    onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
-                      selectedToothNum === t.tooth_number
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
-                        : t.is_implanted
-                        ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
-                    <span className="text-[10px]">
-                      {t.is_implanted ? '🔩' : '🦷'}
-                    </span>
-                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
-                      {t.is_implanted ? 'کاشت' : 'طبیعی'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Q3: 31 to 38 */}
-              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
-                {q3.map((t) => (
-                  <button
-                    key={t.tooth_number}
-                    onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
-                      selectedToothNum === t.tooth_number
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
-                        : t.is_implanted
-                        ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
-                    <span className="text-[10px]">
-                      {t.is_implanted ? '🔩' : '🦷'}
-                    </span>
-                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
-                      {t.is_implanted ? 'کاشت' : 'طبیعی'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="text-xs text-slate-500 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>تعامل دوطرفه: کلیک روی تصویر فک ⇄ تغییر مشخصات کادر پایین</span>
           </div>
         </div>
 
-        {/* Selected Tooth Detail Panel */}
+        {/* Chart View Content */}
+        {chartViewMode === 'jaw' ? (
+          <div className="mb-8">
+            <InteractiveJawChart
+              teeth={teeth}
+              selectedToothNum={selectedToothNum}
+              onSelectTooth={handleSelectTooth}
+            />
+          </div>
+        ) : (
+          /* 32 Tooth Matrix Grid */
+          <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-8 mb-8 shadow-xs">
+            <div className="text-center mb-6">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                نقشه دندانی فک بالا و پایین (Maxilla & Mandible Chart)
+              </span>
+            </div>
+
+            {/* Upper Jaw (Maxilla): Q1 (Right) | Q2 (Left) */}
+            <div className="mb-4">
+              <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
+                قوس فک بالا (Maxillary Arch)
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
+                {/* Q1: 18 to 11 */}
+                <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
+                  {q1.map((t) => (
+                    <button
+                      key={t.tooth_number}
+                      onClick={() => handleSelectTooth(t.tooth_number)}
+                      className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border cursor-pointer ${
+                        selectedToothNum === t.tooth_number
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
+                          : t.is_implanted
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
+                      <span className="text-[10px]">
+                        {t.is_implanted ? '🔩' : '🦷'}
+                      </span>
+                      <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
+                        {t.is_implanted ? 'کاشت' : 'طبیعی'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Q2: 21 to 28 */}
+                <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
+                  {q2.map((t) => (
+                    <button
+                      key={t.tooth_number}
+                      onClick={() => handleSelectTooth(t.tooth_number)}
+                      className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border cursor-pointer ${
+                        selectedToothNum === t.tooth_number
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
+                          : t.is_implanted
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
+                      <span className="text-[10px]">
+                        {t.is_implanted ? '🔩' : '🦷'}
+                      </span>
+                      <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
+                        {t.is_implanted ? 'کاشت' : 'طبیعی'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Lower Jaw (Mandible): Q4 (Right) | Q3 (Left) */}
+            <div>
+              <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
+                قوس فک پایین (Mandibular Arch)
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
+                {/* Q4: 48 to 41 */}
+                <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
+                  {q4.map((t) => (
+                    <button
+                      key={t.tooth_number}
+                      onClick={() => handleSelectTooth(t.tooth_number)}
+                      className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border cursor-pointer ${
+                        selectedToothNum === t.tooth_number
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
+                          : t.is_implanted
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
+                      <span className="text-[10px]">
+                        {t.is_implanted ? '🔩' : '🦷'}
+                      </span>
+                      <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
+                        {t.is_implanted ? 'کاشت' : 'طبیعی'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Q3: 31 to 38 */}
+                <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
+                  {q3.map((t) => (
+                    <button
+                      key={t.tooth_number}
+                      onClick={() => handleSelectTooth(t.tooth_number)}
+                      className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border cursor-pointer ${
+                        selectedToothNum === t.tooth_number
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
+                          : t.is_implanted
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-bold hover:bg-emerald-100'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
+                      <span className="text-[10px]">
+                        {t.is_implanted ? '🔩' : '🦷'}
+                      </span>
+                      <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
+                        {t.is_implanted ? 'کاشت' : 'طبیعی'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Selected Tooth Detail Panel (کادر پایین شناسنامه با قابلیت انتخاب دوطرفه) */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+          {/* Bidirectional Quick Tooth Selector Bar */}
+          <div className="bg-linear-to-r from-slate-50 to-emerald-50/40 border border-slate-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <label htmlFor="tooth-picker-select" className="text-xs font-bold text-slate-700 whitespace-nowrap flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                <span>انتخاب مستقیم شماره دندان:</span>
+              </label>
+              <select
+                id="tooth-picker-select"
+                value={selectedToothNum}
+                onChange={(e) => handleSelectTooth(Number(e.target.value))}
+                className="bg-white border border-slate-300 hover:border-emerald-500 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 shadow-2xs focus:ring-3 focus:ring-emerald-500/20 focus:outline-hidden transition-all cursor-pointer"
+              >
+                <optgroup label="فک بالا راست (Q1: ۱۸ تا ۱۱)">
+                  {q1.map((t) => (
+                    <option key={t.tooth_number} value={t.tooth_number}>
+                      #{t.tooth_number} - {t.tooth_name_fa} {t.is_implanted ? '🔩 (ایمپلنت)' : '🦷 (طبیعی)'}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="فک بالا چپ (Q2: ۲۱ تا ۲۸)">
+                  {q2.map((t) => (
+                    <option key={t.tooth_number} value={t.tooth_number}>
+                      #{t.tooth_number} - {t.tooth_name_fa} {t.is_implanted ? '🔩 (ایمپلنت)' : '🦷 (طبیعی)'}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="فک پایین چپ (Q3: ۳۱ تا ۳۸)">
+                  {q3.map((t) => (
+                    <option key={t.tooth_number} value={t.tooth_number}>
+                      #{t.tooth_number} - {t.tooth_name_fa} {t.is_implanted ? '🔩 (ایمپلنت)' : '🦷 (طبیعی)'}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="فک پایین راست (Q4: ۴۱ تا ۴۸)">
+                  {q4.map((t) => (
+                    <option key={t.tooth_number} value={t.tooth_number}>
+                      #{t.tooth_number} - {t.tooth_name_fa} {t.is_implanted ? '🔩 (ایمپلنت)' : '🦷 (طبیعی)'}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+
+            {/* Stepper Buttons (Previous & Next Tooth) */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleSelectTooth(prevTooth.tooth_number)}
+                className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
+                title={`انتقال به دندان #${prevTooth.tooth_number}`}
+              >
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <span>دندان قبلی (#{prevTooth.tooth_number})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectTooth(nextTooth.tooth_number)}
+                className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
+                title={`انتقال به دندان #${nextTooth.tooth_number}`}
+              >
+                <span>دندان بعدی (#{nextTooth.tooth_number})</span>
+                <ChevronLeft className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 font-mono font-black text-xl flex items-center justify-center">
+              <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-emerald-500 to-teal-700 text-white font-mono font-black text-2xl flex items-center justify-center shadow-md shadow-emerald-500/20 ring-4 ring-emerald-50">
                 #{selectedTooth.tooth_number}
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-base">
-                  دندان {selectedTooth.tooth_name_fa} (شماره {selectedTooth.tooth_number})
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                  <span>دندان {selectedTooth.tooth_name_fa}</span>
+                  <span className="font-mono text-emerald-700 text-sm">(کد #{selectedTooth.tooth_number})</span>
                 </h3>
                 <span className="text-xs text-slate-500">
                   ربع فک: {selectedTooth.quadrant} | وضعیت:{' '}
                   {selectedTooth.is_implanted ? (
-                    <span className="text-emerald-700 font-bold">ایمپلنت ثبت‌شده در پاسپورت</span>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                      ایمپلنت ثبت‌شده در پاسپورت 🔩
+                    </span>
                   ) : (
-                    <span className="text-slate-500">دندان طبیعی / فاقد ایمپلنت</span>
+                    <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                      دندان طبیعی / فاقد ایمپلنت 🦷
+                    </span>
                   )}
                 </span>
               </div>
