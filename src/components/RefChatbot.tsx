@@ -101,21 +101,21 @@ export const RefChatbot: React.FC<RefChatbotProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-[calc(100vw-2rem)]">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl flex items-center gap-2.5 transition-all hover:scale-105 group border-2 border-white/20"
+          className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl flex items-center gap-2 sm:gap-2.5 transition-all hover:scale-105 group border-2 border-white/20"
         >
-          <Bot className="w-6 h-6 animate-bounce" />
+          <Bot className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce" />
           <span className="font-bold text-xs">دستیار هوشمند استعلام REF</span>
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px] animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-[calc(100vw-2rem)] sm:w-96 max-w-[384px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px] max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-950 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">

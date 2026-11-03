@@ -157,14 +157,14 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
             <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
               قوس فک بالا (Maxillary Arch)
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
               {/* Q1: 18 to 11 */}
-              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1">
+              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
                 {q1.map((t) => (
                   <button
                     key={t.tooth_number}
                     onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-9 sm:w-12 h-14 sm:h-16 rounded-xl flex flex-col items-center justify-between p-1.5 transition-all text-center border ${
+                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
                       selectedToothNum === t.tooth_number
                         ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
                         : t.is_implanted
@@ -172,11 +172,11 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    <span className="font-mono text-xs font-bold">{t.tooth_number}</span>
+                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
                     <span className="text-[10px]">
                       {t.is_implanted ? '🔩' : '🦷'}
                     </span>
-                    <span className="text-[9px] truncate w-full text-slate-400">
+                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
                       {t.is_implanted ? 'کاشت' : 'طبیعی'}
                     </span>
                   </button>
@@ -184,12 +184,12 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
               </div>
 
               {/* Q2: 21 to 28 */}
-              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1">
+              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
                 {q2.map((t) => (
                   <button
                     key={t.tooth_number}
                     onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-9 sm:w-12 h-14 sm:h-16 rounded-xl flex flex-col items-center justify-between p-1.5 transition-all text-center border ${
+                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
                       selectedToothNum === t.tooth_number
                         ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
                         : t.is_implanted
@@ -197,11 +197,11 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    <span className="font-mono text-xs font-bold">{t.tooth_number}</span>
+                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
                     <span className="text-[10px]">
                       {t.is_implanted ? '🔩' : '🦷'}
                     </span>
-                    <span className="text-[9px] truncate w-full text-slate-400">
+                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
                       {t.is_implanted ? 'کاشت' : 'طبیعی'}
                     </span>
                   </button>
@@ -215,14 +215,14 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
             <div className="text-[11px] font-bold text-slate-400 text-center mb-2">
               قوس فک پایین (Mandibular Arch)
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div className="grid grid-cols-2 gap-2 sm:gap-6 bg-white p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs min-w-0">
               {/* Q4: 48 to 41 */}
-              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1">
+              <div className="flex justify-end gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
                 {q4.map((t) => (
                   <button
                     key={t.tooth_number}
                     onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-9 sm:w-12 h-14 sm:h-16 rounded-xl flex flex-col items-center justify-between p-1.5 transition-all text-center border ${
+                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
                       selectedToothNum === t.tooth_number
                         ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
                         : t.is_implanted
@@ -230,11 +230,11 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    <span className="font-mono text-xs font-bold">{t.tooth_number}</span>
+                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
                     <span className="text-[10px]">
                       {t.is_implanted ? '🔩' : '🦷'}
                     </span>
-                    <span className="text-[9px] truncate w-full text-slate-400">
+                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
                       {t.is_implanted ? 'کاشت' : 'طبیعی'}
                     </span>
                   </button>
@@ -242,12 +242,12 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
               </div>
 
               {/* Q3: 31 to 38 */}
-              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1">
+              <div className="flex justify-start gap-1 sm:gap-2 overflow-x-auto pb-1 min-w-0 scrollbar-none">
                 {q3.map((t) => (
                   <button
                     key={t.tooth_number}
                     onClick={() => handleSelectTooth(t.tooth_number)}
-                    className={`w-9 sm:w-12 h-14 sm:h-16 rounded-xl flex flex-col items-center justify-between p-1.5 transition-all text-center border ${
+                    className={`w-8 sm:w-12 h-13 sm:h-16 shrink-0 rounded-xl flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all text-center border ${
                       selectedToothNum === t.tooth_number
                         ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-emerald-500 scale-105'
                         : t.is_implanted
@@ -255,11 +255,11 @@ export const PassportSimulator: React.FC<PassportSimulatorProps> = ({
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    <span className="font-mono text-xs font-bold">{t.tooth_number}</span>
+                    <span className="font-mono text-[10px] sm:text-xs font-bold">{t.tooth_number}</span>
                     <span className="text-[10px]">
                       {t.is_implanted ? '🔩' : '🦷'}
                     </span>
-                    <span className="text-[9px] truncate w-full text-slate-400">
+                    <span className="text-[8px] sm:text-[9px] truncate w-full text-slate-400">
                       {t.is_implanted ? 'کاشت' : 'طبیعی'}
                     </span>
                   </button>

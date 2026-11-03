@@ -43,11 +43,63 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [isBrandsMenuOpen, setIsBrandsMenuOpen] = useState(false);
   const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
+  const headerRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const categoryMenuRef = useRef<HTMLDivElement>(null);
   const brandsMenuRef = useRef<HTMLDivElement>(null);
   const servicesMenuRef = useRef<HTMLDivElement>(null);
+
+  // Measure header height for smooth spacer rendering
+  useEffect(() => {
+    const updateHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
+
+  // Smart Header Scroll Effect: Hide on scroll down, show immediately on scroll up
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const diff = currentScrollY - lastScrollY;
+
+          // Always visible near top of page
+          if (currentScrollY <= 15) {
+            setIsVisible(true);
+          } else if (diff > 6 && currentScrollY > 70) {
+            // User scrolled down -> hide header and dismiss active dropdowns
+            setIsVisible(false);
+            setIsCategoryMenuOpen(false);
+            setIsBrandsMenuOpen(false);
+            setIsServicesMenuOpen(false);
+            setIsSearchOpen(false);
+          } else if (diff < -6) {
+            // User scrolled up -> reveal header immediately
+            setIsVisible(true);
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -107,84 +159,60 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-      {/* Top Hotline & Announcement Bar */}
-      <div className="bg-slate-900 text-slate-200 text-xs py-1.5 px-4 transition-all">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              مرجع رسمی استعلام کد قطعات و پاسپورت ایمپلنتولوژی ایران
-            </span>
-            <span className="hidden md:inline-block text-slate-500">|</span>
-            <span className="hidden md:inline-block text-slate-300">
-              استعلام اصالت بیش از ۱۲,۰۰۰ قطعه تاییدشده وزارت بهداشت و IMED
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Hotline */}
-            <a
-              href="tel:02188001144"
-              className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-bold font-mono tracking-wider dir-ltr"
-            >
-              <span>021-88001144</span>
-              <PhoneCall className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          {/* Brand Logo & Name */}
-          <div className="flex items-center gap-3">
-            <a href="#" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xl font-black text-slate-900 tracking-tight">دنتال مَپ</span>
-                  <span className="text-[10px] uppercase font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">
-                    Dental Map
+    <>
+      <header
+        ref={headerRef}
+        className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs transition-all duration-300 ease-in-out ${
+          isVisible ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        {/* Main Navbar */}
+        <div className="max-w-7xl mx-auto px-4 py-2.5 sm:py-3">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            {/* Brand Logo & Name */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <a href="/" className="flex items-center gap-2 group">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
+                  <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">دنتال مَپ</span>
+                    <span className="text-[9px] sm:text-[10px] uppercase font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">
+                      Dental Map
+                    </span>
+                  </div>
+                  <span className="hidden sm:inline-block text-[11px] text-slate-500 -mt-0.5 font-medium">
+                    شفافیت، اصالت قطعات و دایرکتوری ایمپلنت
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-500 -mt-0.5 font-medium">
-                  شفافیت، اصالت قطعات و دایرکتوری ایمپلنت
-                </span>
-              </div>
-            </a>
-          </div>
-
-          {/* Live Search Bar for REF, Brand, Doctor */}
-          <div className="flex-1 max-w-xl relative" ref={searchRef}>
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setIsSearchOpen(true);
-                }}
-                onFocus={() => setIsSearchOpen(true)}
-                placeholder="جستجوی زنده کد رفرنس (REF)، برند یا نام پزشک (مثلاً: 021.4312 یا اشترومن)..."
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl text-sm focus:outline-hidden focus:ring-3 focus:ring-emerald-500/15 transition-all"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3" />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute left-3 top-3 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+              </a>
             </div>
+
+            {/* Live Search Bar for REF, Brand, Doctor */}
+            <div className="flex-1 max-w-xl min-w-0 relative" ref={searchRef}>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setIsSearchOpen(true);
+                  }}
+                  onFocus={() => setIsSearchOpen(true)}
+                  placeholder="جستجوی کد REF، برند یا پزشک..."
+                  className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-2 sm:py-2.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl text-xs sm:text-sm focus:outline-hidden focus:ring-3 focus:ring-emerald-500/15 transition-all truncate"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute right-2.5 sm:right-3.5 top-2.5 sm:top-3 pointer-events-none" />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute left-2.5 top-2.5 sm:top-3 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
 
             {/* Live Search Dropdown */}
             {isSearchOpen && hasResults && (
@@ -271,19 +299,30 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Quick Nav Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Direct Hotline */}
+            <a
+              href="tel:02188001144"
+              className="hidden xl:flex items-center gap-1.5 px-3 py-2 text-slate-700 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 rounded-xl text-xs font-bold transition-all border border-slate-200"
+              title="پشتیبانی تلفنی"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <span className="font-mono dir-ltr">021-88001144</span>
+            </a>
+
             <a
               href="/passport"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:shadow-lg"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-[11px] sm:text-xs font-bold shadow-md shadow-emerald-600/20 transition-all hover:shadow-lg shrink-0"
             >
-              <FileCheck2 className="w-4 h-4" />
-              <span>پاسپورت ایمپلنت</span>
+              <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline sm:inline">پاسپورت</span>
+              <span className="hidden sm:inline"> ایمپلنت</span>
             </a>
 
             {/* Admin Toggle */}
             <button
               onClick={onToggleAdmin}
-              className={`p-2 rounded-xl border text-xs font-medium transition-colors ${
+              className={`p-2 rounded-xl border text-xs font-medium transition-colors shrink-0 ${
                 isAdminOpen
                   ? 'bg-slate-900 text-white border-slate-900'
                   : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -296,10 +335,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Navigation Menu Bar with Dropdowns (مشابه تصویر ارسالی کاربر) */}
+      {/* Navigation Menu Bar with Dropdowns */}
       <nav className="bg-white border-t border-slate-200 text-xs sm:text-sm font-semibold">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-1 sm:gap-2 py-1 relative">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-2 overflow-x-auto scrollbar-none py-1">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 relative">
             {/* 1. دسته‌بندی‌های ۸ گانه قطعات (منوی بازشونده زیر هم مطابق عکس) */}
             <div
               className="relative"
@@ -506,10 +545,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* سمت چپ نوار ناوبری: دکمه هدایت سریع به آزمون یا استعلام */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <a
               href="/quiz"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all whitespace-nowrap"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>آزمون هوشمند ایمپلنت</span>
@@ -518,5 +557,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </nav>
     </header>
+
+    {/* Dynamic Spacer for fixed header */}
+    <div style={{ height: headerHeight }} className="shrink-0" aria-hidden="true" />
+  </>
   );
 };

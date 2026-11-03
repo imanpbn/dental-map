@@ -190,7 +190,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-500 selection:text-white overflow-x-hidden w-full max-w-full">
       {/* 1. Global Navbar with live URL routing */}
       <Navbar
         isAdminOpen={false}
@@ -208,7 +208,7 @@ const AppContent: React.FC = () => {
       />
 
       {/* 2. Routes (Zero-Collision SEO URL Architecture) */}
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
         <Routes>
           {/* Main Landing */}
           <Route
