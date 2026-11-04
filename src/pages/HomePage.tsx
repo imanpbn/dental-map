@@ -84,6 +84,10 @@ export const HomePage: React.FC<HomePageProps> = ({
       navigate('/passport');
       return;
     }
+    if (sectionId === 'directory-section') {
+      navigate('/directory');
+      return;
+    }
     const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });

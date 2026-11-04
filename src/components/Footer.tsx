@@ -88,7 +88,7 @@ export const Footer: React.FC<FooterProps> = ({
                 </a>
               </li>
               <li>
-                <a href="#directory-section" className="hover:text-emerald-400 transition-colors">
+                <a href="/directory" className="hover:text-emerald-400 transition-colors">
                   دایرکتوری جراحان و مراکز شبانه‌روزی
                 </a>
               </li>

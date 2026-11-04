@@ -22,6 +22,7 @@ import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
 import { CustomPageView } from './pages/CustomPageView';
+import { DirectoryPage } from './pages/DirectoryPage';
 
 import { DentalMapRoutes } from './utils/urlBuilder';
 
@@ -239,6 +240,66 @@ const AppContent: React.FC = () => {
           />
 
           {/* Dentists Directory Hub & Location Routes */}
+          <Route
+            path="/directory"
+            element={
+              <DirectoryPage
+                doctors={doctors}
+                clinics={clinics}
+                specialties={initialSpecialties}
+                cities={initialCities}
+                districts={initialDistricts}
+                insurances={initialInsurances}
+                brands={brands}
+                implantTypes={initialImplantTypes}
+                clinicDoctors={initialClinicDoctors}
+                clinicInsurances={clinicInsurances}
+                doctorImplantTypes={initialDoctorImplantTypes}
+                leadValuations={leadValuations}
+                onRecordLead={handleRecordLead}
+              />
+            }
+          />
+          <Route
+            path="/doctors"
+            element={
+              <DirectoryPage
+                doctors={doctors}
+                clinics={clinics}
+                specialties={initialSpecialties}
+                cities={initialCities}
+                districts={initialDistricts}
+                insurances={initialInsurances}
+                brands={brands}
+                implantTypes={initialImplantTypes}
+                clinicDoctors={initialClinicDoctors}
+                clinicInsurances={clinicInsurances}
+                doctorImplantTypes={initialDoctorImplantTypes}
+                leadValuations={leadValuations}
+                onRecordLead={handleRecordLead}
+              />
+            }
+          />
+          <Route
+            path="/doctors-and-clinics"
+            element={
+              <DirectoryPage
+                doctors={doctors}
+                clinics={clinics}
+                specialties={initialSpecialties}
+                cities={initialCities}
+                districts={initialDistricts}
+                insurances={initialInsurances}
+                brands={brands}
+                implantTypes={initialImplantTypes}
+                clinicDoctors={initialClinicDoctors}
+                clinicInsurances={clinicInsurances}
+                doctorImplantTypes={initialDoctorImplantTypes}
+                leadValuations={leadValuations}
+                onRecordLead={handleRecordLead}
+              />
+            }
+          />
           <Route
             path="/dentists"
             element={

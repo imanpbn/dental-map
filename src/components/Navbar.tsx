@@ -506,11 +506,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                       ارزیابی استخوان و چک‌لیست سوال از متخصص
                     </span>
                   </a>
+
+                  <a
+                    href="/directory"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                  >
+                    <div className="font-bold flex items-center gap-2">
+                      <Stethoscope className="w-4 h-4 text-emerald-600" />
+                      <span>دایرکتوری جراحان و کلینیک‌ها</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      جستجوی چندمتغیره، مراکز شبانه‌روزی و بیمه‌ها
+                    </span>
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* 3. دانشنامه و وبلاگ */}
+            {/* 3. دایرکتوری جراحان و کلینیک‌ها */}
+            <a
+              href="/directory"
+              className="px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-1.5"
+            >
+              <Stethoscope className="w-4 h-4 text-emerald-600" />
+              <span>جراحان و کلینیک‌ها</span>
+            </a>
+
+            {/* 4. دانشنامه و وبلاگ */}
             <a
               href="/blog"
               className="px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-1.5"
