@@ -12,7 +12,9 @@ import {
   Layers,
   Sparkles,
   Settings,
-  Building
+  Building,
+  Activity,
+  ArrowLeftRight
 } from 'lucide-react';
 import { DentalComponent, Doctor, ImplantBrand } from '../types';
 
@@ -337,9 +339,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Navigation Menu Bar with Dropdowns */}
-      <nav className="bg-white border-t border-slate-200 text-xs sm:text-sm font-semibold">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-2 overflow-x-auto scrollbar-none py-1">
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 relative">
+      <nav className="bg-white border-t border-slate-200 text-xs sm:text-sm font-semibold relative z-40">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-2 py-1 overflow-visible">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 relative overflow-visible">
             {/* 1. دسته‌بندی‌های ۸ گانه قطعات (منوی بازشونده زیر هم مطابق عکس) */}
             <div
               className="relative"
@@ -363,10 +365,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* منوی آبشاری عمودی زیر هم (مطابق با عکس ارسالی) */}
               {isCategoryMenuOpen && (
-                <div className="absolute right-0 top-full mt-0.5 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                <div className="absolute right-0 top-full mt-0.5 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
                   {categories.map((cat, idx) => (
-                    <button
+                    <a
                       key={cat.id}
+                      href={`/parts/${cat.id}`}
                       onClick={() => {
                         onSelectCategory(cat.id);
                         setIsCategoryMenuOpen(false);
@@ -380,13 +383,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <span className="text-[10px] text-slate-400 font-mono group-hover:text-emerald-600 transition-colors">
                         #۰{idx + 1}
                       </span>
-                    </button>
+                    </a>
                   ))}
+                  <a
+                    href="/parts"
+                    onClick={() => setIsCategoryMenuOpen(false)}
+                    className="block text-center px-4 py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 transition-colors cursor-pointer"
+                  >
+                    <span>کاتالوگ جامع همه قطعات (REF) ←</span>
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* 2. برندها (منوی آبشاری شامل راهنمای ناکسیس آلمان در زیر برندها) */}
+            {/* 2. برندها (منوی آبشاری شامل راهنمای ناکسیس آلمان و همه برندها) */}
             <div
               className="relative"
               ref={brandsMenuRef}
@@ -408,20 +418,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* منوی بازشونده زیر برندها */}
               {isBrandsMenuOpen && (
-                <div className="absolute right-0 top-full mt-0.5 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                <div className="absolute right-0 top-full mt-0.5 w-76 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
                   {/* راهنمای ناکسیس آلمان زیر منوی برندها */}
                   <a
                     href="/naxis-guide"
-                    onClick={(e) => {
+                    onClick={() => {
                       setIsBrandsMenuOpen(false);
                       onOpenNaxisGuide();
                     }}
-                    className="block px-5 py-3 text-xs sm:text-sm bg-emerald-50/70 hover:bg-emerald-100/70 text-emerald-950 transition-colors group"
+                    className="block px-5 py-3 text-xs sm:text-sm bg-emerald-50/70 hover:bg-emerald-100/70 text-emerald-950 transition-colors group cursor-pointer"
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="font-bold flex items-center gap-2 text-emerald-900 group-hover:text-emerald-700">
                         <span className="text-base">🇩🇪</span>
-                        <span>راهنمای ناکسیس آلمان</span>
+                        <span>راهنمای ناکسیس آلمان (Naxis)</span>
                       </div>
                       <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">
                         کاتالوگ کامل
@@ -432,10 +442,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </span>
                   </a>
 
-                  {/* فهرست برندهای همکار */}
+                  {/* فهرست برندهای همکار با لینک مستقیم به صفحه هر برند */}
                   {brands && brands.length > 0 && brands.map((brand) => (
-                    <div
+                    <a
                       key={brand.id}
+                      href={brand.slug === 'naxis' ? '/naxis-guide' : `/brands/${brand.slug}`}
                       onClick={() => {
                         if (brand.slug === 'naxis' || brand.name.toLowerCase().includes('naxis')) {
                           onOpenNaxisGuide();
@@ -449,15 +460,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <span className="font-medium">{brand.name}</span>
                       </div>
                       <span className="text-[10px] text-slate-400 group-hover:text-emerald-600">
-                        {brand.warranty_description ? 'گارانتی رسمی' : 'اورجینال'}
+                        مشاهده سیستم و قطعات ←
                       </span>
-                    </div>
+                    </a>
                   ))}
+
+                  <a
+                    href="/brands"
+                    onClick={() => setIsBrandsMenuOpen(false)}
+                    className="block text-center px-4 py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 transition-colors cursor-pointer"
+                  >
+                    <span>مشاهده همه برندها و سازندگان ←</span>
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* 2. خدمات و ابزارها (منوی آبشاری دوم با فلش ▼) */}
+            {/* 3. خدمات و ابزارها (منوی آبشاری کامل خدمات و زیرمجموعه‌ها) */}
             <div
               className="relative"
               ref={servicesMenuRef}
@@ -477,27 +496,29 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-[10px] text-slate-400 font-mono">▼</span>
               </button>
 
-              {/* زیرمنوی آبشاری عمودی */}
+              {/* زیرمنوی آبشاری عمودی خدمات و ابزارها */}
               {isServicesMenuOpen && (
-                <div className="absolute right-0 top-full mt-0.5 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn">
+                <div className="absolute right-0 top-full mt-0.5 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100 animate-fadeIn max-h-[85vh] overflow-y-auto">
+                  {/* 1. پاسپورت سلامت */}
                   <a
                     href="/passport"
                     onClick={() => setIsServicesMenuOpen(false)}
-                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
                   >
                     <div className="font-bold flex items-center gap-2">
                       <FileCheck2 className="w-4 h-4 text-emerald-600" />
                       <span>پاسپورت سلامت ۳۲ دندان (FDI)</span>
                     </div>
                     <span className="text-[11px] text-slate-500 block mt-0.5">
-                      ثبت شماره لات، سریال و نسخه چاپی PDF
+                      ثبت شماره لات، سریال و نسخه چاپی رسمی PDF
                     </span>
                   </a>
 
+                  {/* 2. آزمون انتخاب ایمپلنت */}
                   <a
                     href="/quiz"
                     onClick={() => setIsServicesMenuOpen(false)}
-                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-amber-700 hover:bg-amber-50/60 transition-colors"
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-amber-700 hover:bg-amber-50/60 transition-colors cursor-pointer"
                   >
                     <div className="font-bold flex items-center gap-2 text-amber-900">
                       <Sparkles className="w-4 h-4 text-amber-500" />
@@ -508,24 +529,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </span>
                   </a>
 
+                  {/* 3. دندانپزشکان سراسر کشور */}
                   <a
                     href="/dentists"
                     onClick={() => setIsServicesMenuOpen(false)}
-                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
                   >
                     <div className="font-bold flex items-center gap-2">
                       <Stethoscope className="w-4 h-4 text-emerald-600" />
                       <span>دندانپزشکان و جراحان سراسر کشور</span>
                     </div>
                     <span className="text-[11px] text-slate-500 block mt-0.5">
-                      فهرست استانی و شهری جراحان فک و صورت و متخصصان ایمپلنت
+                      فهرست استانی و شهری جراحان فک و صورت و متخصصان
                     </span>
                   </a>
 
+                  {/* 4. دایرکتوری چندمتغیره */}
                   <a
                     href="/directory"
                     onClick={() => setIsServicesMenuOpen(false)}
-                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
                   >
                     <div className="font-bold flex items-center gap-2">
                       <Building className="w-4 h-4 text-emerald-600" />
@@ -533,6 +556,66 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                     <span className="text-[11px] text-slate-500 block mt-0.5">
                       مراکز شبانه‌روزی، بیمه‌های طرف قرارداد و رزرو نوبت
+                    </span>
+                  </a>
+
+                  {/* 5. مترجم بیومکانیک استخوان */}
+                  <a
+                    href="/#biomechanics-section"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-cyan-700 hover:bg-cyan-50/60 transition-colors cursor-pointer"
+                  >
+                    <div className="font-bold flex items-center gap-2 text-cyan-900">
+                      <Activity className="w-4 h-4 text-cyan-600" />
+                      <span>مترجم بیومکانیک تراکم استخوان (D1 تا D4)</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      پیشنهاددهنده تورک و زاویه کاشت بر اساس بافت استخوانی
+                    </span>
+                  </a>
+
+                  {/* 6. بسته‌های جراحی ۴ در ۱ */}
+                  <a
+                    href="/#packages-section"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-indigo-700 hover:bg-indigo-50/60 transition-colors cursor-pointer"
+                  >
+                    <div className="font-bold flex items-center gap-2 text-indigo-900">
+                      <Layers className="w-4 h-4 text-indigo-600" />
+                      <span>بسته‌های ترکیبی جراحی و پروتز (۴ در ۱)</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      پکیج‌های جامع ایمپلنت، اباتمنت، هیلینگ و کوپینگ
+                    </span>
+                  </a>
+
+                  {/* 7. ماتریس مقایسه سیستم‌های ایمپلنت */}
+                  <a
+                    href="/#comparison-section"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-purple-700 hover:bg-purple-50/60 transition-colors cursor-pointer"
+                  >
+                    <div className="font-bold flex items-center gap-2 text-purple-900">
+                      <ArrowLeftRight className="w-4 h-4 text-purple-600" />
+                      <span>ماتریس مقایسه سیستم‌های ایمپلنت و میکروگپ</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      مقایسه علمی آلیاژها و اتصال کونیکال مورس تیپر
+                    </span>
+                  </a>
+
+                  {/* 8. استعلام کد REF قطعات */}
+                  <a
+                    href="/#parts-catalog"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors cursor-pointer"
+                  >
+                    <div className="font-bold flex items-center gap-2">
+                      <Search className="w-4 h-4 text-emerald-600" />
+                      <span>استعلام اصالت و کاتالوگ قطعات (REF Code)</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      جستجوی ۱۲,۰۰۰ قطعه تاییدشده وزارت بهداشت و IMED
                     </span>
                   </a>
                 </div>
