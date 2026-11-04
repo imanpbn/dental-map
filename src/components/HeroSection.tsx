@@ -20,7 +20,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   featuredComponent
 }) => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white pt-10 pb-20">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white pt-10 pb-20 rounded-2xl md:rounded-3xl my-4 shadow-xl border border-slate-800/80">
       {/* Background radial medical glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />

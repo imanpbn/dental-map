@@ -95,7 +95,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   return (
-    <div>
+    <div className="w-full px-[5%]">
       {/* 1. Hero Section */}
       <HeroSection
         onSearchClick={() => handleNavigate('parts-catalog')}
