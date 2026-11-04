@@ -1,14 +1,8 @@
 import React from 'react';
 import {
-  ShieldCheck,
   Search,
-  CheckCircle2,
   Sparkles,
-  ArrowLeft,
-  FileCheck,
-  Award,
-  Layers,
-  Activity
+  FileCheck
 } from 'lucide-react';
 import { DentalComponent } from '../types';
 
@@ -74,78 +68,46 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </button>
             </div>
 
-            {/* Platform Stats */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80">
-              <div>
+            {/* Platform Stats (وسط‌چین شده مطابق درخواست) */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80 text-center">
+              <div className="flex flex-col items-center justify-center">
                 <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">۱۲,۴۸۰+</div>
-                <div className="text-xs text-slate-400 mt-0.5">قطعه استعلام‌شده IMED</div>
+                <div className="text-xs text-slate-400 mt-0.5 text-center">قطعه استعلام‌شده IMED</div>
               </div>
-              <div>
+              <div className="flex flex-col items-center justify-center">
                 <div className="text-2xl sm:text-3xl font-black text-teal-400 font-mono">۴۵۰+</div>
-                <div className="text-xs text-slate-400 mt-0.5">جراح و متخصص معتبر</div>
+                <div className="text-xs text-slate-400 mt-0.5 text-center">جراح و متخصص معتبر</div>
               </div>
-              <div>
+              <div className="flex flex-col items-center justify-center">
                 <div className="text-2xl sm:text-3xl font-black text-emerald-300 font-mono">۱۰۰٪</div>
-                <div className="text-xs text-slate-400 mt-0.5">تضمین اصالت و گارانتی</div>
+                <div className="text-xs text-slate-400 mt-0.5 text-center">تضمین اصالت و گارانتی</div>
               </div>
             </div>
           </div>
 
-          {/* Straumann BLX & Spotlight Card */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl bg-gradient-to-b from-slate-800/90 to-slate-900/95 border border-slate-700/80 p-6 shadow-2xl backdrop-blur-xl">
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5" />
-                  برترین فیکسچر پرچمدار سال
+          {/* Hero Image Showcase (جایگزین کارت فیکسچر پرچمدار سال با تصویر ارسالی کاربر) */}
+          <div className="lg:col-span-5 flex items-center justify-center">
+            <div className="relative w-full max-w-md lg:max-w-none rounded-3xl overflow-hidden shadow-2xl border border-slate-700/80 bg-slate-900 group">
+              {/* Subtle ambient medical glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 -z-10" />
+
+              <img
+                src="/images/hero-dentist-patient.jpg"
+                alt="درمان و جراحی تخصصی ایمپلنت دنتال‌مپ"
+                className="w-full h-auto max-h-[520px] object-cover object-center rounded-3xl transition-transform duration-500 group-hover:scale-[1.02]"
+              />
+
+              {/* Bottom Subtle Overlay Badge */}
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent p-5 pt-12 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-bold text-white text-xs sm:text-sm">
+                    پلتفرم مرجع شفافیت و اصالت ایمپلنتولوژی
+                  </span>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                  مورد تایید IMED
                 </span>
-                <span className="text-xs text-slate-400 font-mono">سوئیس 🇨🇭</span>
-              </div>
-
-              {/* Title */}
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-white">Straumann BLX Roxolid SLActive</h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  فیکسچر تیتانیوم-زیرکونیوم با اتصال TorcFit Conical 15°
-                </p>
-              </div>
-
-              {/* Specs Pills */}
-              <div className="grid grid-cols-2 gap-2.5 text-xs mb-5">
-                <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-                  <span className="text-slate-400 block text-[10px]">کد رفرنس رسمی:</span>
-                  <span className="font-mono text-emerald-400 font-bold text-sm">REF: 021.4312</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-                  <span className="text-slate-400 block text-[10px]">استئواینتگریشن:</span>
-                  <span className="text-white font-bold">۳ الی ۴ هفته هیدروفیلیک</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-                  <span className="text-slate-400 block text-[10px]">پایداری اولیه:</span>
-                  <span className="text-white font-bold">ISQ &gt; 78 (بسیار بالا)</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-                  <span className="text-slate-400 block text-[10px]">ریسک میکرومیکروگپ:</span>
-                  <span className="text-emerald-400 font-bold">نزدیک به صفر (Zero Gap)</span>
-                </div>
-              </div>
-
-              {/* Verification & Action */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>تاییدیه اصالت CE MDR و FDA 510(k)</span>
-                </div>
-                {featuredComponent && (
-                  <button
-                    onClick={() => onSelectComponent(featuredComponent)}
-                    className="text-xs font-bold text-white hover:text-emerald-400 flex items-center gap-1 transition-colors"
-                  >
-                    <span>مشاهده جزئیات</span>
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
             </div>
           </div>
