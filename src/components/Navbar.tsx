@@ -11,7 +11,8 @@ import {
   ChevronDown,
   Layers,
   Sparkles,
-  Settings
+  Settings,
+  Building
 } from 'lucide-react';
 import { DentalComponent, Doctor, ImplantBrand } from '../types';
 
@@ -508,29 +509,43 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </a>
 
                   <a
-                    href="/directory"
+                    href="/dentists"
                     onClick={() => setIsServicesMenuOpen(false)}
                     className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
                   >
                     <div className="font-bold flex items-center gap-2">
                       <Stethoscope className="w-4 h-4 text-emerald-600" />
-                      <span>دایرکتوری جراحان و کلینیک‌ها</span>
+                      <span>دندانپزشکان و جراحان سراسر کشور</span>
                     </div>
                     <span className="text-[11px] text-slate-500 block mt-0.5">
-                      جستجوی چندمتغیره، مراکز شبانه‌روزی و بیمه‌ها
+                      فهرست استانی و شهری جراحان فک و صورت و متخصصان ایمپلنت
+                    </span>
+                  </a>
+
+                  <a
+                    href="/directory"
+                    onClick={() => setIsServicesMenuOpen(false)}
+                    className="block px-5 py-3 text-xs sm:text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/60 transition-colors"
+                  >
+                    <div className="font-bold flex items-center gap-2">
+                      <Building className="w-4 h-4 text-emerald-600" />
+                      <span>دایرکتوری چندمتغیره کلینیک‌ها و مراکز ۲۴/۷</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      مراکز شبانه‌روزی، بیمه‌های طرف قرارداد و رزرو نوبت
                     </span>
                   </a>
                 </div>
               )}
             </div>
 
-            {/* 3. دایرکتوری جراحان و کلینیک‌ها */}
+            {/* 3. دندانپزشکان و جراحان سراسر کشور */}
             <a
-              href="/directory"
+              href="/dentists"
               className="px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-1.5"
             >
               <Stethoscope className="w-4 h-4 text-emerald-600" />
-              <span>جراحان و کلینیک‌ها</span>
+              <span>دندانپزشکان و جراحان سراسر کشور</span>
             </a>
 
             {/* 4. دانشنامه و وبلاگ */}
