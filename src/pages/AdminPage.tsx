@@ -901,19 +901,67 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           {/* ---------------------------------------------------------------- */}
           {activeSection === 'dashboard' && (
             <div className="space-y-6">
-              {/* Welcome Card */}
-              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 text-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-800 relative overflow-hidden">
-                <div className="relative z-10 max-w-2xl">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold mb-3 border border-emerald-500/30">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>پیشخوان مدیریت یکپارچه محتوای دنتال مپ</span>
+              {/* Quick Actions Bar (Quick Launchers at Top) */}
+              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black text-slate-900">
+                      درود، {currentUser.full_name} خوش آمدید!
+                    </h2>
+                    <span className="text-xs text-slate-500 mt-0.5 block">
+                      مدیریت آنی مقالات، جراحان، کاتالوگ قطعات و کلینیک‌های دنتال مپ
+                    </span>
                   </div>
-                  <h2 className="text-xl sm:text-3xl font-black mb-2">
-                    درود، {currentUser.full_name} به CMS دنتال مپ خوش آمدید!
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    از طریق این بخش می‌توانید تمامی نوشته‌ها، پزشکان، کاتالوگ قطعات ۸ گانه و تنظیمات سایت را به صورت آنی مدیریت نمایید. تغییرات بلافاصله در فرانت‌اند اعمال می‌شوند.
-                  </p>
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 self-start sm:self-auto">
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                    <span>دسترسی‌های سریع (Quick Launchers):</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <button
+                    onClick={() => {
+                      setEditingPost(null);
+                      setIsPostModalOpen(true);
+                    }}
+                    className="p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <FileText className="w-5 h-5 text-emerald-700" />
+                    <span>نوشتن مقاله جدید</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setEditingDoctor(null);
+                      setIsDoctorModalOpen(true);
+                    }}
+                    className="p-4 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Users className="w-5 h-5 text-teal-700" />
+                    <span>افزودن جراح جدید</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setEditingComponent(null);
+                      setIsComponentModalOpen(true);
+                    }}
+                    className="p-4 rounded-2xl bg-cyan-50 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Cpu className="w-5 h-5 text-cyan-700" />
+                    <span>ثبت قطعه ایمپلنت</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setEditingClinic(null);
+                      setIsClinicModalOpen(true);
+                    }}
+                    className="p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Building2 className="w-5 h-5 text-amber-700" />
+                    <span>افزودن مرکز درمانی</span>
+                  </button>
                 </div>
               </div>
 
@@ -967,61 +1015,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     {components.length} قطعه
                   </div>
                   <span className="text-[10px] text-slate-400 mt-1 block">
-                    در ۸ دسته‌بندی تخصصی
+                    در دسته‌بندی‌های تخصصی
                   </span>
-                </div>
-              </div>
-
-              {/* Quick Actions Bar */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
-                <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <span>دسترسی‌های سریع (Quick Launchers):</span>
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <button
-                    onClick={() => {
-                      setEditingPost(null);
-                      setIsPostModalOpen(true);
-                    }}
-                    className="p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors"
-                  >
-                    <FileText className="w-5 h-5 text-emerald-700" />
-                    <span>نوشتن مقاله جدید</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setEditingDoctor(null);
-                      setIsDoctorModalOpen(true);
-                    }}
-                    className="p-4 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors"
-                  >
-                    <Users className="w-5 h-5 text-teal-700" />
-                    <span>افزودن جراح جدید</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setEditingComponent(null);
-                      setIsComponentModalOpen(true);
-                    }}
-                    className="p-4 rounded-2xl bg-cyan-50 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors"
-                  >
-                    <Cpu className="w-5 h-5 text-cyan-700" />
-                    <span>ثبت قطعه ایمپلنت</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setEditingClinic(null);
-                      setIsClinicModalOpen(true);
-                    }}
-                    className="p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold flex flex-col items-center gap-2 transition-colors"
-                  >
-                    <Building2 className="w-5 h-5 text-amber-700" />
-                    <span>افزودن مرکز درمانی</span>
-                  </button>
                 </div>
               </div>
             </div>

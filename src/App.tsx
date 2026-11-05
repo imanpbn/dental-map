@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { RefChatbot } from './components/RefChatbot';
@@ -69,6 +69,8 @@ import { SupabaseSyncService } from './utils/supabaseClient';
 // App Wrapper to use Router hooks
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
 
   // CMS-Managed Data States with localStorage persistence
   const [components, setComponents] = useState<DentalComponent[]>(() => CmsStorageService.getComponents());
@@ -194,7 +196,7 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-500 selection:text-white overflow-x-hidden w-full max-w-full">
       {/* 1. Global Navbar with live URL routing */}
       <Navbar
-        isAdminOpen={false}
+        isAdminOpen={isAdminPath}
         onToggleAdmin={() => navigate('/admin')}
         onOpenNaxisGuide={() => navigate('/naxis-guide')}
         components={components}
@@ -723,11 +725,13 @@ const AppContent: React.FC = () => {
         </Routes>
       </main>
 
-      {/* 3. Global Footer */}
-      <Footer
-        onOpenAdmin={() => navigate('/admin')}
-        onOpenNaxisGuide={() => navigate('/naxis-guide')}
-      />
+      {/* 3. Global Footer (hidden on admin panel) */}
+      {!isAdminPath && (
+        <Footer
+          onOpenAdmin={() => navigate('/admin')}
+          onOpenNaxisGuide={() => navigate('/naxis-guide')}
+        />
+      )}
 
       {/* 4. RefChatbot Floating AI widget */}
       <RefChatbot
