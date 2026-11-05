@@ -104,26 +104,32 @@ export const HomePage: React.FC<HomePageProps> = ({
         featuredComponent={components[0]}
       />
 
-      {/* 2. Platform Services (4 Cards) */}
-      <PlatformServicesSection onNavigate={handleNavigate} />
-
-      {/* 3. Top Specialists Banner */}
+      {/* 2. Top Specialists Banner (پزشکان تایید صلاحیت شده با استعلام نظام پزشکی) */}
       <TopSpecialistsBanner
         doctors={doctors}
         onSelectDoctor={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
         onBookClick={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
       />
 
-      {/* 4. Trust Guarantees Ribbon */}
+      {/* 3. Passport Simulator (استاندارد جهانی فدراسیون بین‌المللی دندانپزشکی FDI و شناسنامه دیجیتال فک ۳۲ دندان) */}
+      <PassportSimulator
+        teeth={teethPassport}
+        onUpdateTooth={onUpdateTooth}
+      />
+
+      {/* 4. Platform Services (4 Cards) */}
+      <PlatformServicesSection onNavigate={handleNavigate} />
+
+      {/* 5. Trust Guarantees Ribbon */}
       <TrustGuaranteesBanner />
 
-      {/* 5. Featured Components Showcase (Top 5) */}
+      {/* 6. Featured Components Showcase (Top 5) */}
       <FeaturedComponentsShowcase
         components={components}
         onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
       />
 
-      {/* 6. Parts Explorer (8 Categories Catalog) */}
+      {/* 7. Parts Explorer (Categories Catalog) */}
       <PartsExplorer
         components={components}
         brands={brands}
@@ -132,7 +138,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
       />
 
-      {/* 7. Clinical Packages (Bundled 4-in-1 Suites) */}
+      {/* 8. Clinical Packages (Bundled 4-in-1 Suites) */}
       <ClinicalPackages
         packages={packages}
         onOrderPackage={() => {
@@ -140,24 +146,18 @@ export const HomePage: React.FC<HomePageProps> = ({
         }}
       />
 
-      {/* 8. Comparison Matrix (Brands & Micro-gap) */}
+      {/* 9. Comparison Matrix (Brands & Micro-gap) */}
       <ComparisonMatrix
         brands={brands}
         implantTypes={implantTypes}
         onOpenNaxisGuide={() => navigate('/naxis-guide')}
       />
 
-      {/* 9. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
+      {/* 10. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
       <BiomechanicsTranslator />
 
-      {/* 10. Implant Knowledge Quiz */}
+      {/* 11. Implant Knowledge Quiz */}
       <ImplantKnowledgeQuiz />
-
-      {/* 11. Passport Simulator (FDI 32 Teeth & PDF Modal) */}
-      <PassportSimulator
-        teeth={teethPassport}
-        onUpdateTooth={onUpdateTooth}
-      />
 
       {/* 12. Doctor & Clinic Directory */}
       <DoctorDirectory
