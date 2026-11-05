@@ -86,9 +86,10 @@ export const Footer: React.FC<FooterProps> = ({
   ];
 
   return (
-    <footer className="bg-slate-950 text-slate-300 pt-16 pb-8 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Main 4 Columns Grid */}
+    <footer className="w-full px-[5%] pb-8 pt-4">
+      <div className="bg-slate-950 text-slate-300 pt-16 pb-8 border border-slate-800 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Main 4 Columns Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-12 border-b border-slate-800">
           
           {/* Col 1: About Platform & Contact Info */}
@@ -253,6 +254,7 @@ export const Footer: React.FC<FooterProps> = ({
             </button>
           </div>
         </div>
+      </div>
       </div>
     </footer>
   );
