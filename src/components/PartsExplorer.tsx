@@ -40,7 +40,6 @@ export const PartsExplorer: React.FC<PartsExplorerProps> = ({
     { id: 'impression_coping', label: 'ایمپرشن کوپینگ', sub: 'انتقال به لابراتوار' },
     { id: 'analog', label: 'آنالوگ کست (Analog)', sub: 'شبیه‌ساز فیکسچر در گچ' },
     { id: 'surgical_kit', label: 'کیت جراحی (Surgical)', sub: 'دریل، درایور و ترکمتر' },
-    { id: 'scan_body', label: 'اسکن بادی (Scan Body)', sub: 'شاخص اسکن دیجیتال' },
     { id: 'digital_analog', label: 'آنالوگ ۳ بعدی', sub: 'پرینت رزینی دیجیتال' }
   ];
 
@@ -80,11 +79,11 @@ export const PartsExplorer: React.FC<PartsExplorerProps> = ({
             کاوشگر و موتور جستجوی کدهای رفرنس (REF Code Explorer)
           </h2>
           <p className="text-slate-600 text-sm mt-2">
-            فیلتر قطعات بر اساس ۸ دسته استاندارد، برندهای سوئیسی، آلمانی، آمریکایی و کره‌ای، و ابعاد پلتفرم
+            فیلتر قطعات بر اساس دسته‌های استاندارد، برندهای سوئیسی، آلمانی، آمریکایی و کره‌ای، و ابعاد پلتفرم
           </p>
         </div>
 
-        {/* 8 Category Tabs */}
+        {/* Category Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-thin">
           {categories.map((cat) => (
             <button

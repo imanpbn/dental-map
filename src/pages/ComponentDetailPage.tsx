@@ -109,7 +109,7 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
       system: 'Astra Tech OsseoSpeed (Aqua / Lilac)',
       connection: '11° Conical Morse Taper + Internal Hex',
       compatibility_status: '۱۰۰٪ سازگاری کامل بیومکانیک و بدون Micro-gap',
-      compatible_parts: 'اباتمنت، ایمپرشن کوپینگ و اسکن بادی'
+      compatible_parts: 'اباتمنت، هیلینگ کپ و ایمپرشن کوپینگ'
     },
     {
       system: 'Straumann CrossFit Conical Connection (BL / BLX)',

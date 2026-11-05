@@ -44,7 +44,7 @@ export const FeaturedComponentsShowcase: React.FC<FeaturedComponentsShowcaseProp
             href="#parts-catalog"
             className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
           >
-            مشاهده کل کاتالوگ ۸ دسته &larr;
+            مشاهده کاتالوگ جامع قطعات &larr;
           </a>
         </div>
 
@@ -70,7 +70,6 @@ export const FeaturedComponentsShowcase: React.FC<FeaturedComponentsShowcaseProp
                       {comp.category === 'abutment' && 'اباتمنت پروتزی'}
                       {comp.category === 'healing' && 'هیلینگ لثه'}
                       {comp.category === 'surgical_kit' && 'کیت جراحی'}
-                      {comp.category === 'scan_body' && 'اسکن بادی'}
                     </span>
                   </div>
                 </div>

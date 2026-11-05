@@ -115,7 +115,7 @@ export const NaxisGuidePage: React.FC<NaxisGuidePageProps> = ({ components }) =>
                     هگز داخلی ۲.۱ میلی‌متر:
                   </span>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    جهت استقرار زاویه‌ای ضدچرخش (Anti-rotational) در اباتمنت‌های زاویه‌دار، ایمپرشن کوپینگ و اسکن بادی‌های دیجیتال با دقت زیر ۱۰ میکرون.
+                    جهت استقرار زاویه‌ای ضدچرخش (Anti-rotational) در اباتمنت‌های زاویه‌دار، ایمپرشن کوپینگ و قطعات پروتزی با دقت زیر ۱۰ میکرون.
                   </p>
                 </div>
 

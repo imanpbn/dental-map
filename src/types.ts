@@ -151,7 +151,7 @@ export interface DoctorImplantType {
   implant_type_id: number;
 }
 
-// --- 8 Component Categories ---
+// --- 7 Component Categories ---
 export type ComponentCategory =
   | 'fixture'           // حیاتی / داخل استخوان
   | 'abutment'          // پروتزی / بافت نرم
@@ -159,7 +159,6 @@ export type ComponentCategory =
   | 'impression_coping' // انتقال موقعیت به لابراتوار
   | 'analog'            // شبیه‌ساز فیکسچر در کست
   | 'surgical_kit'      // کیت دریل و درایور
-  | 'scan_body'         // شاخص اسکن دیجیتال
   | 'digital_analog';   // آنالوگ پرینت ۳ بعدی
 
 export interface DentalComponent {

@@ -3202,7 +3202,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     <option value="impression_coping">ایمپرشن کوپینگ (قالب‌گیری)</option>
                     <option value="analog">آنالوگ کست</option>
                     <option value="surgical_kit">کیت جراحی</option>
-                    <option value="scan_body">اسکن‌بادی دیجیتال</option>
                     <option value="digital_analog">آنالوگ پرینت ۳ بعدی</option>
                   </select>
                 </div>

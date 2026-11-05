@@ -20,7 +20,7 @@ export const PlatformServicesSection: React.FC<PlatformServicesSectionProps> = (
       id: 'parts-catalog',
       icon: Layers,
       title: 'کاتالوگ جامع قطعات و استعلام رفرنس (REF)',
-      subtitle: 'دسترسی به مشخصات فنی ۸ دسته قطعه',
+      subtitle: 'دسترسی به مشخصات فنی و کدهای استاندارد قطعات',
       desc: 'فیلتر، مقایسه و بررسی ابعاد، هگز، مورس تیپر، سازگاری و اصالت فیکسچرها، اباتمنت‌ها و قطعات دیجیتال از سوئیس تا آلمان و کره.',
       color: 'from-emerald-500/10 to-emerald-500/5',
       borderColor: 'border-emerald-500/20 hover:border-emerald-500/50',

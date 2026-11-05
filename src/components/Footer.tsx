@@ -39,8 +39,7 @@ export const Footer: React.FC<FooterProps> = ({
     { id: 'impression', name: 'ایمپرشن کوپینگ', num: '۰۴' },
     { id: 'analog', name: 'آنالوگ کست', num: '۰۵' },
     { id: 'kit', name: 'کیت جراحی', num: '۰۶' },
-    { id: 'scanbody', name: 'اسکن بادی دیجیتال', num: '۰۷' },
-    { id: 'digital-analog', name: 'آنالوگ ۳ بعدی پرینت', num: '۰۸' }
+    { id: 'digital-analog', name: 'آنالوگ ۳ بعدی پرینت', num: '۰۷' }
   ];
 
   const services = [

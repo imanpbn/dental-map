@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import {
   Layers,
   ChevronLeft,
@@ -24,7 +24,6 @@ export const CATEGORY_NAMES: Record<string, string> = {
   impression_coping: 'ایمپرشن کوپینگ‌های قالب‌گیری (Impression Coping)',
   analog: 'آنالوگ‌های کست گچی (Analog)',
   surgical_kit: 'کیت‌های جراحی و درایور (Surgical Kit)',
-  scan_body: 'شاخص‌های اسکن دیجیتال (Scan Body)',
   digital_analog: 'آنالوگ‌های مدل پرینت ۳ بعدی (Digital Analog)'
 };
 
@@ -33,6 +32,11 @@ export const PartCategoryPage: React.FC<PartCategoryPageProps> = ({
   brands
 }) => {
   const { categorySlug, refCode } = useParams<{ categorySlug?: string; refCode?: string }>();
+
+  // Redirect removed scanbody category
+  if (categorySlug === 'scanbody' || categorySlug === 'scan_body') {
+    return <Navigate to="/parts" replace />;
+  }
 
   // If a single part by REF is requested
   if (refCode) {
@@ -218,7 +222,7 @@ export const PartCategoryPage: React.FC<PartCategoryPageProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold mb-3 border border-emerald-500/30">
             <Layers className="w-3.5 h-3.5" />
-            <span>کاتالوگ سئو رده‌های هشت‌گانه قطعات ایمپلنت</span>
+            <span>کاتالوگ رده‌های تخصصی قطعات ایمپلنت</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white">{catTitle}</h1>

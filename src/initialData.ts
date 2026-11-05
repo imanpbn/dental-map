@@ -787,26 +787,7 @@ export const initialComponents: DentalComponent[] = [
     is_critical: true
   },
 
-  // 7. Scan Body (شاخص اسکن دیجیتال)
-  {
-    id: 11,
-    ref_code: 'NX-SB-DIGI',
-    lot_number: 'LOT-DE2026-SC01',
-    brand_id: 2, // Naxis
-    category: 'scan_body',
-    name_fa: 'اسکن بادی دیجیتال اینترااورال ناکسیس آلمان',
-    name_en: 'Naxis High-Precision Intraoral & Desktop Scan Body PEEK',
-    description: 'شاخص اسکن با پرتوهای نوری و پوشش بدون رفلکس PEEK جهت ثبت زاویه ایمپلنت در اسکنرهای داخل دهانی 3Shape و Medit.',
-    platform_size: 'RP 11° Conical',
-    material: 'Medical PEEK + Titanium Base Screw',
-    torque_ncm: 10,
-    compatibility: 'اسکنرهای 3Shape، Medit، Carestream، Cerec و نرم‌افزار Exocad',
-    price_toman: 2800000,
-    in_stock: true,
-    image_url: 'https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&q=80&w=400'
-  },
-
-  // 8. Digital Analog (آنالوگ پرینت ۳ بعدی)
+  // 7. Digital Analog (آنالوگ پرینت ۳ بعدی)
   {
     id: 12,
     ref_code: 'NX-DA-3DPRN',
