@@ -15,12 +15,13 @@ import {
   ArrowLeftRight,
   Search,
   ExternalLink,
-  ChevronLeft
+  ChevronLeft,
+  BookOpen
 } from 'lucide-react';
 
 interface FooterProps {
   onOpenAdmin: () => void;
-  onOpenNaxisGuide: () => void;
+  onOpenNaxisGuide?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -197,36 +198,49 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 4: برندها و راهنماها */}
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-bold text-white mb-3">برندها و راهنماها</h4>
-              <ul className="space-y-2 text-xs text-slate-400">
-                <li>
-                  <a
-                    href="/naxis-guide"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onOpenNaxisGuide();
-                    }}
-                    className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-900/40 transition-colors"
-                  >
-                    <span>🇩🇪</span>
-                    <span className="font-bold">راهنمای تخصصی ناکسیس آلمان (Naxis)</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/brands" className="hover:text-emerald-400 transition-colors block px-1 py-0.5">
-                    مشاهده لیست همه برندهای رسمی ایمپلنت ←
-                  </a>
-                </li>
-                <li>
-                  <a href="/blog" className="hover:text-emerald-400 transition-colors block px-1 py-0.5">
-                    دانشنامه، مقالات و راهنمای بیماران ←
-                  </a>
-                </li>
-              </ul>
+          {/* Col 4: دانشنامه و وبلاگ تخصصی */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-4 h-4 text-emerald-400" />
+              <h4 className="text-sm font-bold text-white">دانشنامه و وبلاگ</h4>
             </div>
+            <ul className="space-y-2 text-xs text-slate-400">
+              <li>
+                <a
+                  href="/blog/implant-passport-guide"
+                  className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                >
+                  <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
+                    راهنمای جامع پاسپورت اصالت ایمپلنت
+                  </span>
+                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                    بررسی شماره رفرنس (REF) و لات ساخت
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/blog/morse-taper-vs-flat-hex-microgap"
+                  className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                >
+                  <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
+                    تفاوت اتصال مورس تیپر با هگز تخت
+                  </span>
+                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                    بررسی معضل میکروگپ و پایداری استخوان
+                  </span>
+                </a>
+              </li>
+              <li className="pt-2">
+                <a
+                  href="/blog"
+                  className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-1 text-xs"
+                >
+                  <span>ورود به دانشنامه و همه مقالات</span>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
