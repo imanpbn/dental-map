@@ -153,9 +153,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <span className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">دنتال مَپ</span>
-                    <span className="text-[9px] sm:text-[10px] uppercase font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">
-                      Dental Map
-                    </span>
                   </div>
                   <span className="hidden sm:inline-block text-[11px] text-slate-500 -mt-0.5 font-medium">
                     شفافیت، اصالت قطعات و دایرکتوری ایمپلنت

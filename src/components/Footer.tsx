@@ -100,9 +100,6 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div>
                 <span className="text-lg font-black text-white">دنتال مَپ</span>
-                <span className="text-[10px] text-emerald-400 block font-mono">
-                  Dental Map Iran
-                </span>
               </div>
             </div>
 
