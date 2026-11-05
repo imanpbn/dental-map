@@ -196,7 +196,7 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 4: برندها، راهنماها و خبرنامه */}
+          {/* Col 4: برندها و راهنماها */}
           <div className="space-y-4">
             <div>
               <h4 className="text-sm font-bold text-white mb-3">برندها و راهنماها</h4>
@@ -225,23 +225,6 @@ export const Footer: React.FC<FooterProps> = ({
                   </a>
                 </li>
               </ul>
-            </div>
-
-            <div className="pt-2">
-              <h5 className="text-xs font-bold text-white mb-2">خبرنامه علمی و استعلام قطعات</h5>
-              <p className="text-[11px] text-slate-400 leading-relaxed mb-2.5">
-                اطلاع از آخرین کدهای استعلام و بخشنامه‌های تجهیزات پزشکی:
-              </p>
-              <div className="space-y-2">
-                <input
-                  type="email"
-                  placeholder="ایمیل یا شماره موبایل..."
-                  className="w-full py-2 px-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-emerald-500"
-                />
-                <button className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors">
-                  عضویت در سامانه اطلاع‌رسانی
-                </button>
-              </div>
             </div>
           </div>
         </div>
