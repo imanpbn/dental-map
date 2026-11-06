@@ -305,13 +305,19 @@ const AppContent: React.FC = () => {
           <Route
             path="/dentists"
             element={
-              <DentistsByLocationPage
+              <DirectoryPage
                 doctors={doctors}
+                clinics={clinics}
+                specialties={initialSpecialties}
                 cities={initialCities}
                 districts={initialDistricts}
-                specialties={initialSpecialties}
-                clinics={clinics}
+                insurances={initialInsurances}
+                brands={brands}
+                implantTypes={initialImplantTypes}
                 clinicDoctors={initialClinicDoctors}
+                clinicInsurances={clinicInsurances}
+                doctorImplantTypes={initialDoctorImplantTypes}
+                leadValuations={leadValuations}
                 onRecordLead={handleRecordLead}
               />
             }

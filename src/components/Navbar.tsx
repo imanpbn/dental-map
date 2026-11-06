@@ -383,7 +383,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* 2. دندانپزشکان و جراحان سراسر کشور */}
             <a
-              href="/dentists"
+              href="/directory"
               className="px-3.5 py-2.5 text-slate-800 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-1.5"
             >
               <Stethoscope className="w-4 h-4 text-emerald-600" />
