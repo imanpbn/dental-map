@@ -17,9 +17,16 @@ import {
   AlertTriangle,
   Info,
   Send,
-  Phone
+  Phone,
+  Smartphone,
+  KeyRound,
+  ShieldCheck,
+  Timer,
+  Edit3,
+  Check
 } from 'lucide-react';
-import { SmsService } from '../utils/smsService';
+import confetti from 'canvas-confetti';
+import { SmsService, normalizeIranMobile, isValidIranMobile } from '../utils/smsService';
 
 const faNum = (n: number | string) =>
   String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
@@ -162,7 +169,7 @@ const TICKER = [
 export const ImplantTestPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [screen, setScreen] = useState<'intro' | 'quiz' | 'analyze' | 'result'>('intro');
+  const [screen, setScreen] = useState<'intro' | 'quiz' | 'analyze' | 'verify' | 'result'>('intro');
   const [currentQ, setCurrentQ] = useState(0);
   const [rawScore, setRawScore] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>([null, null, null, null, null]);
@@ -175,8 +182,28 @@ export const ImplantTestPage: React.FC = () => {
   const [animScore, setAnimScore] = useState(0);
   const [demoActive, setDemoActive] = useState(false);
 
+  // Mobile Verification & OTP States
+  const [mobileInput, setMobileInput] = useState(() => SmsService.getVerifiedMobile() || '');
+  const [otpInput, setOtpInput] = useState('');
+  const [otpStep, setOtpStep] = useState<'phone' | 'code'>('phone');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [verifiedMobile, setVerifiedMobile] = useState<string | null>(() => SmsService.getVerifiedMobile());
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [demoCodeHint, setDemoCodeHint] = useState<string | null>(null);
+
   const audioCtxRef = useRef<AudioContext | null>(null);
   const demoTimersRef = useRef<NodeJS.Timeout[]>([]);
+
+  // OTP Resend Countdown
+  useEffect(() => {
+    if (otpTimer <= 0) return;
+    const interval = setInterval(() => {
+      setOtpTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [otpTimer]);
 
   // Sound generator
   const playBeep = (freq = 600, duration = 0.09) => {
@@ -309,8 +336,99 @@ export const ImplantTestPage: React.FC = () => {
 
     setTimeout(() => {
       clearInterval(interval);
-      setScreen('result');
+      const savedMobile = SmsService.getVerifiedMobile();
+      if (savedMobile) {
+        setVerifiedMobile(savedMobile);
+        setScreen('result');
+      } else {
+        setScreen('verify');
+      }
     }, 2600);
+  };
+
+  // OTP Request Handler
+  const handleRequestOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setOtpError(null);
+    const clean = normalizeIranMobile(mobileInput);
+    if (!isValidIranMobile(clean)) {
+      setOtpError('لطفاً شماره تلفن همراه ۱۱ رقمی معتبر (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد فرمایید.');
+      return;
+    }
+
+    setIsSendingOtp(true);
+    try {
+      const res = await SmsService.sendOtp(clean, 'اعتبارسنجی کارنامه آزمون ایمپلنت');
+      if (res.success) {
+        setOtpStep('code');
+        setOtpTimer(60);
+        if (res.code) setDemoCodeHint(res.code);
+        showToast('کد تایید ۵ رقمی پیامک شد ✓');
+      } else {
+        setOtpError(res.message);
+      }
+    } catch {
+      setOtpError('خطا در ارسال پیامک. لطفاً اتصال اینترنت خود را بررسی نمایید.');
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  // OTP Verification Handler
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setOtpError(null);
+    setIsVerifyingOtp(true);
+
+    try {
+      const res = SmsService.verifyOtp(mobileInput, otpInput);
+      if (res.success) {
+        const clean = normalizeIranMobile(mobileInput);
+        setVerifiedMobile(clean);
+        showToast(res.message);
+        playBeep(750, 0.18);
+
+        // Record verified lead locally for CRM
+        try {
+          const profile = PROFILES[calculatedProfile];
+          const lead = {
+            mobile: clean,
+            score: normScore,
+            profile: profile?.t,
+            createdAt: new Date().toISOString()
+          };
+          const existingLeads = JSON.parse(localStorage.getItem('dentalmap_verified_leads') || '[]');
+          existingLeads.unshift(lead);
+          localStorage.setItem('dentalmap_verified_leads', JSON.stringify(existingLeads.slice(0, 100)));
+        } catch {
+          // ignore
+        }
+
+        // Send full result notification SMS
+        const profile = PROFILES[calculatedProfile];
+        await SmsService.sendQuizResultNotification({
+          mobile: clean,
+          score: normScore,
+          profileTitle: profile.t
+        });
+
+        // Trigger confetti celebration and open results
+        setScreen('result');
+        try {
+          confetti({
+            particleCount: 120,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        } catch {
+          // ignore
+        }
+      } else {
+        setOtpError(res.message);
+      }
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   // Profile and normalized score calculation
@@ -747,10 +865,227 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
         )}
 
         {/* ========================================================= */}
+        {/* SCREEN 3.5: SMS MOBILE NUMBER VERIFICATION GATE */}
+        {/* ========================================================= */}
+        {screen === 'verify' && (
+          <div className="max-w-xl mx-auto my-8 animate-fadeIn">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-10 space-y-7 relative overflow-hidden">
+              {/* Background Ambient Glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-teal-100/60 to-emerald-100/40 rounded-full blur-3xl -z-10 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-cyan-100/50 to-teal-100/30 rounded-full blur-2xl -z-10 pointer-events-none" />
+
+              {/* Header Badge */}
+              <div className="text-center space-y-3">
+                <div className="relative inline-flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 text-white flex items-center justify-center shadow-lg shadow-teal-600/30">
+                    <ShieldCheck className="w-9 h-9" />
+                  </div>
+                  <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm ring-2 ring-white">
+                    <Check className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-[11px] font-bold text-teal-800">
+                  <Sparkles className="w-3 h-3 text-teal-600" />
+                  <span>پاسخ‌های شما آنالیز شدند (شاخص آگاهی: {faNum(normScore)} از ۱۰۰)</span>
+                </div>
+
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+                  اعتبارسنجی پیامکی شماره همراه
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                  جهت ثبت رسمی کارنامه در سامانه دنتال‌مپ و ارسال آنی پیامک چک‌لیست سوالات مشاوره با جراح، شماره همراه خود را تایید فرمایید.
+                </p>
+              </div>
+
+              {/* OTP Step 1: Request OTP Code */}
+              {otpStep === 'phone' && (
+                <form onSubmit={handleRequestOtp} className="space-y-5">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Smartphone className="w-4 h-4 text-teal-600" />
+                        <span>شماره تلفن همراه شما:</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-normal">ارسال کد یکبار مصرف ۵ رقمی</span>
+                    </label>
+
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        dir="ltr"
+                        value={mobileInput}
+                        onChange={(e) => {
+                          setMobileInput(e.target.value);
+                          if (otpError) setOtpError(null);
+                        }}
+                        placeholder="09123456789"
+                        className="w-full bg-slate-50 border border-slate-300 focus:border-teal-500 focus:bg-white rounded-2xl px-4 py-3.5 pl-12 text-sm sm:text-base font-mono font-bold text-slate-900 placeholder:text-slate-400 focus:ring-4 focus:ring-teal-500/10 outline-none transition-all"
+                        autoFocus
+                      />
+                      <div className="absolute left-3.5 top-3.5 text-slate-400 flex items-center gap-1 text-xs font-mono">
+                        <Phone className="w-4 h-4 text-teal-600" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {otpError && (
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-fadeIn">
+                      <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+                      <span>{otpError}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSendingOtp || !mobileInput.trim()}
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 hover:from-teal-500 hover:to-emerald-500 text-white font-bold text-sm sm:text-base shadow-lg shadow-teal-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
+                  >
+                    {isSendingOtp ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>در حال ارسال پیامک تایید…</span>
+                      </span>
+                    ) : (
+                      <>
+                        <span>ارسال کد اعتبارسنجی پیامکی</span>
+                        <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+
+                  <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-[11px] text-slate-500 text-center leading-relaxed">
+                    🔒 حریم خصوصی محفوظ است. شماره شما تنها برای ارسال نسخه کارنامه بالینی و اعتبارسنجی قطعات استعلام‌شده استفاده می‌شود.
+                  </div>
+                </form>
+              )}
+
+              {/* OTP Step 2: Enter Verification Code */}
+              {otpStep === 'code' && (
+                <form onSubmit={handleVerifyOtp} className="space-y-6">
+                  <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200/80 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 text-teal-900">
+                      <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
+                      <span>
+                        کد تایید ۵ رقمی به شماره <span className="font-mono font-bold text-teal-950 dir-ltr inline-block">{mobileInput}</span> پیامک شد.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOtpStep('phone');
+                        setOtpError(null);
+                      }}
+                      className="text-[11px] text-teal-700 hover:text-teal-900 font-bold underline flex items-center gap-1 cursor-pointer shrink-0"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                      <span>ویرایش شماره</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <KeyRound className="w-4 h-4 text-teal-600" />
+                        <span>کد تایید پیامک شده را وارد کنید:</span>
+                      </span>
+                      {otpTimer > 0 ? (
+                        <span className="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
+                          <Timer className="w-3.5 h-3.5 text-teal-600" />
+                          <span>ارسال مجدد تا {faNum(otpTimer)} ثانیه دیگر</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleRequestOtp()}
+                          className="text-[11px] text-teal-700 hover:text-teal-900 font-bold underline cursor-pointer"
+                        >
+                          ارسال مجدد کد پیامکی
+                        </button>
+                      )}
+                    </label>
+
+                    <input
+                      type="text"
+                      dir="ltr"
+                      maxLength={6}
+                      value={otpInput}
+                      onChange={(e) => {
+                        setOtpInput(e.target.value);
+                        if (otpError) setOtpError(null);
+                      }}
+                      placeholder="• • • • •"
+                      className="w-full text-center bg-slate-50 border-2 border-slate-300 focus:border-teal-500 focus:bg-white rounded-2xl py-3.5 text-2xl font-mono font-black tracking-widest text-slate-900 placeholder:text-slate-300 focus:ring-4 focus:ring-teal-500/10 outline-none transition-all"
+                      autoFocus
+                    />
+                  </div>
+
+                  {demoCodeHint && (
+                    <div className="text-[10px] text-slate-500 bg-slate-100 p-2.5 rounded-xl text-center font-mono">
+                      کد تایید ارسال شده جهت تست: <span className="font-bold text-teal-700">{demoCodeHint}</span>
+                    </div>
+                  )}
+
+                  {otpError && (
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-fadeIn">
+                      <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+                      <span>{otpError}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isVerifyingOtp || otpInput.trim().length < 4}
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
+                  >
+                    {isVerifyingOtp ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>در حال اعتبارسنجی شماره…</span>
+                      </span>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-5 h-5 text-emerald-200" />
+                        <span>تایید شماره و مشاهده کارنامه تخصصی</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
         {/* SCREEN 4: RESULTS & DOCTOR CHECKLIST */}
         {/* ========================================================= */}
         {screen === 'result' && (
           <div className="space-y-6">
+            {/* Verified Mobile Number Banner */}
+            {verifiedMobile && (
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-6 h-6 text-emerald-300" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-200">هویت بالینی تایید شد:</span>
+                      <span className="font-mono font-black text-sm dir-ltr tracking-wider">{verifiedMobile}</span>
+                    </div>
+                    <p className="text-xs text-white/90 mt-0.5">
+                      پیامک کارنامه و چک‌لیست مشاوره‌ای با موفقیت برای این شماره ارسال شد ✓
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] bg-white/20 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                    <span>شماره معتبر</span>
+                  </span>
+                </div>
+              </div>
+            )}
             {/* Header Score Card */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
               <div className="flex flex-col sm:flex-row items-center gap-6">

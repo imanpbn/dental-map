@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   HelpCircle,
   CheckCircle2,
@@ -6,9 +6,18 @@ import {
   Award,
   RotateCcw,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  Smartphone,
+  KeyRound,
+  ShieldCheck,
+  Timer,
+  Check,
+  AlertCircle,
+  Phone,
+  Edit3
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { SmsService, normalizeIranMobile, isValidIranMobile } from '../utils/smsService';
 
 interface QuizQuestion {
   id: number;
@@ -98,6 +107,70 @@ export const ImplantKnowledgeQuiz: React.FC = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
+
+  // SMS Verification State
+  const [mobileInput, setMobileInput] = useState(() => SmsService.getVerifiedMobile() || '');
+  const [otpInput, setOtpInput] = useState('');
+  const [otpStep, setOtpStep] = useState<'idle' | 'code' | 'verified'>(() => SmsService.getVerifiedMobile() ? 'verified' : 'idle');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [demoCodeHint, setDemoCodeHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (otpTimer <= 0) return;
+    const interval = setInterval(() => {
+      setOtpTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [otpTimer]);
+
+  const handleRequestOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setOtpError(null);
+    const clean = normalizeIranMobile(mobileInput);
+    if (!isValidIranMobile(clean)) {
+      setOtpError('لطفاً شماره تلفن همراه ۱۱ رقمی معتبر وارد فرمایید.');
+      return;
+    }
+
+    setIsSendingOtp(true);
+    try {
+      const res = await SmsService.sendOtp(clean, 'اعتبارسنجی کارنامه کویز علمی ایمپلنت');
+      if (res.success) {
+        setOtpStep('code');
+        setOtpTimer(60);
+        if (res.code) setDemoCodeHint(res.code);
+      } else {
+        setOtpError(res.message);
+      }
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setOtpError(null);
+    setIsVerifyingOtp(true);
+    try {
+      const res = SmsService.verifyOtp(mobileInput, otpInput);
+      if (res.success) {
+        const clean = normalizeIranMobile(mobileInput);
+        setOtpStep('verified');
+        await SmsService.sendQuizResultNotification({
+          mobile: clean,
+          score: Math.round((correctCount / questions.length) * 100),
+          profileTitle: `کویز علمی قطعات (${correctCount} از ${questions.length} پاسخ صحیح)`
+        });
+      } else {
+        setOtpError(res.message);
+      }
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
 
   const currentQ = questions[currentIdx];
   const isAnswered = selectedAnswers[currentIdx] !== undefined;
@@ -274,7 +347,7 @@ export const ImplantKnowledgeQuiz: React.FC = () => {
                 شما به <span className="font-bold text-emerald-700 font-mono text-base">{correctCount}</span> پرسش از {questions.length} پرسش پاسخ صحیح دادید.
               </p>
 
-              <div className="inline-block p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 mb-8 max-w-md mx-auto text-right leading-relaxed">
+              <div className="inline-block p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 mb-6 max-w-md mx-auto text-right leading-relaxed">
                 {correctCount >= 5 ? (
                   <span className="text-emerald-800 font-bold">
                     عالی! تسلط شما به متالورژی تیتانیوم، استانداردهای مورس تیپر و پروتکل‌های جراحی در حد یک متخصص بالینی است.
@@ -287,6 +360,109 @@ export const ImplantKnowledgeQuiz: React.FC = () => {
                   <span>
                     برای انتخاب مطمئن ایمپلنت، مرور کاتالوگ قطعات و مطالعه مقالات بخش وبلاگ به شما کمک خواهد کرد.
                   </span>
+                )}
+              </div>
+
+              {/* SMS Verification & Delivery Card */}
+              <div className="max-w-md mx-auto mb-8 bg-gradient-to-br from-emerald-50/80 to-teal-50/80 border border-emerald-200 rounded-3xl p-5 text-right space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                    <span className="text-xs font-bold text-emerald-950">
+                      دریافت کارنامه با اعتبارسنجی پیامکی
+                    </span>
+                  </div>
+                  {otpStep === 'verified' && (
+                    <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Check className="w-3 h-3" />
+                      <span>شماره تایید شد</span>
+                    </span>
+                  )}
+                </div>
+
+                {otpStep === 'idle' && (
+                  <form onSubmit={handleRequestOtp} className="space-y-3">
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      شماره موبایل خود را وارد فرمایید تا کد تایید پیامک شده و کارنامه آزمون در سامانه ثبت شود:
+                    </p>
+                    <div className="flex gap-2">
+                      <input
+                        type="tel"
+                        dir="ltr"
+                        value={mobileInput}
+                        onChange={(e) => {
+                          setMobileInput(e.target.value);
+                          if (otpError) setOtpError(null);
+                        }}
+                        placeholder="09123456789"
+                        className="w-full bg-white border border-emerald-200 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 outline-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSendingOtp || !mobileInput.trim()}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        {isSendingOtp ? 'ارسال…' : 'ارسال کد تایید'}
+                      </button>
+                    </div>
+                    {otpError && (
+                      <p className="text-[11px] text-rose-600 font-medium">{otpError}</p>
+                    )}
+                  </form>
+                )}
+
+                {otpStep === 'code' && (
+                  <form onSubmit={handleVerifyOtp} className="space-y-3">
+                    <div className="flex items-center justify-between text-[11px] text-emerald-900">
+                      <span>کد ۵ رقمی به {mobileInput} ارسال شد:</span>
+                      <button
+                        type="button"
+                        onClick={() => setOtpStep('idle')}
+                        className="text-emerald-700 hover:underline flex items-center gap-0.5 cursor-pointer"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        <span>ویرایش</span>
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        dir="ltr"
+                        maxLength={6}
+                        value={otpInput}
+                        onChange={(e) => {
+                          setOtpInput(e.target.value);
+                          if (otpError) setOtpError(null);
+                        }}
+                        placeholder="کد تایید"
+                        className="w-full bg-white border border-emerald-300 focus:border-emerald-600 rounded-xl px-3 py-2 text-center text-sm font-mono font-bold tracking-widest text-slate-900 outline-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isVerifyingOtp || otpInput.trim().length < 4}
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        {isVerifyingOtp ? 'تایید…' : 'تایید کد'}
+                      </button>
+                    </div>
+                    {demoCodeHint && (
+                      <p className="text-[10px] text-slate-500 font-mono">
+                        کد تستی ارسالی: <span className="font-bold text-emerald-700">{demoCodeHint}</span>
+                      </p>
+                    )}
+                    {otpError && (
+                      <p className="text-[11px] text-rose-600 font-medium">{otpError}</p>
+                    )}
+                  </form>
+                )}
+
+                {otpStep === 'verified' && (
+                  <div className="p-3 bg-white/80 rounded-2xl border border-emerald-200 text-xs text-emerald-900 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span>
+                      شماره <strong className="font-mono dir-ltr inline-block">{mobileInput}</strong> اعتبارسنجی شد و پیامک کارنامه ارسال گردید.
+                    </span>
+                  </div>
                 )}
               </div>
 

@@ -3,6 +3,25 @@ import { SmsSettings, SmsLogRecord } from '../types';
 const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
 
+export const normalizeIranMobile = (input: string): string => {
+  if (!input) return '';
+  let cleaned = input
+    .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/[\s\-\+\(\)]/g, '')
+    .trim();
+  if (cleaned.startsWith('0098')) cleaned = '0' + cleaned.slice(4);
+  if (cleaned.startsWith('98') && cleaned.length === 12) cleaned = '0' + cleaned.slice(2);
+  if (cleaned.startsWith('+98')) cleaned = '0' + cleaned.slice(3);
+  if (!cleaned.startsWith('0') && cleaned.startsWith('9') && cleaned.length === 10) cleaned = '0' + cleaned;
+  return cleaned;
+};
+
+export const isValidIranMobile = (mobile: string): boolean => {
+  const norm = normalizeIranMobile(mobile);
+  return /^09\d{9}$/.test(norm);
+};
+
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
   apiKey: '29c3b26d3caf4cd3b865f43a10d1b19d', // کلید تاییدشده کنسول ملی پیامک کاربر
   senderNumber: '5000xxx', // شماره خط اختصاصی (از پنل کاربر)
@@ -271,5 +290,108 @@ export const SmsService = {
       bodyId: settings.patternPassport || undefined,
       args: [String(params.toothNumber), params.brandName, params.refCode]
     });
+  },
+
+  /**
+   * Send OTP Verification Code to Mobile for Tests/Quizzes
+   */
+  async sendOtp(mobile: string, purpose: string = 'اعتبارسنجی کارنامه آزمون ایمپلنت'): Promise<{
+    success: boolean;
+    message: string;
+    code?: string;
+    expiresInSeconds?: number;
+  }> {
+    const cleanMobile = normalizeIranMobile(mobile);
+    if (!isValidIranMobile(cleanMobile)) {
+      return {
+        success: false,
+        message: 'لطفاً یک شماره همراه معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد فرمایید.'
+      };
+    }
+
+    // Generate random 5-digit verification code
+    const code = Math.floor(10000 + Math.random() * 90000).toString();
+    const expiresAt = Date.now() + 3 * 60 * 1000; // 3 minutes validity
+
+    try {
+      sessionStorage.setItem(`dm_otp_${cleanMobile}`, JSON.stringify({ code, expiresAt }));
+    } catch {
+      // fallback
+    }
+
+    const text =
+      `کد تایید دنتال‌مپ: ${code}\n` +
+      `جهت ${purpose}\n` +
+      `اعتبار: ۳ دقیقه\n` +
+      `سامانه اصالت قطعات ایمپلنت دنتال‌مپ`;
+
+    await this.sendSms({
+      to: cleanMobile,
+      text,
+      type: 'test',
+      bodyId: this.getSettings().patternQuiz || undefined,
+      args: [code, '۳ دقیقه']
+    });
+
+    return {
+      success: true,
+      message: `کد تایید ۵ رقمی برای شماره ${cleanMobile} پیامک شد.`,
+      code,
+      expiresInSeconds: 180
+    };
+  },
+
+  /**
+   * Verify entered OTP code for Mobile
+   */
+  verifyOtp(mobile: string, enteredCode: string): { success: boolean; message: string } {
+    const cleanMobile = normalizeIranMobile(mobile);
+    const cleanCode = enteredCode
+      .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+      .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+      .trim();
+
+    if (!cleanCode || cleanCode.length < 4) {
+      return { success: false, message: 'لطفاً کد تایید ۵ رقمی را به صورت کامل وارد فرمایید.' };
+    }
+
+    try {
+      const stored = sessionStorage.getItem(`dm_otp_${cleanMobile}`);
+      if (!stored) {
+        return {
+          success: false,
+          message: 'کد تایید منقضی شده یا یافت نشد. لطفاً مجدداً درخواست ارسال کد دهید.'
+        };
+      }
+      const data = JSON.parse(stored);
+      if (Date.now() > data.expiresAt) {
+        sessionStorage.removeItem(`dm_otp_${cleanMobile}`);
+        return {
+          success: false,
+          message: 'مهلت استفاده از کد تایید به پایان رسیده است. لطفاً کد جدید دریافت کنید.'
+        };
+      }
+      if (data.code !== cleanCode) {
+        return {
+          success: false,
+          message: 'کد تایید وارد شده نادرست است. لطفاً ارقام را مجدداً بررسی فرمایید.'
+        };
+      }
+
+      // Successful OTP
+      sessionStorage.removeItem(`dm_otp_${cleanMobile}`);
+      localStorage.setItem('dm_verified_mobile', cleanMobile);
+      return { success: true, message: 'شماره تلفن همراه شما با موفقیت تایید و اعتبارسنجی شد ✓' };
+    } catch {
+      return { success: false, message: 'خطا در بررسی کد تایید پیامکی.' };
+    }
+  },
+
+  getVerifiedMobile(): string | null {
+    try {
+      return localStorage.getItem('dm_verified_mobile');
+    } catch {
+      return null;
+    }
   }
 };
