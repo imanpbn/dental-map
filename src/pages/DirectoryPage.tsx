@@ -56,8 +56,8 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
       <link rel="canonical" href="https://dentalmap.ir/directory" />
 
       {/* Top Breadcrumb & Quick Bar */}
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sticky top-0 z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="w-full px-[5%] pt-3">
+        <div className="bg-white border border-slate-200/90 rounded-2xl py-3 px-4 sm:px-6 shadow-xs flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs truncate">
             <Link to="/" className="text-slate-500 hover:text-emerald-700 font-medium">
               صفحه اصلی
@@ -78,46 +78,48 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
         </div>
       </div>
 
-      {/* Dedicated Page Hero Banner */}
-      <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white py-12 px-4 border-b border-slate-800 relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Dedicated Page Hero Banner with 10% Total Horizontal Padding (px-[5%]) */}
+      <div className="w-full px-[5%] my-4">
+        <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white py-10 sm:py-12 px-6 sm:px-10 rounded-2xl md:rounded-3xl border border-slate-800/80 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold mb-3">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>مرجع رسمی دایرکتوری درمانی ایمپلنتولوژی و جراحی فک و صورت کشور</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight mb-3">
-            دایرکتوری جامع جراحان فک و صورت، کلینیک‌ها و مراکز شبانه‌روزی
-          </h1>
-
-          <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed mb-6 font-normal">
-            جستجوی پیشرفته و چندبعدی بر اساس شماره نظام پزشکی تاییدشده، منطقه شهرداری و شهرها، پوشش بیمه‌های طرف قرارداد
-            (دانا، البرز، ایران، تامین اجتماعی)، وضعیت شبانه‌روزی ۲۴ ساعته و برندهای ایمپلنت مورد استفاده.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
-              <Stethoscope className="w-4 h-4 text-emerald-400" />
-              <span>
-                تعداد جراحان و متخصصان فعال:{' '}
-                <strong className="text-white font-mono font-bold">{doctors.length}</strong> پزشک
-              </span>
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold mb-3">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>مرجع رسمی دایرکتوری درمانی ایمپلنتولوژی و جراحی فک و صورت کشور</span>
             </div>
 
-            <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
-              <Building className="w-4 h-4 text-teal-400" />
-              <span>
-                کلینیک‌ها و مراکز تخصصی:{' '}
-                <strong className="text-white font-mono font-bold">{clinics.length}</strong> مرکز
-              </span>
-            </div>
+            <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight mb-3">
+              دایرکتوری جامع جراحان فک و صورت، کلینیک‌ها و مراکز شبانه‌روزی
+            </h1>
 
-            <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-amber-400" />
-              <span>پوشش کلیه مناطق تهران، مشهد، اصفهان، شیراز و تبریز</span>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed mb-6 font-normal">
+              جستجوی پیشرفته و چندبعدی بر اساس شماره نظام پزشکی تاییدشده، منطقه شهرداری و شهرها، پوشش بیمه‌های طرف قرارداد
+              (دانا، البرز، ایران، تامین اجتماعی)، وضعیت شبانه‌روزی ۲۴ ساعته و برندهای ایمپلنت مورد استفاده.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
+                <Stethoscope className="w-4 h-4 text-emerald-400" />
+                <span>
+                  تعداد جراحان و متخصصان فعال:{' '}
+                  <strong className="text-white font-mono font-bold">{doctors.length}</strong> پزشک
+                </span>
+              </div>
+
+              <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
+                <Building className="w-4 h-4 text-teal-400" />
+                <span>
+                  کلینیک‌ها و مراکز تخصصی:{' '}
+                  <strong className="text-white font-mono font-bold">{clinics.length}</strong> مرکز
+                </span>
+              </div>
+
+              <div className="px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-amber-400" />
+                <span>پوشش کلیه مناطق تهران، مشهد، اصفهان، شیراز و تبریز</span>
+              </div>
             </div>
           </div>
         </div>

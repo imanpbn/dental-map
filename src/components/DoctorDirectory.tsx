@@ -289,8 +289,8 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     (centerTypeFilter !== 'all' ? 1 : 0);
 
   return (
-    <section id="directory-section" className="py-8 sm:py-12 bg-slate-50 border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4">
+    <section id="directory-section" className="py-8 sm:py-10 bg-slate-50">
+      <div className="w-full px-[5%]">
         
         {/* Main 2-Column Responsive Layout: Sidebar on Right (RTL), Results Feed on Left */}
         <div className="flex flex-col lg:flex-row gap-6 items-start">
