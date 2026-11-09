@@ -343,3 +343,36 @@ export interface DoctorApplication {
   created_at: string;
   reviewed_at?: string;
 }
+
+// Digital FDI Implant Passport Model
+export interface IssuedPassportTooth {
+  tooth_number: number;
+  brand_name: string;
+  implant_model?: string;
+  fixture_ref: string;
+  lot_number: string;
+  abutment_type?: string;
+  abutment_torque_ncm?: number;
+  crown_type?: string;
+  implant_date: string;
+  surgeon_name: string;
+  clinic_name: string;
+  notes?: string;
+}
+
+export interface IssuedPassport {
+  id: string; // e.g. "DMP-2026-98104"
+  tracking_code: string;
+  patient_name: string;
+  patient_national_id: string;
+  patient_mobile: string;
+  teeth: IssuedPassportTooth[];
+  clinic_name?: string;
+  surgeon_name?: string;
+  issue_date_shamsi: string;
+  issue_date_iso: string;
+  qr_code_data_url?: string;
+  verification_url: string;
+  notes?: string;
+  status: 'active' | 'revoked';
+}

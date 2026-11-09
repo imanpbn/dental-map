@@ -19,7 +19,8 @@ import {
   LeadValuationRecord,
   WordPressBlogPost,
   WordPressPage,
-  DoctorApplication
+  DoctorApplication,
+  IssuedPassport
 } from './types';
 
 // ==============================================================================
@@ -1168,5 +1169,83 @@ export const initialDoctorApplications: DoctorApplication[] = [
     bio: 'کلینیک مجهز به اسکنر داخل دهانی تری‌شیپ، کدکم و اتاق جراحی اختصاصی استریل با نوبت‌دهی شبانه‌روزی.',
     status: 'pending',
     created_at: '2026-11-09T10:15:00Z'
+  }
+];
+
+// Initial Issued Digital FDI Implant Passports
+export const initialIssuedPassports: IssuedPassport[] = [
+  {
+    id: 'DMP-2026-98104',
+    tracking_code: '98104',
+    patient_name: 'محمدحسین رضایی',
+    patient_national_id: '0012345678',
+    patient_mobile: '09121234567',
+    clinic_name: 'کلینیک جراحی ایمپلنت آتیه غرب',
+    surgeon_name: 'دکتر علیرضا صالحی‌راد',
+    issue_date_shamsi: '۱۴۰۳/۰۸/۱۰',
+    issue_date_iso: '2026-10-31T09:00:00Z',
+    verification_url: 'https://dentalmap.ir/passport?code=DMP-2026-98104',
+    notes: 'جراحی مرحله دوم با موفقیت انجام شد. تورک نهایی ۳۵ نیوتن‌سانتی‌متر. بدون تحلیل استخوان مارژینال.',
+    status: 'active',
+    teeth: [
+      {
+        tooth_number: 16,
+        brand_name: 'اشترومن (Straumann - سوئیس)',
+        implant_model: 'Straumann BLX SLA Active Ø4.5 L10mm',
+        fixture_ref: '021.4312',
+        lot_number: 'LOT-CH2026-98104',
+        abutment_type: 'Screw-Retained Multi-Unit (روکش پیچی)',
+        abutment_torque_ncm: 35,
+        crown_type: 'زیرکونیا کادکم تمام‌سرامیک (Katana Zirconia)',
+        implant_date: '۱۴۰۳/۰۵/۱۲',
+        surgeon_name: 'دکتر علیرضا صالحی‌راد',
+        clinic_name: 'کلینیک جراحی ایمپلنت آتیه غرب',
+        notes: 'پیوند استخوان جزئی پودر Bio-Oss و ممبرین Bio-Gide.'
+      },
+      {
+        tooth_number: 21,
+        brand_name: 'اشترومن (Straumann - سوئیس)',
+        implant_model: 'Straumann Bone Level Tapered (BLT) Ø3.3 L12mm',
+        fixture_ref: '021.2314',
+        lot_number: 'LOT-CH2026-98105',
+        abutment_type: 'Variobase Anatomic Customized',
+        abutment_torque_ncm: 35,
+        crown_type: 'فول سرامیک ای‌مکس (IPS e.max)',
+        implant_date: '۱۴۰۳/۰۶/۱۵',
+        surgeon_name: 'دکتر علیرضا صالحی‌راد',
+        clinic_name: 'کلینیک جراحی ایمپلنت آتیه غرب',
+        notes: 'بارگذاری تاخیری در ناحیه قدامی جهت دستیابی به پینکل صورتی زیباشناختی.'
+      }
+    ]
+  },
+  {
+    id: 'DMP-2026-44120',
+    tracking_code: '44120',
+    patient_name: 'مریم سلیمانی',
+    patient_national_id: '0078912345',
+    patient_mobile: '09351239876',
+    clinic_name: 'مرکز تخصصی دندانپزشکی دیجیتال مهر',
+    surgeon_name: 'دکتر سارا معتمدی',
+    issue_date_shamsi: '۱۴۰۳/۰۷/۲۵',
+    issue_date_iso: '2026-10-16T11:30:00Z',
+    verification_url: 'https://dentalmap.ir/passport?code=DMP-2026-44120',
+    notes: 'پاسپورت استعلام اصالت کیت کامل جراحی دیجیتال با گاید جراحی.',
+    status: 'active',
+    teeth: [
+      {
+        tooth_number: 46,
+        brand_name: 'ناکسیس (Naxis - آلمان)',
+        implant_model: 'Naxis Precision Hex Active Ø4.0 L10mm',
+        fixture_ref: 'NX-FX-4010',
+        lot_number: 'LOT-DE2026-44120',
+        abutment_type: 'Straight Titanium Abutment GH 2mm',
+        abutment_torque_ncm: 32,
+        crown_type: 'زیرکونیا تمام‌سرامیک سمان‌شونده',
+        implant_date: '۱۴۰۳/۰۷/۱۰',
+        surgeon_name: 'دکتر سارا معتمدی',
+        clinic_name: 'مرکز تخصصی دندانپزشکی دیجیتال مهر',
+        notes: 'کاشت تمام‌دیجیتال با راهنمای جراحی ۳ بعدی و آنالوگ دیجیتال پرینت.'
+      }
+    ]
   }
 ];

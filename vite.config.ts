@@ -11,7 +11,7 @@ export default defineConfig({
     host: true,
   },
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -20,6 +20,9 @@ export default defineConfig({
           }
           if (id.includes('node_modules/@supabase')) {
             return 'vendor-supabase';
+          }
+          if (id.includes('node_modules/qrcode') || id.includes('node_modules/canvas-confetti')) {
+            return 'vendor-utils';
           }
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
             return 'vendor-react';

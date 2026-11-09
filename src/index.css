@@ -51,9 +51,16 @@
 
 /* Print Styles for Dental Passport */
 @media print {
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
   body {
     background: white !important;
     color: black !important;
+  }
+  header, footer, nav, aside {
+    display: none !important;
   }
   .no-print {
     display: none !important;

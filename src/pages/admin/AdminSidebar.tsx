@@ -11,7 +11,8 @@ import {
   Settings,
   Globe,
   Send,
-  UserCheck
+  UserCheck,
+  FileCheck2
 } from 'lucide-react';
 
 export type AdminSection =
@@ -21,6 +22,7 @@ export type AdminSection =
   | 'doctors'
   | 'clinics'
   | 'applications'
+  | 'passports'
   | 'components'
   | 'brands'
   | 'packages'
@@ -38,6 +40,7 @@ interface AdminSidebarProps {
   doctorsCount: number;
   clinicsCount: number;
   applicationsCount?: number;
+  passportsCount?: number;
   componentsCount: number;
   packagesCount: number;
   accountsCount: number;
@@ -51,6 +54,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   doctorsCount,
   clinicsCount,
   applicationsCount = 0,
+  passportsCount = 0,
   componentsCount,
   packagesCount,
   accountsCount
@@ -177,6 +181,24 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               0
             </span>
           )}
+        </button>
+
+        {/* 5.6 Digital Passports (پاسپورت‌های صادرشده) */}
+        <button
+          onClick={() => setActiveSection('passports')}
+          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+            activeSection === 'passports'
+              ? 'bg-emerald-600 text-white shadow-md'
+              : 'hover:bg-slate-800/80 text-slate-300'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <FileCheck2 className="w-4 h-4 text-teal-400" />
+            <span>پاسپورت‌های صادرشده (FDI)</span>
+          </div>
+          <span className="px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] text-teal-400 font-mono">
+            {passportsCount}
+          </span>
         </button>
 
         {/* 6. Components */}

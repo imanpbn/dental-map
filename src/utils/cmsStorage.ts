@@ -7,7 +7,8 @@ import {
   ClinicalPackage,
   ImplantBrand,
   SiteSettings,
-  DoctorApplication
+  DoctorApplication,
+  IssuedPassport
 } from '../types';
 
 import {
@@ -18,7 +19,8 @@ import {
   initialPages,
   initialClinicalPackages,
   initialBrands,
-  initialDoctorApplications
+  initialDoctorApplications,
+  initialIssuedPassports
 } from '../initialData';
 
 const KEYS = {
@@ -30,7 +32,8 @@ const KEYS = {
   PACKAGES: 'dentalmap_cms_packages_v1',
   BRANDS: 'dentalmap_cms_brands_v1',
   SETTINGS: 'dentalmap_cms_settings_v1',
-  APPLICATIONS: 'dentalmap_cms_applications_v1'
+  APPLICATIONS: 'dentalmap_cms_applications_v1',
+  PASSPORTS: 'dentalmap_cms_passports_v1'
 };
 
 export const defaultSiteSettings: SiteSettings = {
@@ -166,6 +169,39 @@ export const CmsStorageService = {
   },
   saveDoctorApplications(apps: DoctorApplication[]): void {
     localStorage.setItem(KEYS.APPLICATIONS, JSON.stringify(apps));
+  },
+
+  // Digital FDI Implant Passports
+  getIssuedPassports(): IssuedPassport[] {
+    try {
+      const data = localStorage.getItem(KEYS.PASSPORTS);
+      return data ? JSON.parse(data) : initialIssuedPassports;
+    } catch {
+      return initialIssuedPassports;
+    }
+  },
+  saveIssuedPassports(passports: IssuedPassport[]): void {
+    localStorage.setItem(KEYS.PASSPORTS, JSON.stringify(passports));
+  },
+  issuePassport(passport: IssuedPassport): IssuedPassport[] {
+    const current = this.getIssuedPassports();
+    const updated = [passport, ...current.filter((p) => p.id !== passport.id)];
+    this.saveIssuedPassports(updated);
+    return updated;
+  },
+  findPassport(query: string): IssuedPassport | null {
+    if (!query) return null;
+    const cleanQuery = query.trim().toLowerCase();
+    const all = this.getIssuedPassports();
+    return (
+      all.find(
+        (p) =>
+          p.id.toLowerCase() === cleanQuery ||
+          p.tracking_code.toLowerCase() === cleanQuery ||
+          p.patient_national_id === cleanQuery ||
+          p.patient_mobile.replace(/\s+/g, '') === cleanQuery.replace(/\s+/g, '')
+      ) || null
+    );
   },
 
   // Reset to Factory Defaults
