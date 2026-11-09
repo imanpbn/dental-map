@@ -2,9 +2,80 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// In-memory rate limiting map for server
+interface RateLimitRecord {
+  failedAttempts: number;
+  lockedUntil: number;
+  lastAttemptAt: number;
+}
+const loginAttempts = new Map<string, RateLimitRecord>();
+
+const JWT_SECRET = (
+  process.env.ADMIN_JWT_SECRET ||
+  process.env.ADMIN_PASSWORD ||
+  'dentalmap_secure_hmac_secret_key_2026_super_hardened'
+).trim();
+
+function escapeHtml(str: string): string {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function sanitizeUrl(rawUrl: string, fallback: string = 'https://dentalmap.ir'): string {
+  if (!rawUrl || typeof rawUrl !== 'string') return fallback;
+  const trimmed = rawUrl.trim();
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return 'https://dentalmap.ir' + trimmed;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return fallback;
+    const hostname = parsed.hostname.toLowerCase();
+    if (hostname === 'dentalmap.ir' || hostname.endsWith('.dentalmap.ir') || hostname === 'localhost') {
+      return parsed.toString();
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function sanitizeImageUrl(rawImg: string, fallback: string = 'https://dentalmap.ir/images/og-preview.png'): string {
+  if (!rawImg || typeof rawImg !== 'string') return fallback;
+  const trimmed = rawImg.trim();
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return 'https://dentalmap.ir' + trimmed;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') return parsed.toString();
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function signToken(payload: object): string {
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(data).digest('base64url');
+  return `${data}.${signature}`;
+}
+
+function safeStringCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 async function startServer() {
   const app = express();
@@ -23,7 +94,7 @@ async function startServer() {
     });
   });
 
-  // OpenGraph Social Bot Pre-render Endpoint
+  // OpenGraph Social Bot Pre-render Endpoint (Hardened against XSS & Open Redirect)
   app.get('/api/seo/og', (req, res) => {
     const {
       title = 'دنتال مپ | مرجع شفافیت و اصالت قطعات ایمپلنت دندان ایران',
@@ -33,10 +104,14 @@ async function startServer() {
       type = 'website'
     } = req.query;
 
-    const safeTitle = String(title).replace(/"/g, '&quot;');
-    const safeDesc = String(description).replace(/"/g, '&quot;');
-    const safeImage = String(image);
-    const safeUrl = String(url);
+    const validUrl = sanitizeUrl(String(url));
+    const validImage = sanitizeImageUrl(String(image));
+    const validType = ['website', 'article', 'profile'].includes(String(type)) ? String(type) : 'website';
+
+    const safeTitle = escapeHtml(String(title).slice(0, 150));
+    const safeDesc = escapeHtml(String(description).slice(0, 300));
+    const safeUrl = escapeHtml(validUrl);
+    const safeImage = escapeHtml(validImage);
 
     const html = `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -44,7 +119,7 @@ async function startServer() {
   <meta charset="UTF-8">
   <title>${safeTitle}</title>
   <meta name="description" content="${safeDesc}">
-  <meta property="og:type" content="${type}">
+  <meta property="og:type" content="${validType}">
   <meta property="og:url" content="${safeUrl}">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${safeDesc}">
@@ -66,11 +141,26 @@ async function startServer() {
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
     res.send(html);
   });
 
-  // Authentication endpoint
-  app.post('/api/auth/login', (req, res) => {
+  // Authentication endpoint (Hardened with HMAC-SHA256 & Brute-force Rate Limiting)
+  app.post('/api/auth/login', async (req, res) => {
+    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || '127.0.0.1';
+    
+    // Check Rate Limiting
+    const record = loginAttempts.get(clientIp);
+    const now = Date.now();
+    if (record && record.lockedUntil > now) {
+      const remainingSeconds = Math.ceil((record.lockedUntil - now) / 1000);
+      return res.status(429).json({
+        success: false,
+        error: `به دلیل تلاش‌های ناموفق مکرر، ورود موقتاً مسدود شد. لطفاً ${remainingSeconds} ثانیه دیگر مجدداً تلاش فرمایید.`
+      });
+    }
+
     try {
       const { usernameOrEmail, password } = req.body || {};
       if (!usernameOrEmail || !password) {
@@ -84,14 +174,30 @@ async function startServer() {
       const masterEmail = (process.env.ADMIN_EMAIL || 'admin@dentalmap.ir').toLowerCase();
       const masterPassword = process.env.ADMIN_PASSWORD || 'DentalMap@2026';
 
-      const isMatch = (input === masterUsername || input === masterEmail) && cleanPass === masterPassword;
+      const isUserMatch = safeStringCompare(input, masterUsername) || safeStringCompare(input, masterEmail);
+      const isPassMatch = safeStringCompare(cleanPass, masterPassword);
 
-      if (!isMatch) {
+      if (!isUserMatch || !isPassMatch) {
+        // Record failed attempt
+        const r = loginAttempts.get(clientIp) || { failedAttempts: 0, lockedUntil: 0, lastAttemptAt: now };
+        r.failedAttempts += 1;
+        r.lastAttemptAt = now;
+        if (r.failedAttempts >= 5) {
+          r.lockedUntil = now + 15 * 60 * 1000;
+        }
+        loginAttempts.set(clientIp, r);
+
+        // Artificial constant delay
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
         return res.status(401).json({
           success: false,
           error: 'نام کاربری یا رمز عبور اشتباه است.'
         });
       }
+
+      // Successful login: clear lockout
+      loginAttempts.delete(clientIp);
 
       const user = {
         id: 1,
@@ -104,18 +210,17 @@ async function startServer() {
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
       };
 
-      const sessionToken = Buffer.from(
-        JSON.stringify({
-          uid: user.id,
-          role: user.role,
-          exp: Date.now() + 7 * 24 * 60 * 60 * 1000
-        })
-      ).toString('base64');
+      const token = signToken({
+        uid: user.id,
+        role: user.role,
+        username: user.username,
+        exp: Date.now() + 7 * 24 * 60 * 60 * 1000
+      });
 
       return res.status(200).json({
         success: true,
         user,
-        token: sessionToken
+        token
       });
     } catch (err: any) {
       return res.status(500).json({ success: false, error: err.message || 'خطای سرور' });
