@@ -49,11 +49,6 @@ export const Footer: React.FC<FooterProps> = ({
       icon: FileCheck2
     },
     {
-      title: 'آزمون هوشمند انتخاب سیستم ایمپلنت',
-      href: '/quiz',
-      icon: Sparkles
-    },
-    {
       title: 'دندانپزشکان و جراحان سراسر کشور',
       href: '/dentists',
       icon: Stethoscope
