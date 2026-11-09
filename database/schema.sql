@@ -358,27 +358,76 @@ INSERT INTO insurances (name, slug, insurance_type) VALUES
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name;
 
 -- ==========================================
--- 9. ROW LEVEL SECURITY (RLS) POLICIES
+-- 9. ROW LEVEL SECURITY (RLS) POLICIES & HARDENING
 -- ==========================================
--- By default in Supabase, tables need permissions granted to 'anon' role
-ALTER TABLE provinces DISABLE ROW LEVEL SECURITY;
-ALTER TABLE cities DISABLE ROW LEVEL SECURITY;
-ALTER TABLE districts DISABLE ROW LEVEL SECURITY;
-ALTER TABLE specialties DISABLE ROW LEVEL SECURITY;
-ALTER TABLE manufacturers DISABLE ROW LEVEL SECURITY;
-ALTER TABLE implant_brands DISABLE ROW LEVEL SECURITY;
-ALTER TABLE implant_types DISABLE ROW LEVEL SECURITY;
-ALTER TABLE doctors DISABLE ROW LEVEL SECURITY;
-ALTER TABLE clinics DISABLE ROW LEVEL SECURITY;
-ALTER TABLE insurances DISABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_insurances DISABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_doctors DISABLE ROW LEVEL SECURITY;
-ALTER TABLE doctor_implant_types DISABLE ROW LEVEL SECURITY;
-ALTER TABLE components DISABLE ROW LEVEL SECURITY;
-ALTER TABLE clinical_packages DISABLE ROW LEVEL SECURITY;
-ALTER TABLE blog_posts DISABLE ROW LEVEL SECURITY;
-ALTER TABLE pages DISABLE ROW LEVEL SECURITY;
-ALTER TABLE site_settings DISABLE ROW LEVEL SECURITY;
-ALTER TABLE lead_valuations DISABLE ROW LEVEL SECURITY;
-ALTER TABLE admin_users DISABLE ROW LEVEL SECURITY;
+
+-- 1. Enable RLS on all tables
+ALTER TABLE countries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE provinces ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE districts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE specialties ENABLE ROW LEVEL SECURITY;
+ALTER TABLE manufacturers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE implant_brands ENABLE ROW LEVEL SECURITY;
+ALTER TABLE implant_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE doctors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE insurances ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinic_insurances ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinic_doctors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE doctor_implant_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE components ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinical_packages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lead_valuations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+
+-- 2. Public Read Policies (Allow anyone, anon & authenticated, to browse public dental portal data)
+CREATE POLICY "Public read countries" ON countries FOR SELECT USING (true);
+CREATE POLICY "Public read provinces" ON provinces FOR SELECT USING (true);
+CREATE POLICY "Public read cities" ON cities FOR SELECT USING (true);
+CREATE POLICY "Public read districts" ON districts FOR SELECT USING (true);
+CREATE POLICY "Public read specialties" ON specialties FOR SELECT USING (true);
+CREATE POLICY "Public read manufacturers" ON manufacturers FOR SELECT USING (true);
+CREATE POLICY "Public read implant_brands" ON implant_brands FOR SELECT USING (true);
+CREATE POLICY "Public read implant_types" ON implant_types FOR SELECT USING (true);
+CREATE POLICY "Public read doctors" ON doctors FOR SELECT USING (true);
+CREATE POLICY "Public read clinics" ON clinics FOR SELECT USING (true);
+CREATE POLICY "Public read insurances" ON insurances FOR SELECT USING (true);
+CREATE POLICY "Public read clinic_insurances" ON clinic_insurances FOR SELECT USING (true);
+CREATE POLICY "Public read clinic_doctors" ON clinic_doctors FOR SELECT USING (true);
+CREATE POLICY "Public read doctor_implant_types" ON doctor_implant_types FOR SELECT USING (true);
+CREATE POLICY "Public read components" ON components FOR SELECT USING (true);
+CREATE POLICY "Public read clinical_packages" ON clinical_packages FOR SELECT USING (true);
+CREATE POLICY "Public read blog_posts" ON blog_posts FOR SELECT USING (true);
+CREATE POLICY "Public read pages" ON pages FOR SELECT USING (true);
+CREATE POLICY "Public read site_settings" ON site_settings FOR SELECT USING (true);
+
+-- 3. Public Insert for Patient Leads (Patients can submit lead/appointment requests, but cannot read others)
+CREATE POLICY "Public create lead valuations" ON lead_valuations FOR INSERT TO anon, authenticated WITH CHECK (true);
+
+-- 4. Admin Write Policies (Only authenticated administrative sessions or service_role can modify or delete)
+CREATE POLICY "Admin write countries" ON countries FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write provinces" ON provinces FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write cities" ON cities FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write districts" ON districts FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write specialties" ON specialties FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write manufacturers" ON manufacturers FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write implant_brands" ON implant_brands FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write implant_types" ON implant_types FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write doctors" ON doctors FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write clinics" ON clinics FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write insurances" ON insurances FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write clinic_insurances" ON clinic_insurances FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write clinic_doctors" ON clinic_doctors FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write doctor_implant_types" ON doctor_implant_types FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write components" ON components FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write clinical_packages" ON clinical_packages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write blog_posts" ON blog_posts FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write pages" ON pages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write site_settings" ON site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin manage lead valuations" ON lead_valuations FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin manage admin_users" ON admin_users FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
