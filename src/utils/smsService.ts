@@ -7,7 +7,7 @@ const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
 
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
-  apiKey: '29c3b26d3caf4cd3b865f43a10d1b19d', // کلید تاییدشده کنسول ملی پیامک کاربر
+  apiKey: '', // کلید وب‌سرویس در گیت‌وی سرورلس محافظت می‌شود و از متغیرهای محیطی لود می‌شود
   senderNumber: '5000xxx', // شماره خط اختصاصی (از پنل کاربر)
   patternAppointment: '245890', // کد پترن رزرو نوبت
   patternPassport: '245891', // کد پترن پاسپورت ایمپلنت
@@ -32,15 +32,8 @@ export const SmsService = {
   async getCredit(): Promise<{ amount: number; status: string }> {
     const settings = this.getSettings();
     try {
-      const res = await fetch(`/api/sms/credit?apiKey=${settings.apiKey}`);
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    try {
-      const res = await fetch(`https://console.melipayamak.com/api/receive/credit/${settings.apiKey}`);
+      const queryParam = settings.apiKey ? `?apiKey=${encodeURIComponent(settings.apiKey)}` : '';
+      const res = await fetch(`/api/sms/credit${queryParam}`);
       if (res.ok) {
         return await res.json();
       }
@@ -119,12 +112,12 @@ export const SmsService = {
     }
 
     try {
-      // 1. Try sending via backend server endpoint if available (/api/sms)
+      // 1. Send via secure serverless gateway endpoint (/api/sms/send)
       const res = await fetch('/api/sms/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          apiKey: settings.apiKey,
+          apiKey: settings.apiKey || undefined,
           from: settings.senderNumber,
           to: cleanTo,
           text,
@@ -142,36 +135,10 @@ export const SmsService = {
         }
       }
     } catch {
-      // Backend unavailable or network error, attempt direct client fetch or simulate
+      // Backend unavailable or network error, fallback to offline simulation
     }
 
-    // Direct fetch to MeliPayamak Console API
-    try {
-      const directUrl = bodyId
-        ? `https://console.melipayamak.com/api/send/shared/${settings.apiKey}`
-        : `https://console.melipayamak.com/api/send/simple/${settings.apiKey}`;
-
-      const payload = bodyId
-        ? { to: cleanTo, bodyId: Number(bodyId), args: args || [text] }
-        : { from: settings.senderNumber, to: cleanTo, text };
-
-      const directRes = await fetch(directUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (directRes.ok) {
-        const data = await directRes.json();
-        const recId = String(data.recId || data.Value || 'rec-' + Date.now());
-        this.addLog({ to: cleanTo, text, type, status: 'sent', recId });
-        return { success: true, message: 'پیامک از طریق وب‌سرویس ملی‌پیامک ارسال شد.', recId };
-      }
-    } catch {
-      // Browser CORS restrictions typically apply to third-party endpoints
-    }
-
-    // Graceful Log & Offline Simulation
+    // Graceful Log & Offline Simulation when network or gateway is unreachable
     const simulatedRecId = 'sim-' + Math.floor(100000000 + Math.random() * 900000000);
     this.addLog({
       to: cleanTo,

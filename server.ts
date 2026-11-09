@@ -23,11 +23,64 @@ async function startServer() {
     });
   });
 
+  // Authentication endpoint
+  app.post('/api/auth/login', (req, res) => {
+    try {
+      const { usernameOrEmail, password } = req.body || {};
+      if (!usernameOrEmail || !password) {
+        return res.status(400).json({ success: false, error: 'لطفاً نام کاربری و رمز عبور را وارد فرمایید.' });
+      }
+
+      const input = String(usernameOrEmail).trim().toLowerCase();
+      const cleanPass = String(password);
+
+      const masterUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
+      const masterEmail = (process.env.ADMIN_EMAIL || 'admin@dentalmap.ir').toLowerCase();
+      const masterPassword = process.env.ADMIN_PASSWORD || 'DentalMap@2026';
+
+      const isMatch = (input === masterUsername || input === masterEmail) && cleanPass === masterPassword;
+
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          error: 'نام کاربری یا رمز عبور اشتباه است.'
+        });
+      }
+
+      const user = {
+        id: 1,
+        username: masterUsername,
+        email: masterEmail,
+        full_name: 'دکتر محمدرضا نایینی (مدیر ارشد سامانه)',
+        role: 'super_admin',
+        is_active: true,
+        last_login_at: new Date().toISOString(),
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
+      };
+
+      const sessionToken = Buffer.from(
+        JSON.stringify({
+          uid: user.id,
+          role: user.role,
+          exp: Date.now() + 7 * 24 * 60 * 60 * 1000
+        })
+      ).toString('base64');
+
+      return res.status(200).json({
+        success: true,
+        user,
+        token: sessionToken
+      });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || 'خطای سرور' });
+    }
+  });
+
   // MeliPayamak SMS Integration Proxy
   app.post('/api/sms/send', async (req, res) => {
     try {
-      const { apiKey, from, to, text, bodyId, args } = req.body;
-      const key = (apiKey || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+      const { apiKey, from, to, text, bodyId, args } = req.body || {};
+      const key = (process.env.MELIPAYAMAK_API_KEY || apiKey || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
 
       const endpoint = bodyId
         ? `https://console.melipayamak.com/api/send/shared/${key}`
@@ -56,7 +109,7 @@ async function startServer() {
 
   app.get('/api/sms/credit', async (req, res) => {
     try {
-      const key = (req.query.apiKey as string || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+      const key = (process.env.MELIPAYAMAK_API_KEY || (req.query.apiKey as string) || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
       const checkRes = await fetch(`https://console.melipayamak.com/api/receive/credit/${key}`);
       const data = await checkRes.json().catch(() => ({}));
       res.json(data);
@@ -67,7 +120,7 @@ async function startServer() {
 
   app.get('/api/sms/status', async (req, res) => {
     try {
-      const key = (req.query.apiKey as string || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+      const key = (process.env.MELIPAYAMAK_API_KEY || (req.query.apiKey as string) || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
       const checkRes = await fetch(`https://console.melipayamak.com/api/receive/credit/${key}`);
       const data = await checkRes.json().catch(() => ({}));
       res.json({ success: checkRes.ok, data });

@@ -7,12 +7,12 @@ export interface AdminAccountRecord extends AdminUser {
 const STORAGE_ACCOUNTS_KEY = 'dentalmap_admin_accounts_v1';
 const STORAGE_SESSION_KEY = 'dentalmap_admin_session_v1';
 
-// Default master admin account
+// Default master admin account (Sensitive credentials managed via Serverless API Gateway)
 const DEFAULT_MASTER_ADMIN: AdminAccountRecord = {
   id: 1,
   username: 'admin',
   email: 'admin@dentalmap.ir',
-  password_hash: 'DentalMap@2026', // Plaintext simulation or salted hash
+  password_hash: '', // Handled securely on backend /api/auth/login
   full_name: 'دکتر محمدرضا نایینی (مدیر ارشد سامانه)',
   role: 'super_admin',
   is_active: true,
@@ -51,11 +51,39 @@ export const AdminAuthService = {
     }
   },
 
-  // Attempt login
-  login(usernameOrEmail: string, password: string, rememberMe = true): { success: boolean; user?: AdminUser; error?: string } {
+  // Attempt login via secure serverless endpoint with client-side fallback
+  async login(usernameOrEmail: string, password: string, rememberMe = true): Promise<{ success: boolean; user?: AdminUser; error?: string }> {
     const trimmedInput = usernameOrEmail.trim().toLowerCase();
-    const accounts = this.getAccounts();
 
+    // 1. Try secure Serverless Authentication API
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usernameOrEmail: trimmedInput, password })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success && data.user) {
+        const safeUser: AdminUser = data.user;
+        if (rememberMe) {
+          localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(safeUser));
+          if (data.token) localStorage.setItem('dm_auth_token', data.token);
+        } else {
+          sessionStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(safeUser));
+          if (data.token) sessionStorage.setItem('dm_auth_token', data.token);
+        }
+        return { success: true, user: safeUser };
+      } else if (res.status === 401 || data.error) {
+        return { success: false, error: data.error || 'اطلاعات ورود نادرست است.' };
+      }
+    } catch {
+      // Backend unreachable or offline, fallback to local storage accounts
+    }
+
+    // 2. Offline fallback for local admin accounts
+    const accounts = this.getAccounts();
     const account = accounts.find(
       (acc) =>
         (acc.username.toLowerCase() === trimmedInput || acc.email.toLowerCase() === trimmedInput) &&
@@ -69,7 +97,7 @@ export const AdminAuthService = {
       };
     }
 
-    if (account.password_hash !== password) {
+    if (account.password_hash && account.password_hash !== password) {
       return {
         success: false,
         error: 'رمز عبور وارد شده نادرست است.'

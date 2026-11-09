@@ -251,7 +251,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   }, [lockoutTimer]);
 
   // Handle Login
-  const handleLogin = (e?: React.FormEvent) => {
+  const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setAuthError(null);
 
@@ -260,7 +260,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       return;
     }
 
-    const res = AdminAuthService.login(usernameInput, passwordInput, rememberMe);
+    const res = await AdminAuthService.login(usernameInput, passwordInput, rememberMe);
     if (res.success && res.user) {
       setCurrentUser(res.user);
       setAccountsList(AdminAuthService.getAccounts());
@@ -271,12 +271,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   };
 
   // Handle Demo Quick Login
-  const handleQuickDemoLogin = () => {
-    const res = AdminAuthService.login('admin@dentalmap.ir', 'DentalMap@2026', true);
+  const handleQuickDemoLogin = async () => {
+    const res = await AdminAuthService.login('admin@dentalmap.ir', 'DentalMap@2026', true);
     if (res.success && res.user) {
       setCurrentUser(res.user);
       setAccountsList(AdminAuthService.getAccounts());
       showToast('ورود با حساب مدیر ارشد انجام شد.');
+    } else {
+      setAuthError(res.error || 'خطا در ورود سریع');
     }
   };
 

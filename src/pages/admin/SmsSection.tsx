@@ -103,13 +103,12 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
                 type="text"
                 value={smsConfig.apiKey}
                 onChange={(e) => setSmsConfig({ ...smsConfig, apiKey: e.target.value })}
-                placeholder="کلید کنسول ملی‌پیامک..."
+                placeholder="کلید وب‌سرویس سرورلس (خالی = پیش‌فرض امن سرور)..."
                 dir="ltr"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono text-slate-800 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                required
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                کلید ارائه‌شده از منوی تنظیمات پنل کاربری ملی‌پیامک (کنسول).
+                کلید در گیت‌وی سرورلس محافظت می‌شود؛ در صورت خالی بودن، متغیر محیطی MELIPAYAMAK_API_KEY سرور استفاده می‌شود.
               </p>
             </div>
 

@@ -6,8 +6,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { apiKey, from, to, text, bodyId, args } = req.body;
-    const key = (apiKey || process.env.MELIPAYAMAK_API_KEY || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+    const { apiKey, from, to, text, bodyId, args } = req.body || {};
+    // Prioritize environment variable on the server, fallback to client config or default
+    const key = (process.env.MELIPAYAMAK_API_KEY || apiKey || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
 
     const endpoint = bodyId
       ? `https://console.melipayamak.com/api/send/shared/${key}`
