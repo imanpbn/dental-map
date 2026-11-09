@@ -15,6 +15,7 @@ import {
   Share2
 } from 'lucide-react';
 import { DentalComponent } from '../types';
+import { formatPrice } from '../utils/formatters';
 
 interface NaxisGuidePageProps {
   components: DentalComponent[];
@@ -262,7 +263,7 @@ export const NaxisGuidePage: React.FC<NaxisGuidePageProps> = ({ components }) =>
                       {comp.name_fa}
                     </span>
                     <span className="font-mono text-emerald-700 font-bold text-xs mt-1 block">
-                      {comp.price_toman.toLocaleString('fa-IR')} تومان
+                      {formatPrice(comp.price_toman)}
                     </span>
                   </Link>
                 ))}

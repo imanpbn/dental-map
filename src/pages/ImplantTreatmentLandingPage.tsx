@@ -25,10 +25,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { SmsService, normalizeIranMobile, isValidIranMobile } from '../utils/smsService';
-
-const faNum = (n: number | string) =>
-  String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+import { SmsService } from '../utils/smsService';
+import { faNum, normalizeIranMobile, isValidIranMobile } from '../utils/formatters';
 
 export const ImplantTreatmentLandingPage: React.FC = () => {
   const navigate = useNavigate();

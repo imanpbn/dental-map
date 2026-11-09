@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { ImplantBrand, ImplantType, Manufacturer, Country, DentalComponent, Doctor, City } from '../types';
 import { DentalMapRoutes } from '../utils/urlBuilder';
+import { formatPrice } from '../utils/formatters';
 
 interface BrandHubPageProps {
   brands: ImplantBrand[];
@@ -211,7 +212,7 @@ export const BrandHubPage: React.FC<BrandHubPageProps> = ({
                   </div>
                   <span className="font-bold text-slate-900 block truncate">{comp.name_fa}</span>
                   <span className="font-mono font-bold text-slate-700 mt-2 block">
-                    {comp.price_toman.toLocaleString('fa-IR')} تومان
+                    {formatPrice(comp.price_toman)}
                   </span>
                 </Link>
               ))}

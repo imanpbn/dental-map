@@ -1,26 +1,10 @@
 import { SmsSettings, SmsLogRecord } from '../types';
+import { normalizeIranMobile, isValidIranMobile } from './formatters';
+
+export { normalizeIranMobile, isValidIranMobile };
 
 const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
-
-export const normalizeIranMobile = (input: string): string => {
-  if (!input) return '';
-  let cleaned = input
-    .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
-    .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
-    .replace(/[\s\-\+\(\)]/g, '')
-    .trim();
-  if (cleaned.startsWith('0098')) cleaned = '0' + cleaned.slice(4);
-  if (cleaned.startsWith('98') && cleaned.length === 12) cleaned = '0' + cleaned.slice(2);
-  if (cleaned.startsWith('+98')) cleaned = '0' + cleaned.slice(3);
-  if (!cleaned.startsWith('0') && cleaned.startsWith('9') && cleaned.length === 10) cleaned = '0' + cleaned;
-  return cleaned;
-};
-
-export const isValidIranMobile = (mobile: string): boolean => {
-  const norm = normalizeIranMobile(mobile);
-  return /^09\d{9}$/.test(norm);
-};
 
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
   apiKey: '29c3b26d3caf4cd3b865f43a10d1b19d', // کلید تاییدشده کنسول ملی پیامک کاربر

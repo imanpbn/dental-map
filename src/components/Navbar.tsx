@@ -12,6 +12,7 @@ import {
   Settings
 } from 'lucide-react';
 import { DentalComponent, Doctor, ImplantBrand } from '../types';
+import { formatPrice } from '../utils/formatters';
 
 interface NavbarProps {
   isAdminOpen: boolean;
@@ -211,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           </span>
                         </div>
                         <span className="text-emerald-700 font-bold font-mono">
-                          {comp.price_toman.toLocaleString('fa-IR')} تومان
+                          {formatPrice(comp.price_toman)}
                         </span>
                       </button>
                     ))}

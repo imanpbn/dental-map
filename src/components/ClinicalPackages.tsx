@@ -9,6 +9,7 @@ import {
   PhoneCall
 } from 'lucide-react';
 import { ClinicalPackage } from '../types';
+import { formatNumber } from '../utils/formatters';
 
 interface ClinicalPackagesProps {
   packages: ClinicalPackage[];
@@ -135,7 +136,7 @@ export const ClinicalPackages: React.FC<ClinicalPackagesProps> = ({
                     <span className="text-[11px] block text-slate-400">قیمت پکیج جامع ۴ تکه:</span>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl font-black font-mono">
-                        {pkg.price_toman.toLocaleString('fa-IR')}
+                        {formatNumber(pkg.price_toman)}
                       </span>
                       <span className="text-xs font-bold text-slate-400">تومان</span>
                     </div>
