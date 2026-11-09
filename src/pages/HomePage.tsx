@@ -4,7 +4,6 @@ import { HeroSection } from '../components/HeroSection';
 import { PlatformServicesSection } from '../components/PlatformServicesSection';
 import { TopSpecialistsBanner } from '../components/TopSpecialistsBanner';
 import { TrustGuaranteesBanner } from '../components/TrustGuaranteesBanner';
-import { FeaturedComponentsShowcase } from '../components/FeaturedComponentsShowcase';
 import { PartsExplorer } from '../components/PartsExplorer';
 import { ClinicalPackages } from '../components/ClinicalPackages';
 import { ComparisonMatrix } from '../components/ComparisonMatrix';
@@ -122,13 +121,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 5. Trust Guarantees Ribbon */}
       <TrustGuaranteesBanner />
 
-      {/* 6. Featured Components Showcase (Top 5) */}
-      <FeaturedComponentsShowcase
-        components={components}
-        onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
-      />
-
-      {/* 7. Parts Explorer (Categories Catalog) */}
+      {/* 6. Parts Explorer (Categories Catalog) */}
       <PartsExplorer
         components={components}
         brands={brands}
