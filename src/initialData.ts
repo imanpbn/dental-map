@@ -18,7 +18,8 @@ import {
   ToothPassportRecord,
   LeadValuationRecord,
   WordPressBlogPost,
-  WordPressPage
+  WordPressPage,
+  DoctorApplication
 } from './types';
 
 // ==============================================================================
@@ -1127,5 +1128,45 @@ export const initialPages: WordPressPage[] = [
     published_at: '۱۹ آبان ۱۴۰۳',
     featured_image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=800',
     meta_robots: 'index, follow'
+  }
+];
+
+// Initial Doctor & Clinic Registration Applications
+export const initialDoctorApplications: DoctorApplication[] = [
+  {
+    id: 101,
+    center_type: 'private_office',
+    full_name: 'دکتر احسان یزدانی',
+    medical_council_code: '142890',
+    specialty_id: 2, // جراحی دهان و فک و صورت
+    city_id: 1, // تهران
+    district_id: 1, // سعادت‌آباد
+    address: 'تهران، سعادت‌آباد، میدان کاج، مجتمع سروستان، طبقه ۳',
+    mobile: '09121112233',
+    phone: '021-22003344',
+    brands: ['اشترومن (Straumann)', 'ناکسیس (Naxis)'],
+    insurances: ['بیمه دانا', 'بیمه ایران'],
+    is_24_7: false,
+    bio: 'جراح فک و صورت، فلوشیپ جراحی پیشرفته ایمپلنتولوژی و پیوند استخوان با بیش از ۱۲ سال سابقه بالینی.',
+    status: 'pending',
+    created_at: '2026-11-09T08:30:00Z'
+  },
+  {
+    id: 102,
+    center_type: 'clinic',
+    full_name: 'کلینیک دندانپزشکی دیجیتال رازی (دکتر بهاره صادقی)',
+    medical_council_code: '098712',
+    specialty_id: 4, // متخصص پروتزهای دندانی
+    city_id: 1,
+    district_id: 3, // شهرک غرب
+    address: 'تهران، شهرک غرب، بلوار فرحزادی، تقاطع دریا، ساختمان پزشکان رازی',
+    mobile: '09354445566',
+    phone: '021-88665544',
+    brands: ['اوستم (Osstem)', 'مگاژن (MegaGen)'],
+    insurances: ['تأمین اجتماعی', 'بیمه البرز'],
+    is_24_7: true,
+    bio: 'کلینیک مجهز به اسکنر داخل دهانی تری‌شیپ، کدکم و اتاق جراحی اختصاصی استریل با نوبت‌دهی شبانه‌روزی.',
+    status: 'pending',
+    created_at: '2026-11-09T10:15:00Z'
   }
 ];

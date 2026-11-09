@@ -6,7 +6,8 @@ import {
   WordPressPage,
   ClinicalPackage,
   ImplantBrand,
-  SiteSettings
+  SiteSettings,
+  DoctorApplication
 } from '../types';
 
 import {
@@ -16,7 +17,8 @@ import {
   initialBlogPosts,
   initialPages,
   initialClinicalPackages,
-  initialBrands
+  initialBrands,
+  initialDoctorApplications
 } from '../initialData';
 
 const KEYS = {
@@ -27,7 +29,8 @@ const KEYS = {
   PAGES: 'dentalmap_cms_pages_v1',
   PACKAGES: 'dentalmap_cms_packages_v1',
   BRANDS: 'dentalmap_cms_brands_v1',
-  SETTINGS: 'dentalmap_cms_settings_v1'
+  SETTINGS: 'dentalmap_cms_settings_v1',
+  APPLICATIONS: 'dentalmap_cms_applications_v1'
 };
 
 export const defaultSiteSettings: SiteSettings = {
@@ -150,6 +153,19 @@ export const CmsStorageService = {
   },
   saveSettings(settings: SiteSettings): void {
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+  },
+
+  // Doctor & Clinic Onboarding Applications
+  getDoctorApplications(): DoctorApplication[] {
+    try {
+      const data = localStorage.getItem(KEYS.APPLICATIONS);
+      return data ? JSON.parse(data) : initialDoctorApplications;
+    } catch {
+      return initialDoctorApplications;
+    }
+  },
+  saveDoctorApplications(apps: DoctorApplication[]): void {
+    localStorage.setItem(KEYS.APPLICATIONS, JSON.stringify(apps));
   },
 
   // Reset to Factory Defaults

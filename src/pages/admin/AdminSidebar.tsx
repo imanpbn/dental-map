@@ -10,7 +10,8 @@ import {
   DollarSign,
   Settings,
   Globe,
-  Send
+  Send,
+  UserCheck
 } from 'lucide-react';
 
 export type AdminSection =
@@ -19,6 +20,7 @@ export type AdminSection =
   | 'pages'
   | 'doctors'
   | 'clinics'
+  | 'applications'
   | 'components'
   | 'brands'
   | 'packages'
@@ -35,6 +37,7 @@ interface AdminSidebarProps {
   pagesCount: number;
   doctorsCount: number;
   clinicsCount: number;
+  applicationsCount?: number;
   componentsCount: number;
   packagesCount: number;
   accountsCount: number;
@@ -47,6 +50,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   pagesCount,
   doctorsCount,
   clinicsCount,
+  applicationsCount = 0,
   componentsCount,
   packagesCount,
   accountsCount
@@ -149,6 +153,30 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           <span className="px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] text-amber-400 font-mono">
             {clinicsCount}
           </span>
+        </button>
+
+        {/* 5.5 Applications (درخواست‌های عضویت) */}
+        <button
+          onClick={() => setActiveSection('applications')}
+          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+            activeSection === 'applications'
+              ? 'bg-emerald-600 text-white shadow-md'
+              : 'hover:bg-slate-800/80 text-slate-300'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <span>کارتابل درخواست‌های عضویت</span>
+          </div>
+          {applicationsCount > 0 ? (
+            <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold animate-pulse">
+              {applicationsCount} جدید
+            </span>
+          ) : (
+            <span className="px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] text-slate-400 font-mono">
+              0
+            </span>
+          )}
         </button>
 
         {/* 6. Components */}

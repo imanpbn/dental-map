@@ -321,3 +321,25 @@ export interface SiteSettings {
   is_lead_engine_active: boolean;
   sms_settings?: SmsSettings;
 }
+
+// Doctor & Clinic Self-Serve Onboarding Application Model
+export interface DoctorApplication {
+  id: number;
+  center_type: CenterType;
+  full_name: string;
+  medical_council_code: string;
+  specialty_id: number;
+  city_id: number;
+  district_id?: number;
+  address: string;
+  mobile: string;
+  phone: string;
+  brands: string[];
+  insurances: string[];
+  is_24_7: boolean;
+  bio?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  rejection_reason?: string;
+  created_at: string;
+  reviewed_at?: string;
+}

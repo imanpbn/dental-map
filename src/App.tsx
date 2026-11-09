@@ -21,6 +21,7 @@ import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
 import { CustomPageView } from './pages/CustomPageView';
 import { DirectoryPage } from './pages/DirectoryPage';
+import { DoctorJoinPage } from './pages/DoctorJoinPage';
 
 import { DentalMapRoutes } from './utils/urlBuilder';
 
@@ -59,7 +60,8 @@ import {
   WordPressPage,
   ClinicalPackage,
   ImplantBrand,
-  SiteSettings
+  SiteSettings,
+  DoctorApplication
 } from './types';
 import { CmsStorageService, defaultSiteSettings } from './utils/cmsStorage';
 import { SupabaseSyncService } from './utils/supabaseClient';
@@ -79,6 +81,17 @@ const AppContent: React.FC = () => {
   const [packages, setPackages] = useState<ClinicalPackage[]>(() => CmsStorageService.getPackages());
   const [brands, setBrands] = useState<ImplantBrand[]>(() => CmsStorageService.getBrands());
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => CmsStorageService.getSettings());
+  const [doctorApplications, setDoctorApplications] = useState<DoctorApplication[]>(() =>
+    CmsStorageService.getDoctorApplications()
+  );
+
+  const handleAddDoctorApplication = (newApp: DoctorApplication) => {
+    setDoctorApplications((prev) => {
+      const next = [newApp, ...prev.filter((a) => a.id !== newApp.id)];
+      CmsStorageService.saveDoctorApplications(next);
+      return next;
+    });
+  };
 
   const [clinicInsurances, setClinicInsurances] = useState<ClinicInsurance[]>(initialClinicInsurances);
   const [teethPassport, setTeethPassport] = useState<ToothPassportRecord[]>(initial32TeethPassport);
@@ -611,6 +624,21 @@ const AppContent: React.FC = () => {
           {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا) */}
           <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
 
+          {/* Doctor/Clinic Registration Onboarding (ثبت‌نام پزشکان و مراکز درمانی) */}
+          <Route
+            path="/doctor-join"
+            element={
+              <DoctorJoinPage
+                cities={initialCities}
+                districts={initialDistricts}
+                specialties={initialSpecialties}
+                brands={brands}
+                insurances={initialInsurances}
+                onAddApplication={handleAddDoctorApplication}
+              />
+            }
+          />
+
           {/* WordPress-style CMS Admin Panel */}
           <Route
             path="/admin"
@@ -637,6 +665,8 @@ const AppContent: React.FC = () => {
                 onToggleClinicInsurance={handleToggleClinicInsurance}
                 siteSettings={siteSettings}
                 setSiteSettings={setSiteSettings}
+                doctorApplications={doctorApplications}
+                setDoctorApplications={setDoctorApplications}
               />
             }
           />

@@ -9,7 +9,8 @@ import {
   ChevronDown,
   Layers,
   Sparkles,
-  Settings
+  Settings,
+  UserCheck
 } from 'lucide-react';
 import { DentalComponent, Doctor, ImplantBrand } from '../types';
 import { formatPrice } from '../utils/formatters';
@@ -425,8 +426,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
           </div>
 
-          {/* سمت چپ نوار ناوبری: دکمه هدایت سریع به آزمون یا استعلام */}
+          {/* سمت چپ نوار ناوبری: دکمه هدایت سریع به آزمون یا استعلام و ثبت نام پزشکان */}
           <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="/doctor-join"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold border border-emerald-200 transition-all whitespace-nowrap"
+            >
+              <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>ثبت‌نام پزشکان</span>
+            </a>
             <a
               href="/quiz"
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all whitespace-nowrap"
