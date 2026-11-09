@@ -102,7 +102,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         featuredComponent={components[0]}
       />
 
-      {/* 2. Top Specialists Banner (پزشکان تایید صلاحیت شده با استعلام نظام پزشکی) */}
+      {/* 2. Implant Test & Diagnostic Game Banner (دقیقاً زیر هیرو سکشن) */}
+      <ImplantTestHeroBanner />
+
+      {/* 3. Top Specialists Banner (پزشکان تایید صلاحیت شده با استعلام نظام پزشکی) */}
       <TopSpecialistsBanner
         doctors={doctors}
         onSelectDoctor={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
@@ -139,10 +142,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 10. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
       <BiomechanicsTranslator />
 
-      {/* 11. Implant Test & Diagnostic Game Banner */}
-      <ImplantTestHeroBanner />
-
-      {/* 12. Doctor & Clinic Directory */}
+      {/* 11. Doctor & Clinic Directory */}
       <DoctorDirectory
         doctors={doctors}
         clinics={clinics}
