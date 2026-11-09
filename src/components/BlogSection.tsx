@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Clock,
@@ -13,6 +14,8 @@ interface BlogSectionProps {
 }
 
 export const BlogSection: React.FC<BlogSectionProps> = ({ onOpenNaxisGuide }) => {
+  const navigate = useNavigate();
+
   const articles = [
     {
       id: 1,
@@ -34,7 +37,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onOpenNaxisGuide }) =>
       summary: 'بررسی نفوذ باکتری‌ها به فضای داخلی فیکسچر، پدیده پمپاژ باکتریایی و نحوه پیشگیری از تحلیل استخوان حاشیه‌ای (Crestal Bone Loss).',
       image: 'https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&q=80&w=400',
       isFeatured: false,
-      onClick: () => {}
+      onClick: () => navigate('/blog/morse-taper-vs-flat-hex-microgap')
     },
     {
       id: 3,
@@ -45,7 +48,18 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onOpenNaxisGuide }) =>
       summary: 'چگونه ثبت شماره لات (LOT) و کد رفرنس فیکسچر و اباتمنت در پاسپورت دنتال مپ، خدمات وارانتی بین‌المللی و تهیه قطعات یدکی را تضمین می‌کند.',
       image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400',
       isFeatured: false,
-      onClick: () => {}
+      onClick: () => navigate('/blog/implant-passport-guide')
+    },
+    {
+      id: 4,
+      title: 'آزمون زلزله خستگی استخوان طبق استاندارد DIN EN ISO 14801 و دوام ۲۰ ساله ایمپلنت',
+      category: 'متالورژی و استانداردها',
+      readTime: '۶ دقیقه',
+      date: '۲ آبان ۱۴۰۳',
+      summary: 'بررسی ۵ میلیون چرخه بارگذاری نوسانی با زاویه ۳۰ درجه جهت اطمینان از عدم شکستگی فیکسچر و پایداری آلیاژ تیتانیوم تحت فشارهای سنگین فک.',
+      image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=400',
+      isFeatured: false,
+      onClick: () => navigate('/blog/iso-14801-fatigue-test-earthquake-analogy')
     }
   ];
 
@@ -56,17 +70,24 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onOpenNaxisGuide }) =>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold mb-2">
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
               <span>پایگاه دانش بالینی و مقالات تخصصی</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
               راهنماهای علمی، استانداردهای متالورژی و تحلیل برندها
             </h2>
           </div>
+          <button
+            onClick={() => navigate('/blog')}
+            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer self-start md:self-auto"
+          >
+            <span>مشاهده همه مقالات و دانشنامه</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* 3 Articles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 4 Articles Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {articles.map((art) => (
             <div
               key={art.id}
