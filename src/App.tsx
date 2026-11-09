@@ -21,6 +21,7 @@ import { BrandComparisonPage } from './pages/BrandComparisonPage';
 import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
+import { ImplantTreatmentLandingPage } from './pages/ImplantTreatmentLandingPage';
 import { CustomPageView } from './pages/CustomPageView';
 import { DirectoryPage } from './pages/DirectoryPage';
 
@@ -670,10 +671,10 @@ const AppContent: React.FC = () => {
           />
 
           {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا و لندینگ‌ها) */}
+          <Route path="/page/treatment" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/page/implant-treatment" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/treatment" element={<ImplantTreatmentLandingPage />} />
           <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
-          <Route path="/page/treatment" element={<CustomPageView pages={pages} />} />
-          <Route path="/page/implant-treatment" element={<CustomPageView pages={pages} />} />
-          <Route path="/treatment" element={<CustomPageView pages={pages} />} />
           <Route path="/about-us" element={<CustomPageView pages={pages} />} />
           <Route path="/terms" element={<CustomPageView pages={pages} />} />
           <Route path="/contact" element={<CustomPageView pages={pages} />} />
