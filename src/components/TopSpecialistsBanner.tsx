@@ -38,7 +38,7 @@ export const TopSpecialistsBanner: React.FC<TopSpecialistsBannerProps> = ({
             </h2>
           </div>
           <a
-            href="#directory-section"
+            href="/directory"
             className="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1"
           >
             مشاهده همه جراحان و فیلتر پیشرفته &larr;

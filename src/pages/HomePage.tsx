@@ -9,7 +9,6 @@ import { ComparisonMatrix } from '../components/ComparisonMatrix';
 import { BiomechanicsTranslator } from '../components/BiomechanicsTranslator';
 import { ImplantTestHeroBanner } from '../components/ImplantTestHeroBanner';
 import { PassportSimulator } from '../components/PassportSimulator';
-import { DoctorDirectory } from '../components/DoctorDirectory';
 import { BlogSection } from '../components/BlogSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { DentalMapRoutes } from '../utils/urlBuilder';
@@ -142,25 +141,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 10. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
       <BiomechanicsTranslator />
 
-      {/* 11. Doctor & Clinic Directory */}
-      <DoctorDirectory
-        doctors={doctors}
-        clinics={clinics}
-        specialties={specialties}
-        cities={cities}
-        districts={districts}
-        insurances={insurances}
-        brands={brands}
-        implantTypes={implantTypes}
-        clinicDoctors={clinicDoctors}
-        clinicInsurances={clinicInsurances}
-        doctorImplantTypes={doctorImplantTypes}
-        leadValuations={leadValuations}
-        onRecordLead={onRecordLead}
-        onSelectDoctor={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
-      />
-
-      {/* 13. Blog Section */}
+      {/* 11. Blog Section */}
       <BlogSection onOpenNaxisGuide={() => navigate('/blog')} />
 
       {/* 14. Testimonials Section */}
