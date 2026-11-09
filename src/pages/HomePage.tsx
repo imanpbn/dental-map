@@ -4,7 +4,6 @@ import { HeroSection } from '../components/HeroSection';
 import { PlatformServicesSection } from '../components/PlatformServicesSection';
 import { TopSpecialistsBanner } from '../components/TopSpecialistsBanner';
 import { TrustGuaranteesBanner } from '../components/TrustGuaranteesBanner';
-import { PartsExplorer } from '../components/PartsExplorer';
 import { ClinicalPackages } from '../components/ClinicalPackages';
 import { ComparisonMatrix } from '../components/ComparisonMatrix';
 import { BiomechanicsTranslator } from '../components/BiomechanicsTranslator';
@@ -121,16 +120,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 5. Trust Guarantees Ribbon */}
       <TrustGuaranteesBanner />
 
-      {/* 6. Parts Explorer (Categories Catalog) */}
-      <PartsExplorer
-        components={components}
-        brands={brands}
-        selectedCategory={selectedCategory}
-        onSelectCategory={onSelectCategory}
-        onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
-      />
-
-      {/* 8. Clinical Packages (Bundled 4-in-1 Suites) */}
+      {/* 6. Clinical Packages (Bundled 4-in-1 Suites) */}
       <ClinicalPackages
         packages={packages}
         onOrderPackage={() => {
