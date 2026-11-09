@@ -9,7 +9,7 @@ import { PartsExplorer } from '../components/PartsExplorer';
 import { ClinicalPackages } from '../components/ClinicalPackages';
 import { ComparisonMatrix } from '../components/ComparisonMatrix';
 import { BiomechanicsTranslator } from '../components/BiomechanicsTranslator';
-import { ImplantKnowledgeQuiz } from '../components/ImplantKnowledgeQuiz';
+import { ImplantTestHeroBanner } from '../components/ImplantTestHeroBanner';
 import { PassportSimulator } from '../components/PassportSimulator';
 import { DoctorDirectory } from '../components/DoctorDirectory';
 import { BlogSection } from '../components/BlogSection';
@@ -156,8 +156,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 10. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
       <BiomechanicsTranslator />
 
-      {/* 11. Implant Knowledge Quiz */}
-      <ImplantKnowledgeQuiz />
+      {/* 11. Implant Test & Diagnostic Game Banner */}
+      <ImplantTestHeroBanner />
 
       {/* 12. Doctor & Clinic Directory */}
       <DoctorDirectory

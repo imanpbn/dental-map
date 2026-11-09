@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Sparkles,
   Trophy,
@@ -168,6 +168,7 @@ const TICKER = [
 
 export const ImplantTestPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [screen, setScreen] = useState<'intro' | 'quiz' | 'analyze' | 'verify' | 'result'>('intro');
   const [currentQ, setCurrentQ] = useState(0);
@@ -278,6 +279,20 @@ export const ImplantTestPage: React.FC = () => {
     demoTimersRef.current = [];
     setDemoActive(false);
   };
+
+  // Auto-start or run demo when navigated from Homepage or direct links
+  useEffect(() => {
+    const start = searchParams.get('start');
+    const demo = searchParams.get('demo');
+    if (start === 'true') {
+      startQuiz();
+    } else if (demo !== null) {
+      const idx = parseInt(demo, 10);
+      if (!isNaN(idx)) {
+        startDemo(idx);
+      }
+    }
+  }, [searchParams]);
 
   // Handle option selection
   const handleSelectOption = (optIdx: number, overrideQIndex?: number) => {
