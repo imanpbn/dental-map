@@ -21,7 +21,6 @@ import { BrandComparisonPage } from './pages/BrandComparisonPage';
 import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
-import { ImplantTreatmentLandingPage } from './pages/ImplantTreatmentLandingPage';
 import { CustomPageView } from './pages/CustomPageView';
 import { DirectoryPage } from './pages/DirectoryPage';
 
@@ -649,13 +648,6 @@ const AppContent: React.FC = () => {
           <Route path="/test-2" element={<ImplantTestPage />} />
           <Route path="/implant-test" element={<ImplantTestPage />} />
 
-          {/* Dedicated Maanapp-style Treatment Landing Page (زیرمجموعه آزمون و تست‌ها) */}
-          <Route path="/test/landing" element={<ImplantTreatmentLandingPage />} />
-          <Route path="/test/treatment" element={<ImplantTreatmentLandingPage />} />
-          <Route path="/quiz/treatment" element={<ImplantTreatmentLandingPage />} />
-          <Route path="/quiz/landing" element={<ImplantTreatmentLandingPage />} />
-          <Route path="/treatment" element={<ImplantTreatmentLandingPage />} />
-
           {/* FDI 32-Tooth Passport Simulator */}
           <Route
             path="/passport"
@@ -677,8 +669,11 @@ const AppContent: React.FC = () => {
             element={<BlogPage posts={blogPosts} />}
           />
 
-          {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا) */}
+          {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا و لندینگ‌ها) */}
           <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
+          <Route path="/page/treatment" element={<CustomPageView pages={pages} />} />
+          <Route path="/page/implant-treatment" element={<CustomPageView pages={pages} />} />
+          <Route path="/treatment" element={<CustomPageView pages={pages} />} />
           <Route path="/about-us" element={<CustomPageView pages={pages} />} />
           <Route path="/terms" element={<CustomPageView pages={pages} />} />
           <Route path="/contact" element={<CustomPageView pages={pages} />} />

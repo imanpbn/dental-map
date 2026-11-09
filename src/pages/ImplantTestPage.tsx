@@ -640,21 +640,13 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
                     </div>
                   </div>
 
-                  <div className="pt-3 flex flex-wrap items-center gap-3">
+                  <div className="pt-3">
                     <button
                       onClick={startQuiz}
                       className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-2xl font-black text-base shadow-lg shadow-teal-600/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer"
                     >
                       <Play className="w-5 h-5 fill-white" />
                       <span>شروع آزمون و بازی تشخیص هوشمند</span>
-                    </button>
-
-                    <button
-                      onClick={() => navigate('/test/landing')}
-                      className="w-full sm:w-auto px-5 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border border-slate-200"
-                    >
-                      <ShieldCheck className="w-4 h-4 text-teal-600" />
-                      <span>برآورد درمان و کلینیک کاشت (لندینگ اختصاصی)</span>
                     </button>
                   </div>
                 </div>

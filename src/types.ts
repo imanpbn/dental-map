@@ -250,7 +250,7 @@ export interface WordPressPage {
   content: string;
   author: string;
   status: 'publish' | 'draft';
-  template?: 'default' | 'narrow' | 'fullwidth';
+  template?: 'default' | 'narrow' | 'fullwidth' | 'landing';
   published_at: string;
   featured_image?: string;
   meta_robots?: 'index, follow' | 'noindex, nofollow';

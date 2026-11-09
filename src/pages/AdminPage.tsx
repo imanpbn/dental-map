@@ -1189,8 +1189,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                         </td>
                         <td className="py-3.5 text-slate-600">{page.author}</td>
                         <td className="py-3.5">
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-medium">
-                            {page.template === 'fullwidth' ? 'تمام‌عرض' : page.template === 'narrow' ? 'تک‌ستونه' : 'پیش‌فرض'}
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                              page.template === 'landing'
+                                ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                                : 'bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            {page.template === 'landing'
+                              ? '🎯 لندینگ پیج اختصاصی'
+                              : page.template === 'fullwidth'
+                              ? 'تمام‌عرض'
+                              : page.template === 'narrow'
+                              ? 'تک‌ستونه'
+                              : 'پیش‌فرض'}
                           </span>
                         </td>
                         <td className="py-3.5">
@@ -2774,6 +2786,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs"
                   >
                     <option value="default">قالب استاندارد و مقاله‌ای</option>
+                    <option value="landing">قالب لندینگ پیج تخصصی (مان‌اپ / درمان و کلینیک)</option>
                     <option value="fullwidth">قالب تمام‌عرض (Full Width)</option>
                     <option value="narrow">قالب متمرکز و تک‌ستونه</option>
                   </select>

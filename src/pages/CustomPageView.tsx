@@ -12,6 +12,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { WordPressPage } from '../types';
+import { ImplantTreatmentLandingPage } from './ImplantTreatmentLandingPage';
 
 interface CustomPageViewProps {
   pages: WordPressPage[];
@@ -22,9 +23,16 @@ export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
   const navigate = useNavigate();
 
   const cleanSlug = (pageSlug || '').toLowerCase().trim();
-  const page = pages.find((p) => p.slug.toLowerCase() === cleanSlug) || pages[0];
+  const page = pages.find((p) => p.slug.toLowerCase() === cleanSlug);
 
-  if (!page) {
+  // اگر قالب برگه از نوع لندینگ پیج اختصاصی باشد یا آدرس treatment باشد، لندینگ درمان رندر می‌شود
+  if (page?.template === 'landing' || cleanSlug === 'treatment' || cleanSlug === 'implant-treatment') {
+    return <ImplantTreatmentLandingPage />;
+  }
+
+  const activePage = page || (cleanSlug ? null : pages[0]);
+
+  if (!activePage) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 dir-rtl">
         <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center max-w-md w-full shadow-xs">
@@ -44,10 +52,12 @@ export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
     );
   }
 
+  const pageData = activePage;
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: page.title,
+        title: pageData.title,
         url: window.location.href
       }).catch(() => {});
     } else {
@@ -66,7 +76,7 @@ export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
             <span>/</span>
             <span className="text-slate-400">برگه‌ها</span>
             <span>/</span>
-            <span className="text-slate-800 font-bold truncate max-w-xs">{page.title}</span>
+            <span className="text-slate-800 font-bold truncate max-w-xs">{pageData.title}</span>
           </div>
 
           <button
@@ -90,49 +100,49 @@ export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
                 برگه رسمی سامانه
               </span>
               <span className="text-xs text-slate-400 font-mono">
-                /{page.slug}
+                /{pageData.slug}
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-snug">
-              {page.title}
+              {pageData.title}
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-1">
               <div className="flex items-center gap-1.5">
                 <User className="w-4 h-4 text-slate-400" />
-                <span>نویسنده: <b>{page.author}</b></span>
+                <span>نویسنده: <b>{pageData.author}</b></span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-slate-400" />
-                <span>تاریخ انتشار: <b className="font-mono">{page.published_at}</b></span>
+                <span>تاریخ انتشار: <b className="font-mono">{pageData.published_at}</b></span>
               </div>
             </div>
           </header>
 
           {/* Featured Image if present */}
-          {page.featured_image && (
+          {pageData.featured_image && (
             <div className="rounded-2xl overflow-hidden max-h-96 border border-slate-100 shadow-inner">
               <img
-                src={page.featured_image}
-                alt={page.title}
+                src={pageData.featured_image}
+                alt={pageData.title}
                 className="w-full h-full object-cover"
               />
             </div>
           )}
 
           {/* Excerpt Summary if present */}
-          {page.excerpt && (
+          {pageData.excerpt && (
             <div className="bg-emerald-50/60 border-r-4 border-emerald-500 p-4 rounded-xl text-xs sm:text-sm text-emerald-950 font-medium leading-relaxed">
-              {page.excerpt}
+              {pageData.excerpt}
             </div>
           )}
 
           {/* Page Body Content */}
           <div
             className="prose prose-slate max-w-none text-xs sm:text-sm leading-loose text-slate-700 space-y-4 font-normal"
-            dangerouslySetInnerHTML={{ __html: page.content }}
+            dangerouslySetInnerHTML={{ __html: pageData.content }}
           />
 
           {/* Footer Call to Action */}

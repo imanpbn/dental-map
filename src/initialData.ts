@@ -1111,5 +1111,21 @@ export const initialPages: WordPressPage[] = [
     published_at: '۰۵ آبان ۱۴۰۳',
     featured_image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800',
     meta_robots: 'index, follow'
+  },
+  {
+    id: 4,
+    title: 'کلینیک تخصصی کاشت ایمپلنت و بازسازی فک | دنتال‌مپ',
+    slug: 'treatment',
+    excerpt: 'لندینگ پیج جامع خدمات کاشت ایمپلنت، ارزیابی هوشمند آنلاین درمان، گارانتی قطعات رسمی و رزرو ویزیت با جراحان فک و صورت شبکه دنتال‌مپ.',
+    content: `
+      <h2>مرکز جامع خدمات تخصصی ایمپلنتولوژی دنتال‌مپ</h2>
+      <p>ارائه دهنده خدمات کاشت ایمپلنت‌های دارای شناسنامه دیجیتال ۳۲ دندان (FDI)، با بهره‌گیری از جراحان فک و صورت مورد تایید نظام پزشکی، قطعات اصیل سوئیسی و کره‌ای و نظارت مستقیم بر کد رهگیری LOT.</p>
+    `,
+    author: 'شورای بالینی دنتال‌مپ',
+    status: 'publish',
+    template: 'landing',
+    published_at: '۱۹ آبان ۱۴۰۳',
+    featured_image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=800',
+    meta_robots: 'index, follow'
   }
 ];

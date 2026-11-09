@@ -96,7 +96,15 @@ export const CmsStorageService = {
   getPages(): WordPressPage[] {
     try {
       const data = localStorage.getItem(KEYS.PAGES);
-      return data ? JSON.parse(data) : initialPages;
+      if (!data) return initialPages;
+      const parsed: WordPressPage[] = JSON.parse(data);
+      const missingDefaults = initialPages.filter((ip) => !parsed.some((p) => p.slug === ip.slug));
+      if (missingDefaults.length > 0) {
+        const merged = [...parsed, ...missingDefaults];
+        localStorage.setItem(KEYS.PAGES, JSON.stringify(merged));
+        return merged;
+      }
+      return parsed;
     } catch {
       return initialPages;
     }
