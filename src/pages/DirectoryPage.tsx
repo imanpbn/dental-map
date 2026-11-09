@@ -55,8 +55,8 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
       <link rel="canonical" href="https://dentalmap.ir/directory" />
 
-      {/* Top Breadcrumb & Quick Bar */}
-      <div className="w-full px-[5%] pt-3">
+      {/* Top Breadcrumb & Quick Bar with 10% Horizontal Padding */}
+      <div className="w-full px-4 sm:px-6 md:px-[8%] lg:px-[10%] pt-4">
         <div className="bg-white border border-slate-200/90 rounded-2xl py-3 px-4 sm:px-6 shadow-xs flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs truncate">
             <Link to="/" className="text-slate-500 hover:text-emerald-700 font-medium">
@@ -78,8 +78,8 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
         </div>
       </div>
 
-      {/* Dedicated Page Hero Banner with 10% Total Horizontal Padding (px-[5%]) */}
-      <div className="w-full px-[5%] my-4">
+      {/* Dedicated Page Hero Banner with 10% Left & Right Padding (px-[10%]) */}
+      <div className="w-full px-4 sm:px-6 md:px-[8%] lg:px-[10%] my-4">
         <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white py-10 sm:py-12 px-6 sm:px-10 rounded-2xl md:rounded-3xl border border-slate-800/80 shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />

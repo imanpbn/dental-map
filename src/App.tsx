@@ -21,6 +21,7 @@ import { BrandComparisonPage } from './pages/BrandComparisonPage';
 import { PassportPage } from './pages/PassportPage';
 import { BlogPage } from './pages/BlogPage';
 import { ImplantTestPage } from './pages/ImplantTestPage';
+import { ImplantTreatmentLandingPage } from './pages/ImplantTreatmentLandingPage';
 import { CustomPageView } from './pages/CustomPageView';
 import { DirectoryPage } from './pages/DirectoryPage';
 
@@ -647,6 +648,13 @@ const AppContent: React.FC = () => {
           <Route path="/test" element={<ImplantTestPage />} />
           <Route path="/test-2" element={<ImplantTestPage />} />
           <Route path="/implant-test" element={<ImplantTestPage />} />
+
+          {/* Dedicated Maanapp-style Treatment Landing Page (زیرمجموعه آزمون و تست‌ها) */}
+          <Route path="/test/landing" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/test/treatment" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/quiz/treatment" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/quiz/landing" element={<ImplantTreatmentLandingPage />} />
+          <Route path="/treatment" element={<ImplantTreatmentLandingPage />} />
 
           {/* FDI 32-Tooth Passport Simulator */}
           <Route
