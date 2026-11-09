@@ -247,7 +247,7 @@ export const NaxisGuidePage: React.FC<NaxisGuidePageProps> = ({ components }) =>
                 {naxisComponents.map((comp) => (
                   <Link
                     key={comp.id}
-                    to={`/component/${comp.ref_code}`}
+                    to={`/parts/ref/${comp.ref_code}`}
                     className="block p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 transition-all text-xs"
                   >
                     <div className="flex items-center justify-between mb-1">

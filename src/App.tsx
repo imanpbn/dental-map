@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
-import { RefChatbot } from './components/RefChatbot';
 
 // Pages
 import { HomePage } from './pages/HomePage';
 import { NaxisGuidePage } from './pages/NaxisGuidePage';
 import { AdminPage } from './pages/AdminPage';
 import { ComponentDetailPage } from './pages/ComponentDetailPage';
-import { DoctorDetailPage } from './pages/DoctorDetailPage';
 import { DoctorProfilePage } from './pages/DoctorProfilePage';
 import { DentistsByLocationPage } from './pages/DentistsByLocationPage';
 import { SpecialtyByLocationPage } from './pages/SpecialtyByLocationPage';
@@ -241,69 +239,9 @@ const AppContent: React.FC = () => {
             }
           />
 
-          {/* Dentists Directory Hub & Location Routes */}
+          {/* Dentists Directory Hub */}
           <Route
             path="/directory"
-            element={
-              <DirectoryPage
-                doctors={doctors}
-                clinics={clinics}
-                specialties={initialSpecialties}
-                cities={initialCities}
-                districts={initialDistricts}
-                insurances={initialInsurances}
-                brands={brands}
-                implantTypes={initialImplantTypes}
-                clinicDoctors={initialClinicDoctors}
-                clinicInsurances={clinicInsurances}
-                doctorImplantTypes={initialDoctorImplantTypes}
-                leadValuations={leadValuations}
-                onRecordLead={handleRecordLead}
-              />
-            }
-          />
-          <Route
-            path="/doctors"
-            element={
-              <DirectoryPage
-                doctors={doctors}
-                clinics={clinics}
-                specialties={initialSpecialties}
-                cities={initialCities}
-                districts={initialDistricts}
-                insurances={initialInsurances}
-                brands={brands}
-                implantTypes={initialImplantTypes}
-                clinicDoctors={initialClinicDoctors}
-                clinicInsurances={clinicInsurances}
-                doctorImplantTypes={initialDoctorImplantTypes}
-                leadValuations={leadValuations}
-                onRecordLead={handleRecordLead}
-              />
-            }
-          />
-          <Route
-            path="/doctors-and-clinics"
-            element={
-              <DirectoryPage
-                doctors={doctors}
-                clinics={clinics}
-                specialties={initialSpecialties}
-                cities={initialCities}
-                districts={initialDistricts}
-                insurances={initialInsurances}
-                brands={brands}
-                implantTypes={initialImplantTypes}
-                clinicDoctors={initialClinicDoctors}
-                clinicInsurances={clinicInsurances}
-                doctorImplantTypes={initialDoctorImplantTypes}
-                leadValuations={leadValuations}
-                onRecordLead={handleRecordLead}
-              />
-            }
-          />
-          <Route
-            path="/dentists"
             element={
               <DirectoryPage
                 doctors={doctors}
@@ -642,11 +580,8 @@ const AppContent: React.FC = () => {
             element={<NaxisGuidePage components={components} />}
           />
 
-          {/* Interactive Implant Diagnosis Quiz / Test */}
+          {/* Interactive Implant Diagnosis Quiz */}
           <Route path="/quiz" element={<ImplantTestPage />} />
-          <Route path="/test" element={<ImplantTestPage />} />
-          <Route path="/test-2" element={<ImplantTestPage />} />
-          <Route path="/implant-test" element={<ImplantTestPage />} />
 
           {/* FDI 32-Tooth Passport Simulator */}
           <Route
@@ -671,9 +606,6 @@ const AppContent: React.FC = () => {
 
           {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا) */}
           <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
-          <Route path="/about-us" element={<CustomPageView pages={pages} />} />
-          <Route path="/terms" element={<CustomPageView pages={pages} />} />
-          <Route path="/contact" element={<CustomPageView pages={pages} />} />
 
           {/* WordPress-style CMS Admin Panel */}
           <Route
@@ -704,30 +636,6 @@ const AppContent: React.FC = () => {
               />
             }
           />
-
-          {/* Legacy single component / doctor redirects for fallback compatibility */}
-          <Route
-            path="/component/:refCode"
-            element={
-              <ComponentDetailPage
-                components={components}
-                brands={brands}
-              />
-            }
-          />
-          <Route
-            path="/doctor-detail/:id"
-            element={
-              <DoctorDetailPage
-                doctors={doctors}
-                specialties={initialSpecialties}
-                clinics={clinics}
-                brands={initialBrands}
-                clinicDoctors={initialClinicDoctors}
-                onRecordLead={handleRecordLead}
-              />
-            }
-          />
         </Routes>
       </main>
 
@@ -738,13 +646,6 @@ const AppContent: React.FC = () => {
           onOpenNaxisGuide={() => navigate('/naxis-guide')}
         />
       )}
-
-      {/* 4. RefChatbot Floating AI widget */}
-      <RefChatbot
-        components={components}
-        brands={initialBrands}
-        onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
-      />
     </div>
   );
 };

@@ -241,11 +241,11 @@ export const Footer: React.FC<FooterProps> = ({
             <span>تمام حقوق مادی و معنوی این پلتفرم متعلق به سامانه شفافیت تجهیزات دندانپزشکی «دنتال مَپ» می‌باشد. © ۱۴۰۳</span>
             <span className="hidden md:inline">|</span>
             <div className="flex items-center gap-3 text-slate-400">
-              <a href="/about-us" className="hover:text-emerald-400 transition-colors">درباره ما</a>
+              <a href="/page/about-us" className="hover:text-emerald-400 transition-colors">درباره ما</a>
               <span>•</span>
-              <a href="/terms" className="hover:text-emerald-400 transition-colors">قوانین و مقررات</a>
+              <a href="/page/terms" className="hover:text-emerald-400 transition-colors">قوانین و مقررات</a>
               <span>•</span>
-              <a href="/contact" className="hover:text-emerald-400 transition-colors">تماس با ما</a>
+              <a href="/page/contact" className="hover:text-emerald-400 transition-colors">تماس با ما</a>
             </div>
           </div>
 

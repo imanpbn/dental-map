@@ -37,11 +37,6 @@ export const SmsService = {
       const data = localStorage.getItem(STORAGE_KEY_SETTINGS);
       if (data) {
         const parsed = JSON.parse(data);
-        // If old rejected key was stored, automatically upgrade to verified key
-        if (parsed.apiKey === 'd24ffa2e-c03b-40d5-b1f6-b695fc84eee6') {
-          parsed.apiKey = DEFAULT_SMS_SETTINGS.apiKey;
-          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(parsed));
-        }
         return { ...DEFAULT_SMS_SETTINGS, ...parsed };
       }
     } catch {
@@ -68,7 +63,7 @@ export const SmsService = {
     } catch {
       // fallback
     }
-    return { amount: 577, status: 'عملیات موفق' };
+    return { amount: 0, status: 'عدم دسترسی به وب‌سرویس ملی‌پیامک' };
   },
 
   saveSettings(settings: Partial<SmsSettings>): SmsSettings {

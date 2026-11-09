@@ -1016,16 +1016,13 @@ export const ImplantTreatmentLandingPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
-            <Link to="/about-us" className="hover:text-teal-700">
+            <Link to="/page/about-us" className="hover:text-teal-700">
               درباره ما
             </Link>
-            <Link to="/terms" className="hover:text-teal-700">
+            <Link to="/page/terms" className="hover:text-teal-700">
               قوانین و تعهدات
             </Link>
-            <Link to="/privacy" className="hover:text-teal-700">
-              حریم خصوصی
-            </Link>
-            <Link to="/contact" className="hover:text-teal-700">
+            <Link to="/page/contact" className="hover:text-teal-700">
               تماس با ما
             </Link>
           </div>

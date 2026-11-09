@@ -145,7 +145,7 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
             کد یا نام مستعار پزشک در سیستم ثبت نشده است یا اصلاح گردیده است.
           </p>
           <Link
-            to="/dentists"
+            to="/directory"
             className="px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl inline-block"
           >
             مشاهده دایرکتوری پزشکان
@@ -260,7 +260,7 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
               صفحه اصلی
             </Link>
             <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
-            <Link to="/dentists" className="text-slate-500 hover:text-emerald-700 transition-colors">
+            <Link to="/directory" className="text-slate-500 hover:text-emerald-700 transition-colors">
               دایرکتوری جراحان
             </Link>
             <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
@@ -292,7 +292,7 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
               <Share2 className="w-3.5 h-3.5" />
             </button>
             <Link
-              to="/dentists"
+              to="/directory"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
             >
               <ArrowRight className="w-3.5 h-3.5" />

@@ -137,7 +137,7 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const canonicalUrl = `https://dentalmap.ir/component/${encodeURIComponent(component.ref_code)}`;
+  const canonicalUrl = `https://dentalmap.ir/parts/ref/${encodeURIComponent(component.ref_code)}`;
 
   // Schema.org MedicalDevice / Product
   const structuredData = {
