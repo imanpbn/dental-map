@@ -4,6 +4,7 @@ import {
   Clinic,
   DentalComponent,
   WordPressBlogPost,
+  WordPressPage,
   ClinicalPackage,
   SiteSettings
 } from '../types';
@@ -99,6 +100,7 @@ export const SupabaseSyncService = {
     clinics?: Clinic[];
     components?: DentalComponent[];
     blogPosts?: WordPressBlogPost[];
+    pages?: WordPressPage[];
     packages?: ClinicalPackage[];
     settings?: SiteSettings;
   } | null> {
@@ -112,6 +114,7 @@ export const SupabaseSyncService = {
         clinicsRes,
         componentsRes,
         blogPostsRes,
+        pagesRes,
         packagesRes,
         settingsRes
       ] = await Promise.allSettled([
@@ -119,6 +122,7 @@ export const SupabaseSyncService = {
         supabase.from('clinics').select('*'),
         supabase.from('components').select('*'),
         supabase.from('blog_posts').select('*'),
+        supabase.from('pages').select('*'),
         supabase.from('clinical_packages').select('*'),
         supabase.from('site_settings').select('*').limit(1).maybeSingle()
       ]);
@@ -137,6 +141,10 @@ export const SupabaseSyncService = {
 
       if (blogPostsRes.status === 'fulfilled' && blogPostsRes.value.data && blogPostsRes.value.data.length > 0) {
         results.blogPosts = blogPostsRes.value.data;
+      }
+
+      if (pagesRes.status === 'fulfilled' && pagesRes.value.data && pagesRes.value.data.length > 0) {
+        results.pages = pagesRes.value.data;
       }
 
       if (packagesRes.status === 'fulfilled' && packagesRes.value.data && packagesRes.value.data.length > 0) {
@@ -279,6 +287,70 @@ export const SupabaseSyncService = {
     }
   },
 
+  // --- WordPress / CMS Pages Sync ---
+  async syncPage(page: WordPressPage): Promise<boolean> {
+    if (!supabase) return false;
+    try {
+      const { error } = await supabase.from('pages').upsert([page]);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.warn('Supabase syncPage failed:', err);
+      return false;
+    }
+  },
+
+  async deletePage(id: number): Promise<boolean> {
+    if (!supabase) return false;
+    try {
+      const { error } = await supabase.from('pages').delete().eq('id', id);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.warn('Supabase deletePage failed:', err);
+      return false;
+    }
+  },
+
+  // --- Paginated Fetching for Scalability (1000+ Doctors / Components) ---
+  async fetchDoctorsPaginated(page: number = 1, pageSize: number = 12): Promise<{ data: Doctor[]; count: number }> {
+    if (!supabase) return { data: [], count: 0 };
+    try {
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+      const { data, count, error } = await supabase
+        .from('doctors')
+        .select('*', { count: 'exact' })
+        .range(from, to)
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+      return { data: data || [], count: count || 0 };
+    } catch (err) {
+      console.warn('Supabase fetchDoctorsPaginated failed:', err);
+      return { data: [], count: 0 };
+    }
+  },
+
+  async fetchComponentsPaginated(page: number = 1, pageSize: number = 20): Promise<{ data: DentalComponent[]; count: number }> {
+    if (!supabase) return { data: [], count: 0 };
+    try {
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+      const { data, count, error } = await supabase
+        .from('components')
+        .select('*', { count: 'exact' })
+        .range(from, to)
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+      return { data: data || [], count: count || 0 };
+    } catch (err) {
+      console.warn('Supabase fetchComponentsPaginated failed:', err);
+      return { data: [], count: 0 };
+    }
+  },
+
   // --- Site Settings Sync ---
   async syncSettings(settings: SiteSettings): Promise<boolean> {
     if (!supabase) return false;
@@ -300,6 +372,7 @@ export const SupabaseSyncService = {
     clinics: Clinic[];
     components: DentalComponent[];
     blogPosts: WordPressBlogPost[];
+    pages?: WordPressPage[];
     packages: ClinicalPackage[];
     settings: SiteSettings;
   }): Promise<{ success: boolean; counts: Record<string, number>; message: string }> {
@@ -316,6 +389,7 @@ export const SupabaseSyncService = {
       clinics: 0,
       components: 0,
       blogPosts: 0,
+      pages: 0,
       packages: 0,
       settings: 0
     };
@@ -349,7 +423,13 @@ export const SupabaseSyncService = {
         if (!error) counts.blogPosts = data.blogPosts.length;
       }
 
-      // 6. Packages
+      // 6. Pages
+      if (data.pages && data.pages.length > 0) {
+        const { error } = await supabase.from('pages').upsert(data.pages);
+        if (!error) counts.pages = data.pages.length;
+      }
+
+      // 7. Packages
       if (data.packages.length > 0) {
         const { error } = await supabase.from('clinical_packages').upsert(data.packages);
         if (!error) counts.packages = data.packages.length;

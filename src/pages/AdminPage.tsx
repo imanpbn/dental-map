@@ -681,9 +681,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({
               <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
                   <div>
-                    <h2 className="text-base sm:text-lg font-black text-slate-900">
-                      درود، {currentUser.full_name} خوش آمدید!
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-base sm:text-lg font-black text-slate-900">
+                        درود، {currentUser.full_name} خوش آمدید!
+                      </h2>
+                      {isSupabaseConfigured() ? (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          پایگاه‌داده ابری: متصل به PostgreSQL
+                        </span>
+                      ) : (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                          حالت مستقل (کش محلی فعال)
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs text-slate-500 mt-0.5 block">
                       مدیریت آنی مقالات، جراحان، کاتالوگ قطعات و کلینیک‌های دنتال مپ
                     </span>
@@ -1022,6 +1035,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                   const updated = pages.filter((p) => p.id !== page.id);
                                   setPages(updated);
                                   CmsStorageService.savePages(updated);
+                                  SupabaseSyncService.deletePage(page.id);
                                   showToast('برگه با موفقیت حذف گردید.');
                                 }
                               }}
@@ -2180,6 +2194,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   );
                   setPages(updated);
                   CmsStorageService.savePages(updated);
+                  const target = updated.find((p) => p.id === editingPage.id);
+                  if (target) SupabaseSyncService.syncPage(target);
                   showToast('برگه با موفقیت بروزرسانی شد.');
                 } else {
                   const newPage: WordPressPage = {
@@ -2198,6 +2214,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   const updated = [newPage, ...pages];
                   setPages(updated);
                   CmsStorageService.savePages(updated);
+                  SupabaseSyncService.syncPage(newPage);
                   showToast('برگه تازه با موفقیت ایجاد و منتشر گردید.');
                 }
                 setIsPageModalOpen(false);

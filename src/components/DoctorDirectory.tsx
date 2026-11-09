@@ -101,6 +101,10 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
   const [savedDoctorIds, setSavedDoctorIds] = useState<Set<number>>(new Set());
   const [contactedClinicId, setContactedClinicId] = useState<number | null>(null);
 
+  // Pagination states for smooth scaling
+  const [visibleDoctorCount, setVisibleDoctorCount] = useState(12);
+  const [visibleClinicCount, setVisibleClinicCount] = useState(12);
+
   // Available districts for selected city
   const availableDistricts = useMemo(() => {
     if (selectedCityId === 'all') return districts;
@@ -796,7 +800,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                     </button>
                   </div>
                 ) : (
-                  sortedDoctors.map((doc) => {
+                  sortedDoctors.slice(0, visibleDoctorCount).map((doc) => {
                     const specialty = specialties.find((s) => s.id === doc.specialty_id);
                     const isSaved = savedDoctorIds.has(doc.id);
                     
@@ -959,6 +963,28 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                     );
                   })
                 )}
+
+                {/* Pagination Controls */}
+                {sortedDoctors.length > 12 && (
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+                    <div>
+                      <span>نمایش </span>
+                      <strong className="text-slate-800 font-bold">{Math.min(visibleDoctorCount, sortedDoctors.length)}</strong>
+                      <span> از </span>
+                      <strong className="text-slate-800 font-bold">{sortedDoctors.length}</strong>
+                      <span> پزشک متخصص</span>
+                    </div>
+
+                    {visibleDoctorCount < sortedDoctors.length && (
+                      <button
+                        onClick={() => setVisibleDoctorCount((prev) => prev + 12)}
+                        className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                      >
+                        نمایش ۱۲ دندانپزشک بعدی
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -975,7 +1001,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                     </h4>
                   </div>
                 ) : (
-                  filteredClinics.map((clinic) => {
+                  filteredClinics.slice(0, visibleClinicCount).map((clinic) => {
                     const city = cities.find((c) => c.id === clinic.city_id);
                     const district = districts.find((d) => d.id === clinic.district_id);
                     const clinicInsIds = clinicInsurances
@@ -1041,6 +1067,28 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                       </div>
                     );
                   })
+                )}
+
+                {/* Pagination Controls for Clinics */}
+                {filteredClinics.length > 12 && (
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+                    <div>
+                      <span>نمایش </span>
+                      <strong className="text-slate-800 font-bold">{Math.min(visibleClinicCount, filteredClinics.length)}</strong>
+                      <span> از </span>
+                      <strong className="text-slate-800 font-bold">{filteredClinics.length}</strong>
+                      <span> کلینیک تخصصی</span>
+                    </div>
+
+                    {visibleClinicCount < filteredClinics.length && (
+                      <button
+                        onClick={() => setVisibleClinicCount((prev) => prev + 12)}
+                        className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                      >
+                        نمایش ۱۲ کلینیک بعدی
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             )}

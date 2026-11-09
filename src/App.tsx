@@ -109,6 +109,10 @@ const AppContent: React.FC = () => {
           setBlogPosts(remote.blogPosts);
           CmsStorageService.saveBlogPosts(remote.blogPosts);
         }
+        if (remote.pages && remote.pages.length > 0) {
+          setPages(remote.pages);
+          CmsStorageService.savePages(remote.pages);
+        }
         if (remote.packages && remote.packages.length > 0) {
           setPackages(remote.packages);
           CmsStorageService.savePackages(remote.packages);
