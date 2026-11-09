@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import {
   BookOpen,
   Clock,
@@ -43,8 +44,30 @@ export const BlogPage: React.FC<BlogPageProps> = ({ posts }) => {
 
     return (
       <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-        {/* Canonical meta simulation */}
-        <link rel="canonical" href={`https://dentalmap.ir/blog/${post.slug}`} />
+        <SEO
+          title={post.title}
+          description={post.excerpt || post.content.slice(0, 160)}
+          canonical={`/blog/${post.slug}`}
+          ogImage={post.featured_image}
+          ogType="article"
+          jsonLd={{
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            image: post.featured_image,
+            author: {
+              '@type': 'Person',
+              name: post.author
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'دنتال مپ (Dental Map)',
+              url: 'https://dentalmap.ir'
+            },
+            datePublished: post.published_at,
+            description: post.excerpt || post.content.slice(0, 160)
+          }}
+        />
 
         {/* Top Breadcrumbs */}
         <div className="bg-white border-b border-slate-200 py-3 px-4 sticky top-0 z-30 shadow-2xs">
@@ -135,7 +158,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({ posts }) => {
   // Blog Archive Page (/blog)
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      <link rel="canonical" href="https://dentalmap.ir/blog" />
+      <SEO
+        title="وبلاگ آموزشی و دانشنامه تخصصی ایمپلنت دندان"
+        description="مجموعه مقالات علمی تاییدشده توسط متخصصین جراحی فک و صورت در خصوص متالورژی تیتانیوم، استئواینتگریشن، کدهای رفرنس و پاسپورت اصالت قطعات."
+        canonical="/blog"
+        keywords="مقالات ایمپلنت دندان, بیومکانیک فک, استاندارد ISO 14801, مورس تیپر"
+      />
 
       {/* Header */}
       <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white py-12 px-4 border-b border-slate-800">

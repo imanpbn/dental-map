@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import {
   FileText,
   Calendar,
@@ -68,6 +69,12 @@ export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
 
   return (
     <div className="min-h-screen bg-slate-50 dir-rtl pb-20">
+      <SEO
+        title={pageData.title}
+        description={pageData.content.replace(/<[^>]*>?/gm, '').slice(0, 160) || 'سامانه جامع اصالت قطعات و دایرکتوری ایمپلنت دندان دنتال مپ'}
+        canonical={`/page/${pageData.slug}`}
+        ogType="article"
+      />
       {/* Breadcrumb Header */}
       <div className="bg-white border-b border-slate-200 py-3.5 px-4 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between text-xs text-slate-500">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import {
   Sparkles,
   Trophy,
@@ -529,6 +530,12 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-teal-50/20 to-slate-100 text-slate-800 dir-rtl pb-16">
+      <SEO
+        title="آزمون هوشمند آگاهی و انتخاب ایمپلنت دندان | کارنامه تخصصی دنتال‌مپ"
+        description="آزمون تعاملی و هوشمند سنجش آگاهی در جراحی ایمپلنت. دریافت کارنامه بیومکانیک اختصاصی، مشاوره قطعات و چک‌لیست سوالات پیش از جراحی از پزشک."
+        canonical="/quiz"
+        keywords="آزمون ایمپلنت, تست هوشمند دندانپزشکی, انتخاب ایمپلنت مناسب, کارنامه سلامت دهان"
+      />
       {/* Toast Notification */}
       {toastMsg && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 border border-slate-700 animate-bounce">

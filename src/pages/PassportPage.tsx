@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ArrowRight, FileCheck2 } from 'lucide-react';
+import { SEO } from '../components/SEO';
 import { PassportSimulator } from '../components/PassportSimulator';
 import { ToothPassportRecord } from '../types';
 
@@ -15,7 +16,12 @@ export const PassportPage: React.FC<PassportPageProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      <link rel="canonical" href="https://dentalmap.ir/passport" />
+      <SEO
+        title="شناسنامه و پاسپورت دیجیتال فک ۳۲ دندان (FDI) | استعلام آنلاین قطعات"
+        description="سامانه صدور و استعلام پاسپورت اصالت ۳۲ دندان فک طبق استاندارد FDI. ثبت آنلاین برند فیکسچر، شماره لات (LOT) و کد رفرنس جهانی قطعه."
+        canonical="/passport"
+        keywords="پاسپورت ایمپلنت, استاندارد FDI, استعلام قطعات ایمپلنت, شناسنامه دندان"
+      />
 
       {/* Top Bar */}
       <div className="bg-white border-b border-slate-200 py-3 px-4 sticky top-0 z-30 shadow-2xs">

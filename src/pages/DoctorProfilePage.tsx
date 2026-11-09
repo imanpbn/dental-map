@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import {
   ArrowRight,
   ShieldCheck,
@@ -246,10 +247,13 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      <link rel="canonical" href={canonicalUrl} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      <SEO
+        title={`دکتر ${doctor.first_name} ${doctor.last_name} | ${specialty?.title || 'جراح ایمپلنتولوژیست'}`}
+        description={doctor.bio || `پروفایل رسمی و نظرات بیماران دکتر ${doctor.first_name} ${doctor.last_name}، جراح ایمپلنت در دنتال‌مپ با کد نظام پزشکی ${doctor.medical_council_code}.`}
+        canonical={canonicalUrl}
+        ogImage={doctor.avatar}
+        ogType="profile"
+        jsonLd={structuredData}
       />
 
       {/* Top Breadcrumb Navigation */}

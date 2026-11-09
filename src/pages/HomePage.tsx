@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { HeroSection } from '../components/HeroSection';
 import { PlatformServicesSection } from '../components/PlatformServicesSection';
 import { TopSpecialistsBanner } from '../components/TopSpecialistsBanner';
@@ -93,6 +94,11 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="w-full px-[5%]">
+      <SEO
+        title="دنتال مپ (Dental Map) | پلتفرم شفافیت، اصالت قطعات و دایرکتوری ایمپلنت دندان ایران"
+        description="سامانه جامع شفافیت و اصالت قطعات ایمپلنت دندان، دایرکتوری تخصصی جراحان فک و صورت و دندانپزشکان ایران، استعلام کد REF فیکسچر و شناسنامه دیجیتال ۳۲ دندان (FDI)."
+        canonical="/"
+      />
       {/* 1. Hero Section */}
       <HeroSection
         onSearchClick={() => handleNavigate('parts-catalog')}
