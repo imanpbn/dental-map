@@ -51,13 +51,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <a
-                href="#parts-catalog"
-                className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-2 transition-all hover:scale-[1.02]"
+              <button
+                type="button"
+                onClick={onSearchClick}
+                className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
               >
                 <Search className="w-4 h-4" />
                 <span>کاتالوگ قطعات و استعلام کد REF</span>
-              </a>
+              </button>
 
               <button
                 onClick={onOpenPassport}

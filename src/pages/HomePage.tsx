@@ -3,13 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { HeroSection } from '../components/HeroSection';
 import { PlatformServicesSection } from '../components/PlatformServicesSection';
-import { TopSpecialistsBanner } from '../components/TopSpecialistsBanner';
 import { TrustGuaranteesBanner } from '../components/TrustGuaranteesBanner';
-import { ClinicalPackages } from '../components/ClinicalPackages';
-import { ComparisonMatrix } from '../components/ComparisonMatrix';
-import { BiomechanicsTranslator } from '../components/BiomechanicsTranslator';
 import { ImplantTestHeroBanner } from '../components/ImplantTestHeroBanner';
-import { PassportSimulator } from '../components/PassportSimulator';
 import { BlogSection } from '../components/BlogSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { DentalMapRoutes } from '../utils/urlBuilder';
@@ -55,25 +50,7 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
-  components,
-  doctors,
-  clinics,
-  specialties,
-  cities,
-  districts,
-  insurances,
-  brands,
-  implantTypes,
-  clinicDoctors,
-  clinicInsurances,
-  doctorImplantTypes,
-  packages,
-  teethPassport,
-  leadValuations,
-  selectedCategory,
-  onSelectCategory,
-  onUpdateTooth,
-  onRecordLead
+  components
 }) => {
   const navigate = useNavigate();
 
@@ -84,6 +61,14 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
     if (sectionId === 'directory-section') {
       navigate('/directory');
+      return;
+    }
+    if (sectionId === 'parts-catalog') {
+      navigate('/parts');
+      return;
+    }
+    if (sectionId === 'biomechanics-section') {
+      navigate('/quiz');
       return;
     }
     const el = document.getElementById(sectionId);
@@ -107,50 +92,19 @@ export const HomePage: React.FC<HomePageProps> = ({
         featuredComponent={components[0]}
       />
 
-      {/* 2. Implant Test & Diagnostic Game Banner (دقیقاً زیر هیرو سکشن) */}
+      {/* 2. Implant Test & Diagnostic Game Banner */}
       <ImplantTestHeroBanner />
 
-      {/* 3. Top Specialists Banner (پزشکان تایید صلاحیت شده با استعلام نظام پزشکی) */}
-      <TopSpecialistsBanner
-        doctors={doctors}
-        onSelectDoctor={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
-        onBookClick={(doc) => navigate(DentalMapRoutes.doctorProfile(doc.medical_council_code, doc.slug))}
-      />
-
-      {/* 3. Passport Simulator (استاندارد جهانی فدراسیون بین‌المللی دندانپزشکی FDI و شناسنامه دیجیتال فک ۳۲ دندان) */}
-      <PassportSimulator
-        teeth={teethPassport}
-        onUpdateTooth={onUpdateTooth}
-      />
-
-      {/* 4. Platform Services (4 Cards) */}
+      {/* 3. Platform Services (4 Cards) */}
       <PlatformServicesSection onNavigate={handleNavigate} />
 
-      {/* 5. Trust Guarantees Ribbon */}
+      {/* 4. Trust Guarantees Ribbon */}
       <TrustGuaranteesBanner />
 
-      {/* 6. Clinical Packages (Bundled 4-in-1 Suites) */}
-      <ClinicalPackages
-        packages={packages}
-        onOrderPackage={() => {
-          window.location.href = 'tel:02188001144';
-        }}
-      />
-
-      {/* 9. Comparison Matrix (Brands & Micro-gap) */}
-      <ComparisonMatrix
-        brands={brands}
-        implantTypes={implantTypes}
-        onOpenNaxisGuide={() => navigate('/naxis-guide')}
-      />
-
-      {/* 10. Biomechanics Translator (D1-D4 Bone density & Everyday Analogies) */}
-      <BiomechanicsTranslator />
-
-      {/* 11. Blog Section */}
+      {/* 5. Blog Section */}
       <BlogSection onOpenNaxisGuide={() => navigate('/blog')} />
 
-      {/* 14. Testimonials Section */}
+      {/* 6. Testimonials Section */}
       <TestimonialsSection />
     </div>
   );
