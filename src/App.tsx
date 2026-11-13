@@ -1,27 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 
-// Pages
+// Pages - HomePage is loaded immediately for optimal first-paint speed
 import { HomePage } from './pages/HomePage';
-import { NaxisGuidePage } from './pages/NaxisGuidePage';
-import { AdminPage } from './pages/AdminPage';
-import { ComponentDetailPage } from './pages/ComponentDetailPage';
-import { DoctorProfilePage } from './pages/DoctorProfilePage';
-import { DentistsByLocationPage } from './pages/DentistsByLocationPage';
-import { SpecialtyByLocationPage } from './pages/SpecialtyByLocationPage';
-import { ClinicsByLocationPage } from './pages/ClinicsByLocationPage';
-import { ClinicProfilePage } from './pages/ClinicProfilePage';
-import { BrandHubPage } from './pages/BrandHubPage';
-import { PartCategoryPage } from './pages/PartCategoryPage';
-import { BrandComparisonPage } from './pages/BrandComparisonPage';
-import { PassportPage } from './pages/PassportPage';
-import { BlogPage } from './pages/BlogPage';
-import { ImplantTestPage } from './pages/ImplantTestPage';
-import { CustomPageView } from './pages/CustomPageView';
-import { DirectoryPage } from './pages/DirectoryPage';
-import { DoctorJoinPage } from './pages/DoctorJoinPage';
+
+// Lazy-loaded pages for optimized initial bundle & performance
+const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const DoctorProfilePage = lazy(() => import('./pages/DoctorProfilePage').then(m => ({ default: m.DoctorProfilePage })));
+const ImplantTestPage = lazy(() => import('./pages/ImplantTestPage').then(m => ({ default: m.ImplantTestPage })));
+const ClinicProfilePage = lazy(() => import('./pages/ClinicProfilePage').then(m => ({ default: m.ClinicProfilePage })));
+const ComponentDetailPage = lazy(() => import('./pages/ComponentDetailPage').then(m => ({ default: m.ComponentDetailPage })));
+const DoctorJoinPage = lazy(() => import('./pages/DoctorJoinPage').then(m => ({ default: m.DoctorJoinPage })));
+const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
+const DirectoryPage = lazy(() => import('./pages/DirectoryPage').then(m => ({ default: m.DirectoryPage })));
+const PartCategoryPage = lazy(() => import('./pages/PartCategoryPage').then(m => ({ default: m.PartCategoryPage })));
+const DentistsByLocationPage = lazy(() => import('./pages/DentistsByLocationPage').then(m => ({ default: m.DentistsByLocationPage })));
+const SpecialtyByLocationPage = lazy(() => import('./pages/SpecialtyByLocationPage').then(m => ({ default: m.SpecialtyByLocationPage })));
+const ClinicsByLocationPage = lazy(() => import('./pages/ClinicsByLocationPage').then(m => ({ default: m.ClinicsByLocationPage })));
+const BrandHubPage = lazy(() => import('./pages/BrandHubPage').then(m => ({ default: m.BrandHubPage })));
+const BrandComparisonPage = lazy(() => import('./pages/BrandComparisonPage').then(m => ({ default: m.BrandComparisonPage })));
+const PassportPage = lazy(() => import('./pages/PassportPage').then(m => ({ default: m.PassportPage })));
+const NaxisGuidePage = lazy(() => import('./pages/NaxisGuidePage').then(m => ({ default: m.NaxisGuidePage })));
+const CustomPageView = lazy(() => import('./pages/CustomPageView').then(m => ({ default: m.CustomPageView })));
+
+const PageLoadingFallback: React.FC = () => (
+  <div className="min-h-[50vh] flex items-center justify-center p-8">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+      <span className="text-xs text-slate-500 font-medium">در حال بارگذاری صفحه...</span>
+    </div>
+  </div>
+);
 
 import { DentalMapRoutes } from './utils/urlBuilder';
 
@@ -250,7 +261,8 @@ const AppContent: React.FC = () => {
 
       {/* 2. Routes (Zero-Collision SEO URL Architecture) */}
       <main className="flex-1 w-full max-w-full overflow-x-hidden">
-        <Routes>
+        <Suspense fallback={<PageLoadingFallback />}>
+          <Routes>
           {/* Main Landing */}
           <Route
             path="/"
@@ -695,6 +707,7 @@ const AppContent: React.FC = () => {
             }
           />
         </Routes>
+        </Suspense>
       </main>
 
       {/* 3. Global Footer (hidden on admin panel) */}
