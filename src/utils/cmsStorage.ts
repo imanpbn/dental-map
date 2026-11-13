@@ -27,7 +27,7 @@ const KEYS = {
   DOCTORS: 'dentalmap_cms_doctors_v1',
   CLINICS: 'dentalmap_cms_clinics_v1',
   COMPONENTS: 'dentalmap_cms_components_v1',
-  BLOG_POSTS: 'dentalmap_cms_blog_posts_v1',
+  BLOG_POSTS: 'dentalmap_cms_blog_posts_v2',
   PAGES: 'dentalmap_cms_pages_v1',
   PACKAGES: 'dentalmap_cms_packages_v1',
   BRANDS: 'dentalmap_cms_brands_v1',
@@ -85,11 +85,18 @@ export const CmsStorageService = {
     localStorage.setItem(KEYS.COMPONENTS, JSON.stringify(components));
   },
 
-  // Blog Posts
+  // Blog Posts (Headless WordPress)
   getBlogPosts(): WordPressBlogPost[] {
     try {
       const data = localStorage.getItem(KEYS.BLOG_POSTS);
-      return data ? JSON.parse(data) : initialBlogPosts;
+      const posts: WordPressBlogPost[] = data ? JSON.parse(data) : initialBlogPosts;
+      // Filter out any legacy hardcoded mock posts
+      const legacyMockSlugs = new Set([
+        'iso-14801-fatigue-test-earthquake-analogy',
+        'morse-taper-vs-flat-hex-microgap',
+        'implant-passport-guide'
+      ]);
+      return posts.filter((p) => !legacyMockSlugs.has(p.slug));
     } catch {
       return initialBlogPosts;
     }

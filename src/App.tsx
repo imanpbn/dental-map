@@ -65,6 +65,7 @@ import {
 } from './types';
 import { CmsStorageService, defaultSiteSettings } from './utils/cmsStorage';
 import { SupabaseSyncService } from './utils/supabaseClient';
+import { WordPressService } from './utils/wordPressClient';
 
 // App Wrapper to use Router hooks
 const AppContent: React.FC = () => {
@@ -98,10 +99,40 @@ const AppContent: React.FC = () => {
   const [leadValuations, setLeadValuations] = useState<Record<number, LeadValuationRecord>>(initialLeadValuations);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Supabase Remote Sync on Mount
+  // Supabase & WordPress Remote Sync on Mount
   useEffect(() => {
     let isMounted = true;
     const loadRemoteData = async () => {
+      // 1. Fetch Headless WordPress Live Posts & Pages
+      try {
+        const [wpPostsResult, wpPagesResult] = await Promise.allSettled([
+          WordPressService.fetchPosts({ perPage: 50 }),
+          WordPressService.fetchPages()
+        ]);
+
+        if (isMounted) {
+          if (wpPostsResult.status === 'fulfilled' && wpPostsResult.value.length > 0) {
+            const liveWpPosts = wpPostsResult.value;
+            setBlogPosts(liveWpPosts);
+            CmsStorageService.saveBlogPosts(liveWpPosts);
+          }
+
+          if (wpPagesResult.status === 'fulfilled' && wpPagesResult.value.length > 0) {
+            const liveWpPages = wpPagesResult.value;
+            setPages((prevPages) => {
+              const wpSlugs = new Set(liveWpPages.map((p) => p.slug));
+              const nonColliding = prevPages.filter((p) => !wpSlugs.has(p.slug));
+              const merged = [...liveWpPages, ...nonColliding];
+              CmsStorageService.savePages(merged);
+              return merged;
+            });
+          }
+        }
+      } catch (wpErr) {
+        console.warn('Initial Headless WordPress sync skipped:', wpErr);
+      }
+
+      // 2. Fetch Supabase Data
       try {
         const remote = await SupabaseSyncService.fetchRemoteData();
         if (!isMounted || !remote) return;
@@ -117,14 +148,6 @@ const AppContent: React.FC = () => {
         if (remote.components && remote.components.length > 0) {
           setComponents(remote.components);
           CmsStorageService.saveComponents(remote.components);
-        }
-        if (remote.blogPosts && remote.blogPosts.length > 0) {
-          setBlogPosts(remote.blogPosts);
-          CmsStorageService.saveBlogPosts(remote.blogPosts);
-        }
-        if (remote.pages && remote.pages.length > 0) {
-          setPages(remote.pages);
-          CmsStorageService.savePages(remote.pages);
         }
         if (remote.packages && remote.packages.length > 0) {
           setPackages(remote.packages);
@@ -234,6 +257,7 @@ const AppContent: React.FC = () => {
             element={
               <HomePage
                 components={components}
+                blogPosts={blogPosts}
                 doctors={doctors}
                 clinics={clinics}
                 specialties={initialSpecialties}

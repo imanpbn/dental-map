@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import {
@@ -10,10 +10,12 @@ import {
   Share2,
   Clock,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import { WordPressPage } from '../types';
 import { ImplantTreatmentLandingPage } from './ImplantTreatmentLandingPage';
+import { WordPressService, normalizeSlug } from '../utils/wordPressClient';
 
 interface CustomPageViewProps {
   pages: WordPressPage[];
@@ -22,16 +24,49 @@ interface CustomPageViewProps {
 export const CustomPageView: React.FC<CustomPageViewProps> = ({ pages }) => {
   const { pageSlug } = useParams<{ pageSlug: string }>();
   const navigate = useNavigate();
+  const [remotePage, setRemotePage] = useState<WordPressPage | null>(null);
+  const [isLoadingRemote, setIsLoadingRemote] = useState<boolean>(false);
 
-  const cleanSlug = (pageSlug || '').toLowerCase().trim();
-  const page = pages.find((p) => p.slug.toLowerCase() === cleanSlug);
+  const cleanSlug = normalizeSlug(pageSlug || '');
+  const localPage = pages.find((p) => normalizeSlug(p.slug) === cleanSlug);
 
   // اگر قالب برگه از نوع لندینگ پیج اختصاصی باشد یا آدرس treatment باشد، لندینگ درمان رندر می‌شود
-  if (page?.template === 'landing' || cleanSlug === 'treatment' || cleanSlug === 'implant-treatment') {
+  if (localPage?.template === 'landing' || cleanSlug === 'treatment' || cleanSlug === 'implant-treatment') {
     return <ImplantTreatmentLandingPage />;
   }
 
-  const activePage = page || (cleanSlug ? null : pages[0]);
+  // If not found in local state, fetch from WordPress API
+  useEffect(() => {
+    let isCancelled = false;
+    if (cleanSlug && !localPage && cleanSlug !== 'treatment' && cleanSlug !== 'implant-treatment') {
+      setIsLoadingRemote(true);
+      WordPressService.fetchPageBySlug(cleanSlug)
+        .then((fetched) => {
+          if (!isCancelled && fetched) {
+            setRemotePage(fetched);
+          }
+        })
+        .finally(() => {
+          if (!isCancelled) setIsLoadingRemote(false);
+        });
+    }
+    return () => {
+      isCancelled = true;
+    };
+  }, [cleanSlug, localPage]);
+
+  if (isLoadingRemote) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 dir-rtl">
+        <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center max-w-md w-full shadow-xs flex flex-col items-center">
+          <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mb-3" />
+          <h2 className="font-bold text-slate-800 text-sm">در حال دریافت برگه از وردپرس...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  const activePage = localPage || remotePage || (cleanSlug ? null : pages[0]);
 
   if (!activePage) {
     return (

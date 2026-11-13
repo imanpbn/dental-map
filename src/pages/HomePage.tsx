@@ -24,12 +24,14 @@ import {
   DentalComponent,
   ClinicalPackage,
   ToothPassportRecord,
-  LeadValuationRecord
+  LeadValuationRecord,
+  WordPressBlogPost
 } from '../types';
 
 interface HomePageProps {
   components: DentalComponent[];
-  doctors: Doctor[];
+  blogPosts?: WordPressBlogPost[];
+  doctors?: Doctor[];
   clinics: Clinic[];
   specialties: Specialty[];
   cities: City[];
@@ -50,7 +52,8 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
-  components
+  components,
+  blogPosts = []
 }) => {
   const navigate = useNavigate();
 
@@ -101,8 +104,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 4. Trust Guarantees Ribbon */}
       <TrustGuaranteesBanner />
 
-      {/* 5. Blog Section */}
-      <BlogSection onOpenNaxisGuide={() => navigate('/blog')} />
+      {/* 5. Blog Section (Dynamic Headless WordPress) */}
+      <BlogSection posts={blogPosts} onOpenNaxisGuide={() => navigate('/blog')} />
 
       {/* 6. Testimonials Section */}
       <TestimonialsSection />

@@ -211,27 +211,27 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
                 <a
-                  href="/blog/implant-passport-guide"
+                  href="/blog"
                   className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
                 >
                   <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
-                    راهنمای جامع پاسپورت اصالت ایمپلنت
+                    آخرین مقالات و آموزش‌های تخصصی وردپرس
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    بررسی شماره رفرنس (REF) و لات ساخت
+                    بررسی سیستم‌های ایمپلنت و استانداردهای متالورژی
                   </span>
                 </a>
               </li>
               <li>
                 <a
-                  href="/blog/morse-taper-vs-flat-hex-microgap"
+                  href="/quiz"
                   className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
                 >
                   <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
-                    تفاوت اتصال مورس تیپر با هگز تخت
+                    آزمون هوشمند انتخاب سیستم ایمپلنت
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    بررسی معضل میکروگپ و پایداری استخوان
+                    مشاوره بر اساس تراکم استخوان و بودجه
                   </span>
                 </a>
               </li>

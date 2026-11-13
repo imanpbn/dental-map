@@ -74,6 +74,7 @@ import { initialCities, initialSpecialties } from '../initialData';
 import { AdminAuthService, AdminAccountRecord } from '../utils/auth';
 import { CmsStorageService, defaultSiteSettings } from '../utils/cmsStorage';
 import { SupabaseSyncService, isSupabaseConfigured, getSupabaseConfig } from '../utils/supabaseClient';
+import { WordPressService } from '../utils/wordPressClient';
 import { SmsService } from '../utils/smsService';
 import { AdminSidebar, AdminSection } from './admin/AdminSidebar';
 import { SmsSection } from './admin/SmsSection';
@@ -205,6 +206,39 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   const [isClinicModalOpen, setIsClinicModalOpen] = useState(false);
   const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
+
+  // WordPress Headless Sync State
+  const [isSyncingWp, setIsSyncingWp] = useState(false);
+  const [wpSyncMessage, setWpSyncMessage] = useState<{ success: boolean; text: string } | null>(null);
+
+  const handleSyncFromWordPress = async () => {
+    setIsSyncingWp(true);
+    setWpSyncMessage(null);
+    try {
+      const livePosts = await WordPressService.fetchPosts({ perPage: 50 });
+      if (livePosts.length > 0) {
+        setBlogPosts(livePosts);
+        CmsStorageService.saveBlogPosts(livePosts);
+        setWpSyncMessage({
+          success: true,
+          text: `همگام‌سازی موفق: ${livePosts.length} نوشته از وردپرس (cms.dentalmap.ir) با موفقیت دریافت شد.`
+        });
+      } else {
+        setWpSyncMessage({
+          success: false,
+          text: 'پاسخی از وردپرس دریافت شد، اما هیچ نوشته‌ای یافت نشد.'
+        });
+      }
+    } catch (err: any) {
+      setWpSyncMessage({
+        success: false,
+        text: `خطای ارتباط با وردپرس: ${err.message || 'شبکه در دسترس نیست'}`
+      });
+    } finally {
+      setIsSyncingWp(false);
+      setTimeout(() => setWpSyncMessage(null), 6000);
+    }
+  };
 
   // User Accounts
   const [accountsList, setAccountsList] = useState<AdminAccountRecord[]>(() =>
@@ -1052,6 +1086,59 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   <span>افزودن نوشته تازه</span>
                 </button>
               </div>
+
+              {/* WordPress Headless Connection Bar */}
+              <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-950">
+                        موتور وبلاگ وردپرس هدلس فعال است
+                      </span>
+                      <span className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-0.5 rounded-full font-mono">
+                        cms.dentalmap.ir
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 mt-0.5">
+                      مقالات منتشرشده در وردپرس، به‌طور خودکار در مسیر dentalmap.ir/blog نمایش داده می‌شوند.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={handleSyncFromWordPress}
+                    disabled={isSyncingWp}
+                    className="px-3 py-1.5 bg-white hover:bg-slate-50 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isSyncingWp ? 'animate-spin' : ''}`} />
+                    <span>{isSyncingWp ? 'در حال دریافت...' : 'تازه‌سازی از وردپرس'}</span>
+                  </button>
+
+                  <a
+                    href="https://cms.dentalmap.ir/wp-admin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>ورود به پیشخوان وردپرس</span>
+                  </a>
+                </div>
+              </div>
+
+              {wpSyncMessage && (
+                <div
+                  className={`p-3 rounded-xl text-xs font-bold ${
+                    wpSyncMessage.success
+                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                      : 'bg-rose-100 text-rose-900 border border-rose-200'
+                  }`}
+                >
+                  {wpSyncMessage.text}
+                </div>
+              )}
 
               {/* Table of Posts */}
               <div className="overflow-x-auto">
