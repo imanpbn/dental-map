@@ -35,6 +35,7 @@ const PageLoadingFallback: React.FC = () => (
 );
 
 import { DentalMapRoutes } from './utils/urlBuilder';
+import { DataProvider, useData } from './context/DataContext';
 
 // Initial Seed Data
 import {
@@ -84,162 +85,36 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith('/admin');
 
-  // CMS-Managed Data States with localStorage persistence
-  const [components, setComponents] = useState<DentalComponent[]>(() => CmsStorageService.getComponents());
-  const [doctors, setDoctors] = useState<Doctor[]>(() => CmsStorageService.getDoctors());
-  const [clinics, setClinics] = useState<Clinic[]>(() => CmsStorageService.getClinics());
-  const [blogPosts, setBlogPosts] = useState<WordPressBlogPost[]>(() => CmsStorageService.getBlogPosts());
-  const [pages, setPages] = useState<WordPressPage[]>(() => CmsStorageService.getPages());
-  const [packages, setPackages] = useState<ClinicalPackage[]>(() => CmsStorageService.getPackages());
-  const [brands, setBrands] = useState<ImplantBrand[]>(() => CmsStorageService.getBrands());
-  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => CmsStorageService.getSettings());
-  const [doctorApplications, setDoctorApplications] = useState<DoctorApplication[]>(() =>
-    CmsStorageService.getDoctorApplications()
-  );
-
-  const handleAddDoctorApplication = (newApp: DoctorApplication) => {
-    setDoctorApplications((prev) => {
-      const next = [newApp, ...prev.filter((a) => a.id !== newApp.id)];
-      CmsStorageService.saveDoctorApplications(next);
-      return next;
-    });
-  };
-
-  const [clinicInsurances, setClinicInsurances] = useState<ClinicInsurance[]>(initialClinicInsurances);
-  const [teethPassport, setTeethPassport] = useState<ToothPassportRecord[]>(initial32TeethPassport);
-  const [leadValuations, setLeadValuations] = useState<Record<number, LeadValuationRecord>>(initialLeadValuations);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
-  // Supabase & WordPress Remote Sync on Mount
-  useEffect(() => {
-    let isMounted = true;
-    const loadRemoteData = async () => {
-      // 1. Fetch Headless WordPress Live Posts & Pages
-      try {
-        const [wpPostsResult, wpPagesResult] = await Promise.allSettled([
-          WordPressService.fetchPosts({ perPage: 50 }),
-          WordPressService.fetchPages()
-        ]);
-
-        if (isMounted) {
-          if (wpPostsResult.status === 'fulfilled' && wpPostsResult.value.length > 0) {
-            const liveWpPosts = wpPostsResult.value;
-            setBlogPosts(liveWpPosts);
-            CmsStorageService.saveBlogPosts(liveWpPosts);
-          }
-
-          if (wpPagesResult.status === 'fulfilled' && wpPagesResult.value.length > 0) {
-            const liveWpPages = wpPagesResult.value;
-            setPages((prevPages) => {
-              const wpSlugs = new Set(liveWpPages.map((p) => p.slug));
-              const nonColliding = prevPages.filter((p) => !wpSlugs.has(p.slug));
-              const merged = [...liveWpPages, ...nonColliding];
-              CmsStorageService.savePages(merged);
-              return merged;
-            });
-          }
-        }
-      } catch (wpErr) {
-        console.warn('Initial Headless WordPress sync skipped:', wpErr);
-      }
-
-      // 2. Fetch Supabase Data
-      try {
-        const remote = await SupabaseSyncService.fetchRemoteData();
-        if (!isMounted || !remote) return;
-
-        if (remote.doctors && remote.doctors.length > 0) {
-          setDoctors(remote.doctors);
-          CmsStorageService.saveDoctors(remote.doctors);
-        }
-        if (remote.clinics && remote.clinics.length > 0) {
-          setClinics(remote.clinics);
-          CmsStorageService.saveClinics(remote.clinics);
-        }
-        if (remote.components && remote.components.length > 0) {
-          setComponents(remote.components);
-          CmsStorageService.saveComponents(remote.components);
-        }
-        if (remote.packages && remote.packages.length > 0) {
-          setPackages(remote.packages);
-          CmsStorageService.savePackages(remote.packages);
-        }
-        if (remote.settings) {
-          setSiteSettings(remote.settings);
-          CmsStorageService.saveSettings(remote.settings);
-        }
-      } catch (err) {
-        console.warn('Initial remote sync skipped:', err);
-      }
-    };
-
-    loadRemoteData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Lead Valuation Engine: newValuation = leads * 350,000 Toman
-  const handleRecordLead = (clinicId: number, doctorId?: number) => {
-    setLeadValuations((prev) => {
-      const existing = prev[clinicId] || {
-        clinic_id: clinicId,
-        doctor_id: doctorId,
-        lead_count: 0,
-        total_valuation_toman: 0,
-        last_lead_at: ''
-      };
-
-      const newCount = existing.lead_count + 1;
-      const newValuation = newCount * 350000;
-
-      const dateStr = new Date().toLocaleDateString('fa-IR', {
-        month: 'numeric',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-
-      return {
-        ...prev,
-        [clinicId]: {
-          ...existing,
-          lead_count: newCount,
-          total_valuation_toman: newValuation,
-          last_lead_at: dateStr
-        }
-      };
-    });
-  };
-
-  // Admin Actions
-  const handleToggleDoctorVerification = (doctorId: number) => {
-    setDoctors((prev) =>
-      prev.map((d) => (d.id === doctorId ? { ...d, verified: !d.verified } : d))
-    );
-  };
-
-  const handleToggleClinicInsurance = (clinicId: number, insuranceId: number) => {
-    setClinicInsurances((prev) => {
-      const exists = prev.some(
-        (ci) => ci.clinic_id === clinicId && ci.insurance_id === insuranceId
-      );
-      if (exists) {
-        return prev.filter(
-          (ci) => !(ci.clinic_id === clinicId && ci.insurance_id === insuranceId)
-        );
-      } else {
-        return [...prev, { clinic_id: clinicId, insurance_id: insuranceId }];
-      }
-    });
-  };
-
-  // Update Tooth in FDI 32 Passport
-  const handleUpdateTooth = (updated: ToothPassportRecord) => {
-    setTeethPassport((prev) =>
-      prev.map((t) => (t.tooth_number === updated.tooth_number ? updated : t))
-    );
-  };
+  const {
+    doctors,
+    setDoctors,
+    clinics,
+    setClinics,
+    components,
+    setComponents,
+    blogPosts,
+    setBlogPosts,
+    pages,
+    setPages,
+    packages,
+    setPackages,
+    brands,
+    setBrands,
+    siteSettings,
+    setSiteSettings,
+    doctorApplications,
+    setDoctorApplications,
+    clinicInsurances,
+    teethPassport,
+    leadValuations,
+    selectedCategory,
+    setSelectedCategory,
+    handleAddDoctorApplication,
+    handleRecordLead,
+    handleToggleDoctorVerification,
+    handleToggleClinicInsurance,
+    handleUpdateTooth
+  } = useData();
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-500 selection:text-white overflow-x-hidden w-full max-w-full">
@@ -724,7 +599,9 @@ const AppContent: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <DataProvider>
+        <AppContent />
+      </DataProvider>
     </BrowserRouter>
   );
 };

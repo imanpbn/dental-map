@@ -192,16 +192,41 @@ export const WordPressService = {
   },
 
   /**
-   * Fetch list of blog posts with embedded media and taxonomy
+   * Fetch list of blog posts with embedded media, taxonomy, and TTL caching (10 minutes)
    */
   async fetchPosts(params?: {
     page?: number;
     perPage?: number;
     categoryId?: number;
     search?: string;
+    forceRefresh?: boolean;
   }): Promise<WordPressBlogPost[]> {
     const page = params?.page || 1;
     const perPage = params?.perPage || 20;
+    const CACHE_KEY = `dentalmap_wp_posts_cache_p${page}_pp${perPage}`;
+    const CACHE_TTL = 10 * 60 * 1000; // 10 minutes cache TTL
+
+    // Check localStorage cache if not forced and not a specific search/category query
+    if (!params?.forceRefresh && !params?.categoryId && !params?.search) {
+      try {
+        const cachedRaw = localStorage.getItem(CACHE_KEY);
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          if (
+            parsed &&
+            parsed.timestamp &&
+            Date.now() - parsed.timestamp < CACHE_TTL &&
+            Array.isArray(parsed.posts) &&
+            parsed.posts.length > 0
+          ) {
+            return parsed.posts;
+          }
+        }
+      } catch {
+        // Fallback to network fetch
+      }
+    }
+
     const url = new URL(`${WORDPRESS_API_BASE}/wp-json/wp/v2/posts`);
     url.searchParams.set('_embed', '1');
     url.searchParams.set('page', String(page));
@@ -226,7 +251,24 @@ export const WordPressService = {
     const data = await res.json();
     if (!Array.isArray(data)) return [];
 
-    return data.map(mapWordPressPost);
+    const mapped = data.map(mapWordPressPost);
+
+    // Save to cache
+    if (!params?.categoryId && !params?.search) {
+      try {
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            timestamp: Date.now(),
+            posts: mapped
+          })
+        );
+      } catch {
+        // Safe to ignore quota errors
+      }
+    }
+
+    return mapped;
   },
 
   /**
