@@ -10,18 +10,25 @@ import {
 } from '../types';
 
 // Detect Supabase credentials from various environment prefixes
-// Supports Vercel-Supabase Integration (NEXT_PUBLIC_*, SUPABASE_*), Vite (VITE_*)
+// Supports Vercel-Supabase Integration (NEXT_PUBLIC_*, SUPABASE_*), Vite (VITE_*), and Node.js process.env
+const env: Record<string, string | undefined> =
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? (import.meta.env as any)
+    : typeof process !== 'undefined' && process.env
+    ? process.env
+    : {};
+
 const supabaseUrl = (
-  import.meta.env.VITE_SUPABASE_URL ||
-  import.meta.env.SUPABASE_URL ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
+  env.VITE_SUPABASE_URL ||
+  env.SUPABASE_URL ||
+  env.NEXT_PUBLIC_SUPABASE_URL ||
   ''
 ).trim();
 
 const supabaseKey = (
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  import.meta.env.SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  env.VITE_SUPABASE_ANON_KEY ||
+  env.SUPABASE_PUBLISHABLE_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   ''
 ).trim();
 

@@ -8,7 +8,9 @@
     "server": "tsx server.ts",
     "start": "tsx server.ts",
     "build": "tsc && vite build",
-    "preview": "vite preview --port 3000"
+    "preview": "vite preview --port 3000",
+    "generate:doctors": "tsx scripts/generate-1500-doctors.ts",
+    "import:doctors": "tsx scripts/import-doctors.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
