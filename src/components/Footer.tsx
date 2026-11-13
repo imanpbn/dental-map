@@ -1,9 +1,7 @@
 import React from 'react';
 import {
   ShieldCheck,
-  PhoneCall,
   Mail,
-  MapPin,
   Lock,
   ArrowUp,
   Layers,
@@ -110,16 +108,8 @@ export const Footer: React.FC<FooterProps> = ({
 
             <div className="text-xs text-slate-400 space-y-2 pt-2">
               <div className="flex items-center gap-2">
-                <PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="font-mono dir-ltr font-bold text-slate-200">021-88001144</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span className="font-mono text-slate-200">support@dentalmap.ir</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>تهران، میدان ونک، برج ونک، طبقه ششم</span>
               </div>
             </div>
 
