@@ -45,13 +45,22 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
           </button>
         </div>
 
+        {/* Mobile Swipe Hint */}
+        <div className="md:hidden flex items-center justify-between text-[11px] text-slate-500 mb-2 px-1">
+          <span className="flex items-center gap-1.5 font-bold text-emerald-700">
+            <span>👈</span>
+            <span>برای مشاهده تمام شاخص‌ها، جدول را به چپ بکشید</span>
+          </span>
+          <span className="text-[10px] text-slate-400 font-mono">اسکرول افقی</span>
+        </div>
+
         {/* Matrix Table Container */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-right border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-900 text-white border-b border-slate-800">
-                  <th className="p-4 font-bold">برند و کشور</th>
+                  <th className="p-4 font-bold sticky right-0 bg-slate-900 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.3)]">برند و کشور</th>
                   <th className="p-4 font-bold">مدل فیکسچر</th>
                   <th className="p-4 font-bold">آلیاژ ساختاری</th>
                   <th className="p-4 font-bold">تکنولوژی سطح (Surface)</th>
@@ -72,7 +81,9 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
                         isNaxis ? 'bg-emerald-50/50' : ''
                       }`}
                     >
-                      <td className="p-4">
+                      <td className={`p-4 sticky right-0 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] ${
+                        isNaxis ? 'bg-emerald-50' : 'bg-white'
+                      }`}>
                         <div className="flex items-center gap-2">
                           <span className="text-base">{brand?.logo}</span>
                           <div>

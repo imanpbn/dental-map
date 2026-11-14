@@ -297,7 +297,7 @@ export const DoctorJoinPage: React.FC<DoctorJoinPageProps> = ({
                 <label className="block text-sm font-bold text-slate-900">
                   نوع واحد درمانی را انتخاب فرمایید:
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     { type: 'private_office' as CenterType, label: 'مطب دندانپزشکی', icon: Stethoscope },
                     { type: 'clinic' as CenterType, label: 'کلینیک دندانپزشکی', icon: Building },

@@ -66,6 +66,7 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
 }) => {
   const [hoveredToothNum, setHoveredToothNum] = useState<number | null>(null);
   const [showAllNumbers, setShowAllNumbers] = useState<boolean>(true);
+  const [jawFocus, setJawFocus] = useState<'all' | 'upper' | 'lower'>('all');
 
   // Fast tooth record lookup map
   const teethMap = React.useMemo(() => {
@@ -77,18 +78,66 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
   const activeToothRecord = teethMap.get(selectedToothNum);
   const hoveredToothRecord = hoveredToothNum ? teethMap.get(hoveredToothNum) : null;
 
+  // Filter coordinates based on jaw focus for the quick thumb carousel
+  const filteredCoordinates = React.useMemo(() => {
+    if (jawFocus === 'upper') {
+      return TOOTH_COORDINATES.filter((t) => t.quadrant === 1 || t.quadrant === 2);
+    }
+    if (jawFocus === 'lower') {
+      return TOOTH_COORDINATES.filter((t) => t.quadrant === 3 || t.quadrant === 4);
+    }
+    return TOOTH_COORDINATES;
+  }, [jawFocus]);
+
   return (
     <div className="relative w-full max-w-3xl mx-auto bg-slate-900 rounded-3xl p-3 sm:p-5 text-white shadow-2xl border border-slate-800 overflow-hidden select-none">
       {/* Top Bar: Controls & Legend */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-800 text-xs">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 mb-3 pb-3 border-b border-slate-800 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-bold text-slate-100">
-            مدل سه‌بعدی فک و ۳۲ دندان (FDI Digital Passport)
+          <span className="font-bold text-slate-100 text-xs sm:text-sm">
+            مدل سه‌بعدی فک و ۳۲ دندان (FDI)
           </span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        {/* View Focus: All / Upper / Lower */}
+        <div className="flex items-center gap-1 p-1 bg-slate-800/90 rounded-xl border border-slate-700/80 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setJawFocus('all')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              jawFocus === 'all'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            هر دو فک (۳۲)
+          </button>
+          <button
+            type="button"
+            onClick={() => setJawFocus('upper')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              jawFocus === 'upper'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            فک بالا
+          </button>
+          <button
+            type="button"
+            onClick={() => setJawFocus('lower')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              jawFocus === 'lower'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            فک پایین
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
           {/* Toggle All Numbers on Image */}
           <button
             type="button"
@@ -96,21 +145,21 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-medium text-slate-300 transition-colors border border-slate-700 cursor-pointer"
           >
             {showAllNumbers ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-400" />}
-            <span>{showAllNumbers ? 'پنهان کردن شماره‌ها' : 'نمایش شماره همه دندان‌ها'}</span>
+            <span>{showAllNumbers ? 'پنهان کردن شماره‌ها' : 'نمایش شماره‌ها'}</span>
           </button>
 
           {/* Color legend */}
-          <div className="hidden sm:flex items-center gap-3 text-[11px] text-slate-300">
+          <div className="flex items-center gap-2.5 text-[10px] sm:text-[11px] text-slate-300">
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-slate-200 border border-slate-400 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-slate-200 border border-slate-400 inline-block" />
               <span>طبیعی</span>
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-emerald-300 inline-block" />
               <span className="text-emerald-300">ایمپلنت 🔩</span>
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-amber-400 border border-amber-200 ring-2 ring-amber-400/50 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-amber-200 ring-2 ring-amber-400/50 inline-block" />
               <span className="text-amber-300 font-bold">انتخاب‌شده ⭐</span>
             </span>
           </div>
@@ -118,18 +167,21 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
       </div>
 
       {/* Main Photographic Interactive 3D Model with SVG Overlay */}
-      <div className="relative w-full aspect-[969/1024] rounded-2xl overflow-hidden bg-slate-950 shadow-inner border border-slate-800">
-        {/* Exact User Uploaded 3D Jaw Image */}
-        <img
-          src="/images/dental-jaw-3d.jpg"
-          alt="مدل آناتومیک فک ۳۲ دندان دنتال‌مپ"
-          className="w-full h-full object-cover block select-none pointer-events-none"
-        />
-
-        {/* SVG Interactive Overlay using 1:1 image viewBox (969 x 1024) */}
+      <div
+        className={`relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-inner border border-slate-800 transition-all duration-300 ${
+          jawFocus === 'all' ? 'aspect-[969/1024]' : 'aspect-[969/540]'
+        }`}
+      >
+        {/* SVG Interactive Overlay using 1:1 image viewBox (969 x 1024) or zoomed viewBox */}
         <svg
-          viewBox="0 0 969 1024"
-          className="absolute inset-0 w-full h-full pointer-events-auto"
+          viewBox={
+            jawFocus === 'upper'
+              ? '0 160 969 460'
+              : jawFocus === 'lower'
+              ? '0 480 969 460'
+              : '0 0 969 1024'
+          }
+          className="absolute inset-0 w-full h-full pointer-events-auto transition-all duration-300"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
@@ -143,13 +195,27 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
             </filter>
           </defs>
 
+          {/* Exact Anatomical 3D Jaw Photographic Image scaled synchronously */}
+          <image
+            href="/images/dental-jaw-3d.jpg"
+            x="0"
+            y="0"
+            width="969"
+            height="1024"
+            preserveAspectRatio="none"
+          />
+
           {/* Upper / Lower Labels subtle overlay */}
-          <text x="484" y="90" fill="#ffffff" opacity="0.6" fontSize="20" fontWeight="bold" textAnchor="middle">
-            فک بالا (Maxilla)
-          </text>
-          <text x="484" y="980" fill="#ffffff" opacity="0.6" fontSize="20" fontWeight="bold" textAnchor="middle">
-            فک پایین (Mandible)
-          </text>
+          {jawFocus !== 'lower' && (
+            <text x="484" y="90" fill="#ffffff" opacity="0.6" fontSize="20" fontWeight="bold" textAnchor="middle">
+              فک بالا (Maxilla)
+            </text>
+          )}
+          {jawFocus !== 'upper' && (
+            <text x="484" y="980" fill="#ffffff" opacity="0.6" fontSize="20" fontWeight="bold" textAnchor="middle">
+              فک پایین (Mandible)
+            </text>
+          )}
 
           {/* Orientation tags */}
           <text x="40" y="220" fill="#cbd5e1" opacity="0.8" fontSize="16" fontWeight="bold" textAnchor="start">
@@ -166,8 +232,8 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
             const isImplanted = !!toothRecord?.is_implanted;
             const isHovered = hoveredToothNum === t.num;
 
-            // Pin dimensions
-            const radius = isSelected ? 24 : isHovered ? 20 : 16;
+            // Pin dimensions (larger on active/hovered and high clarity)
+            const radius = isSelected ? 26 : isHovered ? 21 : 17;
 
             return (
               <g
@@ -187,14 +253,14 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                   }
                 }}
               >
-                {/* Large clickable invisible hit area */}
-                <circle r={32} fill="transparent" />
+                {/* Large clickable invisible hit area for finger tap on mobile (r=46) */}
+                <circle r={46} fill="transparent" pointerEvents="all" />
 
                 {/* Animated Pulsing Radar Rings for Selected Tooth */}
                 {isSelected && (
                   <>
                     <circle
-                      r={38}
+                      r={40}
                       fill="none"
                       stroke="#fbbf24"
                       strokeWidth="2.5"
@@ -203,7 +269,7 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                       style={{ animationDuration: '2s' }}
                     />
                     <circle
-                      r={30}
+                      r={32}
                       fill="none"
                       stroke="#f59e0b"
                       strokeWidth="3"
@@ -236,8 +302,8 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                       : isHovered
                       ? '#0284c7'
                       : showAllNumbers
-                      ? 'rgba(15, 23, 42, 0.75)'
-                      : 'rgba(255, 255, 255, 0.4)'
+                      ? 'rgba(15, 23, 42, 0.8)'
+                      : 'rgba(255, 255, 255, 0.45)'
                   }
                   stroke={
                     isSelected
@@ -248,7 +314,7 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                       ? '#ffffff'
                       : '#cbd5e1'
                   }
-                  strokeWidth={isSelected ? '3' : isHovered ? '2.5' : '1.5'}
+                  strokeWidth={isSelected ? '3.5' : isHovered ? '2.5' : '1.5'}
                   filter={isSelected ? 'url(#activeGlow)' : undefined}
                 />
 
@@ -256,9 +322,9 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                 {(showAllNumbers || isSelected || isHovered || isImplanted) && (
                   <text
                     x="0"
-                    y={isImplanted && !isSelected ? '4' : '5'}
+                    y={isImplanted && !isSelected ? '4.5' : '5'}
                     fill="#ffffff"
-                    fontSize={isSelected ? '14' : '12'}
+                    fontSize={isSelected ? '15' : '13'}
                     fontWeight="900"
                     fontFamily="monospace"
                     textAnchor="middle"
@@ -273,8 +339,8 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
                 {isImplanted && (
                   <text
                     x="0"
-                    y={-radius - 4}
-                    fontSize="13"
+                    y={-radius - 5}
+                    fontSize="14"
                     textAnchor="middle"
                     className="select-none pointer-events-none drop-shadow-md"
                   >
@@ -288,24 +354,24 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
 
         {/* Live Hover Tooltip floating above tooth */}
         {hoveredToothRecord && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs px-4 py-2 rounded-2xl border border-slate-700 shadow-2xl flex items-center gap-3 z-30 pointer-events-none animate-fadeIn">
-            <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 font-mono font-black text-sm flex items-center justify-center border border-emerald-500/30">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs px-4 py-2 rounded-2xl border border-slate-700 shadow-2xl flex items-center gap-3 z-30 pointer-events-none animate-fadeIn max-w-[90%]">
+            <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 font-mono font-black text-sm flex items-center justify-center border border-emerald-500/30 shrink-0">
               #{hoveredToothRecord.tooth_number}
             </span>
-            <div>
-              <div className="font-bold text-slate-100 flex items-center gap-1.5">
-                <span>{hoveredToothRecord.tooth_name_fa}</span>
+            <div className="truncate">
+              <div className="font-bold text-slate-100 flex items-center gap-1.5 truncate">
+                <span className="truncate">{hoveredToothRecord.tooth_name_fa}</span>
                 {hoveredToothRecord.is_implanted ? (
-                  <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded-sm font-semibold">
+                  <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded-sm font-semibold shrink-0">
                     ایمپلنت فعال 🔩
                   </span>
                 ) : (
-                  <span className="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.2 rounded-sm">
+                  <span className="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.2 rounded-sm shrink-0">
                     طبیعی
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5 truncate">
                 {hoveredToothRecord.is_implanted
                   ? `${hoveredToothRecord.brand_name || 'ایمپلنت'} (REF: ${hoveredToothRecord.fixture_ref || '-'})`
                   : 'جهت انتخاب و ثبت در شناسنامه کلیک فرمایید'}
@@ -313,6 +379,51 @@ export const InteractiveJawChart: React.FC<InteractiveJawChartProps> = ({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Quick Tooth Selector Bar for Easy Mobile Thumb Access (44px Minimum Touch Target) */}
+      <div className="mt-3 pt-3 border-t border-slate-800">
+        <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2 px-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+            <span className="font-bold text-slate-200">انتخاب سریع با لمس دندان:</span>
+          </div>
+          <span className="text-[10px] text-slate-400 font-mono">
+            {jawFocus === 'upper' ? 'فک بالا (۱۶ دندان)' : jawFocus === 'lower' ? 'فک پایین (۱۶ دندان)' : '۳۲ دندان'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          {filteredCoordinates.map((t) => {
+            const toothRecord = teethMap.get(t.num);
+            const isSelected = selectedToothNum === t.num;
+            const isImplanted = !!toothRecord?.is_implanted;
+
+            return (
+              <button
+                key={t.num}
+                type="button"
+                onClick={() => onSelectTooth(t.num)}
+                className={`shrink-0 min-w-[44px] h-11 px-2 rounded-xl flex flex-col items-center justify-center gap-0.5 border text-xs font-mono font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-400 shadow-md scale-105'
+                    : isImplanted
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 hover:bg-emerald-900'
+                    : 'bg-slate-800/90 text-slate-300 border-slate-700 hover:bg-slate-700'
+                }`}
+                title={t.name}
+              >
+                <div className="flex items-center gap-0.5 text-[11px]">
+                  <span>#{t.num}</span>
+                  {isImplanted && <span className="text-[10px]">🔩</span>}
+                </div>
+                <span className="text-[9px] font-sans truncate text-slate-400">
+                  {isImplanted ? 'ایمپلنت' : 'طبیعی'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Bottom Hint Banner */}

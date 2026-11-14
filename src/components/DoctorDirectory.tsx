@@ -94,6 +94,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
   const [genderFilter, setGenderFilter] = useState<Gender | 'all'>('all');
   const [centerTypeFilter, setCenterTypeFilter] = useState<CenterType | 'all'>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // View toggles
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -296,13 +297,42 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     <section id="directory-section" className="py-6 sm:py-8 bg-slate-50">
       <div className="w-full px-4 sm:px-6 md:px-[8%] lg:px-[10%]">
         
+        {/* Mobile Filter Toggle Banner (Visible only on < lg) */}
+        <div className="lg:hidden w-full mb-4">
+          <button
+            type="button"
+            onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+            className="w-full flex items-center justify-between p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-xs text-xs font-bold text-slate-800 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
+              <span>فیلترهای پیشرفته و شهر</span>
+              {activeFiltersCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                  {activeFiltersCount} فیلتر فعال
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
+              <span>{isMobileFilterOpen ? 'بستن فیلترها' : 'تنظیم فیلترها و تخصص'}</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isMobileFilterOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
+          </button>
+        </div>
+
         {/* Main 2-Column Responsive Layout: Sidebar on Right (RTL), Results Feed on Left */}
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           
           {/* ============================================================== */}
           {/* 1. RIGHT SIDEBAR: "فیلترها" (Matching User Screenshot Exactly) */}
           {/* ============================================================== */}
-          <aside className="w-full lg:w-80 xl:w-92 shrink-0 space-y-4">
+          <aside className={`w-full lg:w-80 xl:w-92 shrink-0 space-y-4 ${
+            isMobileFilterOpen ? 'block' : 'hidden lg:block'
+          }`}>
             <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 lg:sticky lg:top-24">
               
               {/* Header: Title + Reset Button */}
@@ -620,6 +650,18 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* Mobile Apply and Close Button */}
+                <div className="lg:hidden pt-4 mt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileFilterOpen(false)}
+                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>اعمال فیلترها و مشاهده نتایج</span>
+                  </button>
                 </div>
               </div>
             </div>

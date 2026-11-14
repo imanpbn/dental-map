@@ -300,7 +300,7 @@ export const OfficialPassportCertificate: React.FC<OfficialPassportCertificatePr
         )}
 
         {/* 6. Stamp and Signatures Section */}
-        <footer className="relative pt-6 border-t-2 border-slate-200 mt-6 grid grid-cols-3 gap-6 text-center text-xs">
+        <footer className="relative pt-6 border-t-2 border-slate-200 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center text-xs">
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-between min-h-[110px]">
             <span className="text-[11px] font-bold text-slate-600">مهر و امضای جراح معالج</span>
             <div className="w-16 h-12 border-b-2 border-dashed border-slate-300 mt-4" />

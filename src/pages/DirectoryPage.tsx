@@ -63,20 +63,20 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
 
       {/* Top Breadcrumb & Quick Bar with 10% Horizontal Padding */}
       <div className="w-full px-4 sm:px-6 md:px-[8%] lg:px-[10%] pt-4">
-        <div className="bg-white border border-slate-200/90 rounded-2xl py-3 px-4 sm:px-6 shadow-xs flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs truncate">
-            <Link to="/" className="text-slate-500 hover:text-emerald-700 font-medium">
+        <div className="bg-white border border-slate-200/90 rounded-2xl py-3 px-4 sm:px-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs truncate max-w-full">
+            <Link to="/" className="text-slate-500 hover:text-emerald-700 font-medium shrink-0">
               صفحه اصلی
             </Link>
-            <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-emerald-700 font-bold">
-              دایرکتوری جراحان فک و صورت، کلینیک‌ها و مراکز شبانه‌روزی
+            <ChevronLeft className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="text-emerald-700 font-bold truncate">
+              دایرکتوری جراحان فک و صورت و کلینیک‌ها
             </span>
           </div>
 
           <Link
             to="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
+            className="self-end sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors shrink-0"
           >
             <ArrowRight className="w-3.5 h-3.5" />
             <span>بازگشت به پرتال اصلی</span>

@@ -70,18 +70,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Platform Stats (وسط‌چین شده مطابق درخواست) */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80 text-center">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-6 border-t border-slate-800/80 text-center">
               <div className="flex flex-col items-center justify-center">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">۱۲,۴۸۰+</div>
-                <div className="text-xs text-slate-400 mt-0.5 text-center">قطعه استعلام‌شده IMED</div>
+                <div className="text-xl sm:text-3xl font-black text-emerald-400 font-mono">۱۲,۴۸۰+</div>
+                <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5 text-center leading-tight">قطعه استعلام‌شده IMED</div>
               </div>
               <div className="flex flex-col items-center justify-center">
-                <div className="text-2xl sm:text-3xl font-black text-teal-400 font-mono">۴۵۰+</div>
-                <div className="text-xs text-slate-400 mt-0.5 text-center">جراح و متخصص معتبر</div>
+                <div className="text-xl sm:text-3xl font-black text-teal-400 font-mono">۴۵۰+</div>
+                <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5 text-center leading-tight">جراح و متخصص معتبر</div>
               </div>
               <div className="flex flex-col items-center justify-center">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-300 font-mono">۱۰۰٪</div>
-                <div className="text-xs text-slate-400 mt-0.5 text-center">تضمین اصالت و گارانتی</div>
+                <div className="text-xl sm:text-3xl font-black text-emerald-300 font-mono">۱۰۰٪</div>
+                <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5 text-center leading-tight">تضمین اصالت و گارانتی</div>
               </div>
             </div>
           </div>

@@ -267,8 +267,8 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
             </div>
 
             {/* Price & Primary CTA */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 min-w-[240px]">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto lg:min-w-[240px]">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center flex-1 sm:flex-initial">
                 <span className="text-slate-400 text-[11px] block mb-1">تعرفه رسمی استعلام قطعه:</span>
                 <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono">
                   {component.price_toman.toLocaleString('fa-IR')}
@@ -278,7 +278,7 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
 
               <button
                 onClick={() => setIsPdfModalOpen(true)}
-                className="w-full px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-md"
+                className="w-full sm:flex-1 lg:w-full px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-md"
               >
                 <Download className="w-4 h-4 text-emerald-400" />
                 <span>دریافت کاتالوگ و دیتاشیت PDF</span>
@@ -286,10 +286,10 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
 
               <a
                 href="tel:02188001144"
-                className="w-full px-5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center gap-2 border border-emerald-200 transition-colors"
+                className="w-full sm:flex-1 lg:w-full px-5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center gap-2 border border-emerald-200 transition-colors"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
-                <span>استعلام موجودی بازرگانی: ۰۲۱-۸۸۰۰۱۱۴۴</span>
+                <span>استعلام بازرگانی: ۰۲۱-۸۸۰۰۱۱۴۴</span>
               </a>
             </div>
           </div>
@@ -324,7 +324,7 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
         {/* 2. TABBED DEEP TECHNICAL SECTIONS */}
         {/* ============================================================ */}
         <div className="space-y-6">
-          <div className="flex border-b border-slate-200 gap-6 text-xs sm:text-sm font-bold">
+          <div className="flex border-b border-slate-200 gap-4 sm:gap-6 text-xs sm:text-sm font-bold overflow-x-auto no-scrollbar whitespace-nowrap pb-1">
             <button
               onClick={() => setActiveTab('biomechanics')}
               className={`pb-3 border-b-2 transition-all ${

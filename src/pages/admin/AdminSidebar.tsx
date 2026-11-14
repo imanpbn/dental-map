@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   LayoutDashboard,
   FileText,
@@ -12,7 +12,9 @@ import {
   Globe,
   Send,
   UserCheck,
-  FileCheck2
+  FileCheck2,
+  ChevronDown,
+  Menu
 } from 'lucide-react';
 
 export type AdminSection =
@@ -59,19 +61,38 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   packagesCount,
   accountsCount
 }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <aside className="w-full md:w-64 bg-slate-900 border-l border-slate-800 text-slate-300 shrink-0 select-none">
-      <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
-        <div>
-          <span className="text-[10px] text-emerald-400 font-mono font-bold block">
-            DENTAL MAP CMS v7.2.0
-          </span>
-          <span className="text-xs font-black text-white">منوی اصلی مدیریت</span>
+      {/* Header bar with mobile toggle */}
+      <div
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="p-4 border-b border-slate-800/80 flex items-center justify-between cursor-pointer md:cursor-default"
+      >
+        <div className="flex items-center gap-2">
+          <Menu className="w-4 h-4 text-emerald-400 md:hidden" />
+          <div>
+            <span className="text-[10px] text-emerald-400 font-mono font-bold block">
+              DENTAL MAP CMS v7.2.0
+            </span>
+            <span className="text-xs font-black text-white">منوی مدیریت (جهت تغییر لمس کنید)</span>
+          </div>
         </div>
-        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+          <ChevronDown
+            className={`w-4 h-4 text-slate-400 md:hidden transition-transform ${
+              isMobileMenuOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </div>
       </div>
 
-      <nav className="p-2 space-y-1 text-xs">
+      <nav
+        onClick={() => setIsMobileMenuOpen(false)}
+        className={`p-2 space-y-1 text-xs ${isMobileMenuOpen ? 'block' : 'hidden md:block'}`}
+      >
         {/* 1. Dashboard */}
         <button
           onClick={() => setActiveSection('dashboard')}
