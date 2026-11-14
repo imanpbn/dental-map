@@ -6,7 +6,7 @@ export const ImplantTestHeroBanner: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="my-10" id="implant-test-section">
+    <section className="my-4 md:my-6" id="implant-test-section">
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xl relative overflow-hidden">
         {/* Ambient Gradient Glows */}
         <div className="absolute -top-24 -left-24 w-72 h-72 bg-teal-200/30 rounded-full blur-3xl pointer-events-none" />
@@ -20,9 +20,9 @@ export const ImplantTestHeroBanner: React.FC = () => {
               <span>بدون نیاز به ثبت‌نام</span>
             </div>
 
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 leading-tight">
               کدام برند ایمپلنت واقعاً <span className="text-teal-600">به‌دردِ شرایط تو</span> می‌خوره؟
-            </h2>
+            </h1>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
               خیلی‌ها فقط می‌گویند «سوئیسی» یا «کره‌ای»! اما کیفیت درمان به پارامترهای مهم‌تری بستگی دارد:

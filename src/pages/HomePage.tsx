@@ -87,22 +87,22 @@ export const HomePage: React.FC<HomePageProps> = ({
         description="سامانه جامع شفافیت و اصالت قطعات ایمپلنت دندان، دایرکتوری تخصصی جراحان فک و صورت و دندانپزشکان ایران، استعلام کد REF فیکسچر و شناسنامه دیجیتال ۳۲ دندان (FDI)."
         canonical="/"
       />
-      {/* 1. Hero Section */}
+      {/* 1. Implant Test & Diagnostic Game Hero (جایگزین هیرو سکشن در بالای صفحه) */}
+      <ImplantTestHeroBanner />
+
+      {/* 2. Platform Services (4 Cards) */}
+      <PlatformServicesSection onNavigate={handleNavigate} />
+
+      {/* 3. Trust Guarantees Ribbon */}
+      <TrustGuaranteesBanner />
+
+      {/* 4. Platform Core Showcase & REF Verification (انتقال‌یافته به بالای مقالات) */}
       <HeroSection
         onSearchClick={() => handleNavigate('parts-catalog')}
         onOpenPassport={() => navigate('/passport')}
         onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
         featuredComponent={components[0]}
       />
-
-      {/* 2. Implant Test & Diagnostic Game Banner */}
-      <ImplantTestHeroBanner />
-
-      {/* 3. Platform Services (4 Cards) */}
-      <PlatformServicesSection onNavigate={handleNavigate} />
-
-      {/* 4. Trust Guarantees Ribbon */}
-      <TrustGuaranteesBanner />
 
       {/* 5. Blog Section (Dynamic Headless WordPress) */}
       <BlogSection posts={blogPosts} onOpenNaxisGuide={() => navigate('/blog')} />

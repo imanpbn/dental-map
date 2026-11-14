@@ -36,12 +36,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight">
               شناسنامه دیجیتال، اصالت قطعات و انتخاب هوشمندانه{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
                 ایمپلنت دندان
               </span>
-            </h1>
+            </h2>
 
             {/* Subtitle */}
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
