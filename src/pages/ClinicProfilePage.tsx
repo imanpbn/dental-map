@@ -25,6 +25,8 @@ import {
 import { Clinic, Doctor, Specialty, Insurance, ClinicInsurance, ClinicDoctor } from '../types';
 import { DentalMapRoutes } from '../utils/urlBuilder';
 import { SmsService } from '../utils/smsService';
+import { SEO } from '../components/SEO';
+import { buildClinicSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
 
 interface ClinicProfilePageProps {
   clinics: Clinic[];
@@ -153,27 +155,21 @@ export const ClinicProfilePage: React.FC<ClinicProfilePageProps> = ({
 
   const canonicalUrl = `https://dentalmap.ir/clinic/${clinic.id}-${clinic.slug}`;
 
-  // Schema.org MedicalClinic
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'MedicalClinic',
-    name: clinic.name,
-    telephone: clinic.phone || '021-88001144',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: clinic.address,
-      addressLocality: 'تهران',
-      addressCountry: 'IR'
-    },
-    openingHours: clinic.is_24_7 ? 'Mo-Su 00:00-24:00' : 'Sa-We 09:00-21:00'
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      <link rel="canonical" href={canonicalUrl} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      <SEO
+        title={`${clinic.name} | کلینیک تخصصی ایمپلنت و جراحی فک و صورت`}
+        description={`اطلاعات تماس، جراحان معالج، بیمه‌ها و خدمات تخصصی کاشت دندان ${clinic.name} در دنتال‌مپ.`}
+        canonical={canonicalUrl}
+        ogImage={clinic.image}
+        jsonLd={[
+          buildClinicSchema(clinic, displayDocs.map((d) => d.doc)),
+          buildBreadcrumbSchema([
+            { name: 'صفحه اصلی', url: '/' },
+            { name: 'دایرکتوری کلینیک‌ها', url: '/directory' },
+            { name: clinic.name, url: canonicalUrl }
+          ])
+        ]}
       />
 
       {/* Top Breadcrumb Navigation */}

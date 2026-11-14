@@ -292,12 +292,16 @@ export interface AdminUser {
 }
 
 // SMS Gateway & MeliPayamak Configuration
+export type SmsProvider = 'melipayamak' | 'kavenegar' | 'farazsms';
+
 export interface SmsSettings {
+  provider?: SmsProvider;
   apiKey: string;
   senderNumber: string;
   patternAppointment: string;
   patternPassport: string;
   patternQuiz: string;
+  patternOtp?: string;
   isSmsActive: boolean;
 }
 

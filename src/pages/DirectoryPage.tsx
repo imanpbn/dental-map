@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ArrowRight, Building, Stethoscope, ShieldCheck, MapPin, Sparkles } from 'lucide-react';
 import { SEO } from '../components/SEO';
+import { buildMedicalWebPageSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
 import { DoctorDirectory } from '../components/DoctorDirectory';
 import {
   Doctor,
@@ -59,6 +60,17 @@ export const DirectoryPage: React.FC<DirectoryPageProps> = ({
         description="بانک اطلاعاتی جامع جراحان فک و صورت، متخصصان ایمپلنتولوژی و کلینیک‌های معتبر تهران و شهرستان‌ها همراه با استعلام نظام پزشکی و بیمه‌های طرف قرارداد."
         canonical="/directory"
         keywords="دایرکتوری دندانپزشکان, جراح ایمپلنت, متخصص ایمپلنت تهران, کلینیک دندانپزشکی شبانه روزی"
+        jsonLd={[
+          buildMedicalWebPageSchema(
+            'دایرکتوری تخصصی جراحان ایمپلنت و کلینیک‌های دندانپزشکی ایران',
+            'بانک اطلاعاتی جامع جراحان فک و صورت، متخصصان ایمپلنتولوژی و کلینیک‌های معتبر تهران و شهرستان‌ها همراه با استعلام نظام پزشکی و بیمه‌های طرف قرارداد.',
+            '/directory'
+          ),
+          buildBreadcrumbSchema([
+            { name: 'صفحه اصلی', url: '/' },
+            { name: 'دایرکتوری دندانپزشکان و کلینیک‌ها', url: '/directory' }
+          ])
+        ]}
       />
 
       {/* Top Breadcrumb & Quick Bar with 10% Horizontal Padding */}

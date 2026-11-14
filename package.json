@@ -7,7 +7,8 @@
     "dev": "vite --port 3000 --host",
     "server": "tsx server.ts",
     "start": "tsx server.ts",
-    "build": "tsc && vite build",
+    "build": "tsx scripts/generate-sitemap.ts && tsc && vite build",
+    "build:sitemap": "tsx scripts/generate-sitemap.ts",
     "preview": "vite preview --port 3000",
     "generate:doctors": "tsx scripts/generate-1500-doctors.ts",
     "import:doctors": "tsx scripts/import-doctors.ts"

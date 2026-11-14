@@ -27,13 +27,11 @@ function normalizeIranMobile(raw: string): string {
   return cleaned;
 }
 
-const ALLOWED_KEYWORDS = ['دنتال', 'dental', 'ایمپلنت', 'نوبت', 'پاسپورت', 'آزمون', 'کد تایید'];
+const ALLOWED_KEYWORDS = ['دنتال', 'dental', 'ایمپلنت', 'نوبت', 'پاسپورت', 'آزمون', 'کد تایید', 'شناسنامه', 'مشاوره'];
 
 function isAuthorizedContent(text: string, bodyId?: string | number): boolean {
-  if (bodyId) {
-    const validBodyIds = ['245890', '245891', '245892', 245890, 245891, 245892];
-    if (validBodyIds.includes(bodyId)) return true;
-  }
+  // If a pattern code is provided, it's an authenticated transactional template
+  if (bodyId) return true;
   if (!text || typeof text !== 'string') return false;
   const lower = text.toLowerCase();
   return ALLOWED_KEYWORDS.some((kw) => lower.includes(kw));
@@ -47,11 +45,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const clientIp = getClientIp(req);
   const now = Date.now();
 
-  // 1. IP Rate Limiting: Max 5 SMS per 10 minutes per IP
+  // 1. IP Rate Limiting: Max 10 SMS per 10 minutes per IP
   const ipRecord = ipSmsHistory.get(clientIp);
   if (ipRecord) {
     if (now - ipRecord.windowStart < 10 * 60 * 1000) {
-      if (ipRecord.count >= 5) {
+      if (ipRecord.count >= 10) {
         const remainingMinutes = Math.ceil((10 * 60 * 1000 - (now - ipRecord.windowStart)) / 60000);
         return res.status(429).json({
           success: false,
@@ -59,7 +57,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
     } else {
-      // Reset window
       ipSmsHistory.set(clientIp, { count: 0, windowStart: now });
     }
   } else {
@@ -67,7 +64,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { apiKey, from, to, text, bodyId, args } = req.body || {};
+    const {
+      provider = 'melipayamak',
+      apiKey,
+      from,
+      to,
+      text,
+      bodyId,
+      args
+    } = req.body || {};
 
     // 2. Validate Recipient Mobile Number
     const cleanTo = normalizeIranMobile(to);
@@ -78,10 +83,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // 3. Cooldown per recipient phone number (Min 90 seconds between sends)
+    // 3. Cooldown per recipient phone number (Min 30 seconds between sends)
     const lastSentToPhone = phoneLastSent.get(cleanTo);
-    if (lastSentToPhone && now - lastSentToPhone < 90 * 1000) {
-      const waitSeconds = Math.ceil((90 * 1000 - (now - lastSentToPhone)) / 1000);
+    if (lastSentToPhone && now - lastSentToPhone < 30 * 1000) {
+      const waitSeconds = Math.ceil((30 * 1000 - (now - lastSentToPhone)) / 1000);
       return res.status(429).json({
         success: false,
         error: `لطفاً قبل از ارسال پیامک مجدد به این شماره، ${waitSeconds} ثانیه صبر فرمایید.`
@@ -96,38 +101,135 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Server-side secret priority: Environment variable -> client fallback -> default
-    const key = (process.env.MELIPAYAMAK_API_KEY || apiKey || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+    let success = false;
+    let responseData: any = {};
+    let recId = 'rec-' + Date.now();
 
-    const endpoint = bodyId
-      ? `https://console.melipayamak.com/api/send/shared/${key}`
-      : `https://console.melipayamak.com/api/send/simple/${key}`;
+    // -------------------------------------------------------------
+    // GATEWAY ADAPTER 1: Kavenegar (کاوه‌نگار)
+    // -------------------------------------------------------------
+    if (provider === 'kavenegar' || process.env.KAVENEGAR_API_KEY) {
+      const key = (process.env.KAVENEGAR_API_KEY || apiKey || '').trim();
+      if (!key) {
+        return res.status(400).json({ success: false, error: 'کلید وب‌سرویس کاوه‌نگار تنظیم نشده است.' });
+      }
 
-    const payload = bodyId
-      ? { to: cleanTo, bodyId: Number(bodyId), args: args || [text] }
-      : { from: from || '5000xxx', to: cleanTo, text };
+      if (bodyId) {
+        // Pattern Verify/Lookup
+        const template = String(bodyId);
+        const token = args?.[0] || text.split(' ')[0] || 'DENTALMAP';
+        const token2 = args?.[1] ? `&token2=${encodeURIComponent(args[1])}` : '';
+        const token3 = args?.[2] ? `&token3=${encodeURIComponent(args[2])}` : '';
+        const url = `https://api.kavenegar.com/v1/${key}/verify/lookup.json?receptor=${cleanTo}&template=${encodeURIComponent(template)}&token=${encodeURIComponent(token)}${token2}${token3}`;
+        const kRes = await fetch(url);
+        responseData = await kRes.json().catch(() => ({}));
+        success = kRes.ok && responseData?.return?.status === 200;
+        recId = String(responseData?.entries?.[0]?.messageid || recId);
+      } else {
+        // Simple Send
+        const sender = from || '10008663';
+        const url = `https://api.kavenegar.com/v1/${key}/sms/send.json`;
+        const kRes = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ receptor: cleanTo, sender, message: text }).toString()
+        });
+        responseData = await kRes.json().catch(() => ({}));
+        success = kRes.ok && responseData?.return?.status === 200;
+        recId = String(responseData?.entries?.[0]?.messageid || recId);
+      }
+    }
+    // -------------------------------------------------------------
+    // GATEWAY ADAPTER 2: FarazSMS / IPPanel (فراز اس‌ام‌اس / آی‌پی‌پنل)
+    // -------------------------------------------------------------
+    else if (provider === 'farazsms' || provider === 'ippanel' || process.env.FARAZSMS_API_KEY) {
+      const key = (process.env.FARAZSMS_API_KEY || apiKey || '').trim();
+      if (!key) {
+        return res.status(400).json({ success: false, error: 'کلید وب‌سرویس فراز اس‌ام‌اس تنظیم نشده است.' });
+      }
 
-    const meliRes = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+      if (bodyId) {
+        // IPPanel v1 Pattern Endpoint
+        const values: Record<string, string> = {};
+        if (Array.isArray(args)) {
+          args.forEach((val, idx) => {
+            values[`param${idx + 1}`] = String(val);
+          });
+        } else {
+          values['code'] = text;
+        }
 
-    const data = await meliRes.json().catch(() => ({}));
+        const fRes = await fetch('https://api2.ippanel.com/api/v1/sms/pattern/normal/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `AccessKey ${key}`
+          },
+          body: JSON.stringify({
+            code: String(bodyId),
+            sender: from || '3000505',
+            recipient: cleanTo,
+            values
+          })
+        });
+        responseData = await fRes.json().catch(() => ({}));
+        success = fRes.ok && responseData?.status === 'OK';
+        recId = String(responseData?.data?.message_id || recId);
+      } else {
+        // Simple send via IPPanel
+        const fRes = await fetch('https://api2.ippanel.com/api/v1/sms/send/webservice/single', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `AccessKey ${key}`
+          },
+          body: JSON.stringify({
+            recipient: [cleanTo],
+            sender: from || '3000505',
+            message: text
+          })
+        });
+        responseData = await fRes.json().catch(() => ({}));
+        success = fRes.ok;
+        recId = String(responseData?.data?.message_id || recId);
+      }
+    }
+    // -------------------------------------------------------------
+    // GATEWAY ADAPTER 3: MeliPayamak (ملی‌پیامک - Default)
+    // -------------------------------------------------------------
+    else {
+      const key = (process.env.MELIPAYAMAK_API_KEY || apiKey || '29c3b26d3caf4cd3b865f43a10d1b19d').trim();
+      const endpoint = bodyId
+        ? `https://console.melipayamak.com/api/send/shared/${key}`
+        : `https://console.melipayamak.com/api/send/simple/${key}`;
 
-    if (meliRes.ok) {
-      // Record successful rate limits
+      const payload = bodyId
+        ? { to: cleanTo, bodyId: Number(bodyId), args: args || [text] }
+        : { from: from || '5000xxx', to: cleanTo, text };
+
+      const meliRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      responseData = await meliRes.json().catch(() => ({}));
+      success = meliRes.ok;
+      recId = (responseData as any)?.recId || (responseData as any)?.Value || recId;
+    }
+
+    if (success) {
       const r = ipSmsHistory.get(clientIp);
       if (r) r.count += 1;
       phoneLastSent.set(cleanTo, now);
     }
 
     return res.status(200).json({
-      success: meliRes.ok,
-      data,
-      recId: (data as any)?.recId || (data as any)?.Value || 'sim-' + Date.now()
+      success,
+      data: responseData,
+      recId: String(recId)
     });
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message || 'خطای شبکه در ارسال پیامک' });
+    return res.status(500).json({ success: false, error: err.message || 'خطای شبکه در اتصال به درگاه پیامک' });
   }
 }

@@ -4,6 +4,7 @@ import { ChevronLeft, ArrowRight, FileCheck2 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { PassportSimulator } from '../components/PassportSimulator';
 import { ToothPassportRecord } from '../types';
+import { buildFaqPageSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
 
 interface PassportPageProps {
   teeth: ToothPassportRecord[];
@@ -21,6 +22,22 @@ export const PassportPage: React.FC<PassportPageProps> = ({
         description="سامانه صدور و استعلام پاسپورت اصالت ۳۲ دندان فک طبق استاندارد FDI. ثبت آنلاین برند فیکسچر، شماره لات (LOT) و کد رفرنس جهانی قطعه."
         canonical="/passport"
         keywords="پاسپورت ایمپلنت, استاندارد FDI, استعلام قطعات ایمپلنت, شناسنامه دندان"
+        jsonLd={[
+          buildFaqPageSchema([
+            {
+              question: 'چرا داشتن پاسپورت ایمپلنت دندان ضروری است؟',
+              answer: 'چون در صورت نیاز به تعویض روکش، اباتمنت یا درمان در هر کشور دیگری در آینده، پزشک جدید باید کد دقیق رفرنس (REF) و سایز پلتفرم فیکسچر را بداند تا قطعه متناسب تهیه کند.'
+            },
+            {
+              question: 'شماره‌های ۳۲ دندان طبق استاندارد FDI چگونه مشخص می‌شوند؟',
+              answer: 'استاندارد جهانی فدراسیون دندانپزشکی فک را به ۴ ربع تقسیم می‌کند: فک بالا راست (۱۱ تا ۱۸)، فک بالا چپ (۲۱ تا ۲۸)، فک پایین چپ (۳۱ تا ۳۸) و فک پایین راست (۴۱ تا ۴۸).'
+            }
+          ]),
+          buildBreadcrumbSchema([
+            { name: 'صفحه اصلی', url: '/' },
+            { name: 'پاسپورت دیجیتال ۳۲ دندان', url: '/passport' }
+          ])
+        ]}
       />
 
       {/* Top Bar */}

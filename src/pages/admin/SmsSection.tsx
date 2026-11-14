@@ -52,13 +52,19 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
           </div>
           <div>
             <h2 className="text-lg font-black text-white flex items-center gap-2">
-              <span>سامانه پیامک ملی‌پیامک (MeliPayamak)</span>
+              <span>سامانه پیامک زنده ({
+                smsConfig.provider === 'kavenegar'
+                  ? 'کاوه‌نگار'
+                  : smsConfig.provider === 'farazsms'
+                  ? 'فراز اس‌ام‌اس / IPPanel'
+                  : 'ملی‌پیامک'
+              })</span>
               <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">
-                REST API v2
+                Live Gateway v3.0
               </span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              ارسال آنی پیامک‌های رزرو نوبت، استعلام پاسپورت و کارنامه آزمون با پترن خدماتی
+              ارسال آنی پیامک‌های صدور پاسپورت، رزرو نوبت و کارنامه آزمون با خطوط خدماتی (بدون بلاک مخابرات)
             </p>
           </div>
         </div>
@@ -66,7 +72,7 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
         <div className="flex items-center gap-3">
           {smsCredit && typeof smsCredit.amount === 'number' && (
             <div className="bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-xl text-center">
-              <div className="text-[10px] text-slate-400">اعتبار حساب ملی‌پیامک:</div>
+              <div className="text-[10px] text-slate-400">اعتبار حساب پیامک:</div>
               <div className="text-sm font-black text-emerald-400 font-mono">
                 {Math.floor(smsCredit.amount).toLocaleString('fa-IR')} پیامک
               </div>
@@ -79,7 +85,7 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
             <span className="text-xs font-bold text-emerald-400 font-mono">
-              توکن فعال: {smsConfig.apiKey ? `${smsConfig.apiKey.substring(0, 8)}...` : 'تنظیم نشده'}
+              درگاه: {smsConfig.provider || 'melipayamak'}
             </span>
           </div>
         </div>
@@ -91,24 +97,40 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
         <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
             <Settings className="w-4 h-4 text-emerald-600" />
-            <span>تنظیمات احراز هویت و الگوهای ملی‌پیامک</span>
+            <span>تنظیمات درگاه پیامک و الگوهای خدماتی (Pattern)</span>
           </h3>
 
           <form onSubmit={onSaveSmsSettings} className="space-y-4 text-xs">
+            {/* Provider Selector */}
             <div>
               <label className="block font-bold text-slate-700 mb-1">
-                کلید وب‌سرویس / توکن کنسول (API Key):
+                انتخاب سرویس‌دهنده و درگاه پیامک (SMS Provider):
+              </label>
+              <select
+                value={smsConfig.provider || 'melipayamak'}
+                onChange={(e) => setSmsConfig({ ...smsConfig, provider: e.target.value as any })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-bold"
+              >
+                <option value="melipayamak">ملی‌پیامک (MeliPayamak - REST Shared Pattern API)</option>
+                <option value="kavenegar">کاوه‌نگار (Kavenegar - Verify Lookup API)</option>
+                <option value="farazsms">فراز اس‌ام‌اس / آی‌پی‌پنل (FarazSMS / IPPanel Pattern API)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">
+                کلید وب‌سرویس / توکن احراز هویت (API Key / Token):
               </label>
               <input
                 type="text"
                 value={smsConfig.apiKey}
                 onChange={(e) => setSmsConfig({ ...smsConfig, apiKey: e.target.value })}
-                placeholder="کلید وب‌سرویس سرورلس (خالی = پیش‌فرض امن سرور)..."
+                placeholder="کلید وب‌سرویس (خالی = پیش‌فرض امن متغیر محیطی سرور)..."
                 dir="ltr"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono text-slate-800 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                کلید در گیت‌وی سرورلس محافظت می‌شود؛ در صورت خالی بودن، متغیر محیطی MELIPAYAMAK_API_KEY سرور استفاده می‌شود.
+                کلید در گیت‌وی سرورلس محافظت می‌شود؛ در صورت خالی بودن، متغیر محیطی سرور لود می‌گردد.
               </p>
             </div>
 
@@ -153,9 +175,9 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
                 شناسه الگوهای خدماتی (عبور از بلک‌لیست مخابرات - Shared BodyId):
               </span>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-[11px] text-slate-600 mb-1">کد پترن نوبت‌دهی:</label>
+                  <label className="block text-[11px] text-slate-600 mb-1">پترن نوبت‌دهی:</label>
                   <input
                     type="text"
                     value={smsConfig.patternAppointment}
@@ -167,7 +189,7 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-slate-600 mb-1">کد پترن پاسپورت:</label>
+                  <label className="block text-[11px] text-slate-600 mb-1">پترن پاسپورت:</label>
                   <input
                     type="text"
                     value={smsConfig.patternPassport}
@@ -179,12 +201,24 @@ export const SmsSection: React.FC<SmsSectionProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-slate-600 mb-1">کد پترن آزمون:</label>
+                  <label className="block text-[11px] text-slate-600 mb-1">پترن آزمون هوشمند:</label>
                   <input
                     type="text"
                     value={smsConfig.patternQuiz}
                     onChange={(e) => setSmsConfig({ ...smsConfig, patternQuiz: e.target.value })}
                     placeholder="245892"
+                    dir="ltr"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-600 mb-1">پترن احراز هویت (OTP):</label>
+                  <input
+                    type="text"
+                    value={smsConfig.patternOtp || ''}
+                    onChange={(e) => setSmsConfig({ ...smsConfig, patternOtp: e.target.value })}
+                    placeholder="245893"
                     dir="ltr"
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-xs"
                   />

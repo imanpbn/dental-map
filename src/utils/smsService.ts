@@ -7,11 +7,13 @@ const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
 
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
+  provider: 'melipayamak',
   apiKey: '', // کلید وب‌سرویس در گیت‌وی سرورلس محافظت می‌شود و از متغیرهای محیطی لود می‌شود
-  senderNumber: '5000xxx', // شماره خط اختصاصی (از پنل کاربر)
+  senderNumber: '50004001', // شماره خط اختصاصی (از پنل کاربر)
   patternAppointment: '245890', // کد پترن رزرو نوبت
   patternPassport: '245891', // کد پترن پاسپورت ایمپلنت
   patternQuiz: '245892', // کد پترن نتیجه آزمون
+  patternOtp: '245893', // کد پترن کد تایید OTP
   isSmsActive: true
 };
 
@@ -32,15 +34,17 @@ export const SmsService = {
   async getCredit(): Promise<{ amount: number; status: string }> {
     const settings = this.getSettings();
     try {
-      const queryParam = settings.apiKey ? `?apiKey=${encodeURIComponent(settings.apiKey)}` : '';
-      const res = await fetch(`/api/sms/credit${queryParam}`);
+      const params = new URLSearchParams();
+      if (settings.apiKey) params.set('apiKey', settings.apiKey);
+      if (settings.provider) params.set('provider', settings.provider);
+      const res = await fetch(`/api/sms/credit?${params.toString()}`);
       if (res.ok) {
         return await res.json();
       }
     } catch {
       // fallback
     }
-    return { amount: 0, status: 'عدم دسترسی به وب‌سرویس ملی‌پیامک' };
+    return { amount: 0, status: 'عدم دسترسی به وب‌سرویس پیامک' };
   },
 
   saveSettings(settings: Partial<SmsSettings>): SmsSettings {
@@ -117,6 +121,7 @@ export const SmsService = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          provider: settings.provider || 'melipayamak',
           apiKey: settings.apiKey || undefined,
           from: settings.senderNumber,
           to: cleanTo,

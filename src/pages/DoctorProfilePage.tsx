@@ -27,6 +27,7 @@ import {
 import { Doctor, Specialty, Clinic, ImplantBrand, ClinicDoctor } from '../types';
 import { DentalMapRoutes } from '../utils/urlBuilder';
 import { SmsService } from '../utils/smsService';
+import { buildPhysicianSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
 
 interface DoctorProfilePageProps {
   doctors: Doctor[];
@@ -224,27 +225,6 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
 
   const canonicalUrl = `https://dentalmap.ir/doctor/${doctor.medical_council_code}-${doctor.slug}`;
 
-  // Structured Data Schema.org (Physician / Dentist)
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Dentist',
-    name: `${doctor.first_name} ${doctor.last_name}`,
-    image: doctor.avatar,
-    telephone: '021-88001144',
-    medicalSpecialty: specialty?.title,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'تهران',
-      addressCountry: 'IR',
-      streetAddress: primaryClinic?.address || 'سعادت‌آباد، خیابان سرو غربی'
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: doctor.rating || 4.9,
-      reviewCount: doctor.reviews_count || reviews.length
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
       <SEO
@@ -253,7 +233,14 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
         canonical={canonicalUrl}
         ogImage={doctor.avatar}
         ogType="profile"
-        jsonLd={structuredData}
+        jsonLd={[
+          buildPhysicianSchema(doctor, specialty, primaryClinic),
+          buildBreadcrumbSchema([
+            { name: 'صفحه اصلی', url: '/' },
+            { name: 'دایرکتوری جراحان', url: '/directory' },
+            { name: `دکتر ${doctor.first_name} ${doctor.last_name}`, url: canonicalUrl }
+          ])
+        ]}
       />
 
       {/* Top Breadcrumb Navigation */}

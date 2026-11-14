@@ -26,6 +26,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { DentalComponent, ImplantBrand } from '../types';
+import { SEO } from '../components/SEO';
+import { buildMedicalDeviceSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
 
 interface ComponentDetailPageProps {
   components: DentalComponent[];
@@ -139,34 +141,22 @@ export const ComponentDetailPage: React.FC<ComponentDetailPageProps> = ({
 
   const canonicalUrl = `https://dentalmap.ir/parts/ref/${encodeURIComponent(component.ref_code)}`;
 
-  // Schema.org MedicalDevice / Product
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: component.name_fa,
-    alternateName: component.name_en,
-    image: component.image_url,
-    description: component.description,
-    sku: component.ref_code,
-    mpn: component.lot_number,
-    brand: {
-      '@type': 'Brand',
-      name: brand?.name || 'Dental Map Component'
-    },
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'IRR',
-      price: (component.price_toman * 10).toString(),
-      availability: component.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      <link rel="canonical" href={canonicalUrl} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      <SEO
+        title={`${component.name_fa} (REF: ${component.ref_code}) | شناسنامه فنی قطعات`}
+        description={`استعلام اصالت کارخانه، شماره لات، تکنولوژی سطح، آلیاژ و قیمت رسمی ${component.name_fa} با رفرنس ${component.ref_code} تولید برند ${brand?.name || ''} در دنتال‌مپ.`}
+        canonical={canonicalUrl}
+        ogImage={component.image_url}
+        jsonLd={[
+          buildMedicalDeviceSchema(component, brand),
+          buildBreadcrumbSchema([
+            { name: 'صفحه اصلی', url: '/' },
+            { name: 'کاتالوگ قطعات ۸ گانه', url: '/parts' },
+            { name: brand.name, url: `/brands/${brand.slug || 'straumann'}` },
+            { name: `REF: ${component.ref_code}`, url: canonicalUrl }
+          ])
+        ]}
       />
 
       {/* Top Breadcrumb Navigation */}
