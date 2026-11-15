@@ -1,10 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { HeroSection } from '../components/HeroSection';
+import { ImplantTestHeroBanner } from '../components/ImplantTestHeroBanner';
 import { BlogSection } from '../components/BlogSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
-import { DentalMapRoutes } from '../utils/urlBuilder';
 import {
   buildWebSiteSchema,
   buildOrganizationSchema,
@@ -84,13 +83,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         ]}
       />
 
-      {/* 1. Main Hero Section (نخستین پلتفرم جامع شفافیت ایمپلنتولوژی و تجهیزات دندانپزشکی کشور) */}
-      <HeroSection
-        onSearchClick={() => navigate('/parts')}
-        onOpenPassport={() => navigate('/passport')}
-        onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
-        featuredComponent={components[0]}
-      />
+      {/* 1. Hero Section: بنر آزمون و بازی ۲ دقیقه‌ای انتخاب برند ایمپلنت */}
+      <ImplantTestHeroBanner />
 
       {/* 2. Blog Section (Dynamic Headless WordPress) */}
       <BlogSection posts={blogPosts} onOpenNaxisGuide={() => navigate('/blog')} />
