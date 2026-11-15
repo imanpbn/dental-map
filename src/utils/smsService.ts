@@ -77,8 +77,8 @@ const safeSession = {
 
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
   provider: 'melipayamak',
-  apiKey: '', // کلید وب‌سرویس در گیت‌وی سرورلس محافظت می‌شود و از متغیرهای محیطی لود می‌شود
-  senderNumber: '50004001', // شماره خط اختصاصی (از پنل کاربر)
+  apiKey: '29c3b26d3caf4cd3b865f43a10d1b19d', // کلید تاییدشده کنسول ملی‌پیامک کاربر
+  senderNumber: '50004001', // شماره خط فرستنده
   patternAppointment: '245890', // کد پترن رزرو نوبت
   patternPassport: '245891', // کد پترن پاسپورت ایمپلنت
   patternQuiz: '245892', // کد پترن نتیجه آزمون
@@ -92,6 +92,9 @@ export const SmsService = {
       const data = safeStorage.getItem(STORAGE_KEY_SETTINGS);
       if (data) {
         const parsed = JSON.parse(data);
+        if (!parsed.apiKey) {
+          parsed.apiKey = DEFAULT_SMS_SETTINGS.apiKey;
+        }
         return { ...DEFAULT_SMS_SETTINGS, ...parsed };
       }
     } catch {

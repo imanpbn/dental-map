@@ -377,7 +377,6 @@ export const ImplantTestPage: React.FC = () => {
       if (res.success) {
         setOtpStep('code');
         setOtpTimer(60);
-        if (res.code) setDemoCodeHint(res.code);
         showToast('کد تایید ۵ رقمی پیامک شد ✓');
       } else {
         setOtpError(res.message);
@@ -1049,12 +1048,6 @@ ${list.map((c, i) => `${faNum(i + 1)}. ${c}`).join('\n')}
                       autoFocus
                     />
                   </div>
-
-                  {demoCodeHint && (
-                    <div className="text-[10px] text-slate-500 bg-slate-100 p-2.5 rounded-xl text-center font-mono">
-                      کد تایید ارسال شده جهت تست: <span className="font-bold text-teal-700">{demoCodeHint}</span>
-                    </div>
-                  )}
 
                   {otpError && (
                     <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-fadeIn">
