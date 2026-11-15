@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
   Mail,
@@ -48,39 +49,39 @@ export const Footer: React.FC<FooterProps> = ({
       icon: FileCheck2
     },
     {
-      title: 'عضویت و ثبت‌نام پزشکان و کلینیک‌ها',
-      href: '/doctor-join',
-      icon: UserCheck
+      title: 'آزمون هوشمند انتخاب برند و ارزیابی استخوان',
+      href: '/quiz',
+      icon: Activity
     },
     {
-      title: 'دندانپزشکان و جراحان سراسر کشور',
+      title: 'کاتالوگ جامع و مقایسه برندهای ایمپلنت',
+      href: '/brands',
+      icon: ArrowLeftRight
+    },
+    {
+      title: 'استعلام اصالت قطعات با کد رفرنس (REF)',
+      href: '/parts',
+      icon: Search
+    },
+    {
+      title: 'دایرکتوری جراحان دهان، فک و صورت',
       href: '/dentists',
       icon: Stethoscope
     },
     {
-      title: 'دایرکتوری مراکز شبانه‌روزی و کلینیک‌ها',
+      title: 'مراکز درمانی و کلینیک‌های شبانه‌روزی ۲۴/۷',
       href: '/directory',
       icon: Building
     },
     {
-      title: 'مترجم بیومکانیک تراکم استخوان (D1 تا D4)',
-      href: '/#biomechanics-section',
-      icon: Activity
-    },
-    {
-      title: 'بسته‌های ترکیبی جراحی و پروتز (۴ در ۱)',
-      href: '/#packages-section',
+      title: 'راهنمای پروتزی و تطبیق استاندارد قطعات',
+      href: '/naxis-guide',
       icon: Layers
     },
     {
-      title: 'ماتریس مقایسه سیستم‌های ایمپلنت و میکروگپ',
-      href: '/#comparison-section',
-      icon: ArrowLeftRight
-    },
-    {
-      title: 'استعلام اصالت و کاتالوگ قطعات (REF Code)',
-      href: '/#parts-catalog',
-      icon: Search
+      title: 'عضویت و ثبت‌نام دندانپزشکان و کلینیک‌ها',
+      href: '/doctor-join',
+      icon: UserCheck
     }
   ];
 
@@ -89,180 +90,180 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="bg-slate-950 text-slate-300 pt-16 pb-8 border border-slate-800 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Main 4 Columns Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-12 border-b border-slate-800">
-          
-          {/* Col 1: About Platform & Contact Info */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-500/20">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-lg font-black text-white">دنتال مَپ</span>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-400 leading-relaxed">
-              نخستین سامانه ملی شفافیت قطعات، شناسنامه دیجیتال ۳۲ دندان و دایرکتوری جراحان دهان و فک و صورت ایران. تضمین اصالت و مبارزه با توزیع قطعات غیراستاندارد.
-            </p>
-
-            <div className="text-xs text-slate-400 space-y-2 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-12 border-b border-slate-800">
+            
+            {/* Col 1: About Platform & Contact Info */}
+            <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="font-mono text-slate-200">support@dentalmap.ir</span>
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-500/20">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-lg font-black text-white">دنتال مَپ</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-400 leading-relaxed">
+                نخستین پلتفرم ملی شفافیت قطعات، شناسنامه دیجیتال ۳۲ دندان و دایرکتوری جراحان دهان و فک و صورت ایران. تضمین اصالت و مبارزه با توزیع قطعات غیراستاندارد.
+              </p>
+
+              <div className="text-xs text-slate-400 space-y-2 pt-2">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-mono text-slate-200">support@dentalmap.ir</span>
+                </div>
+              </div>
+
+              {/* ورود ادمین و عضویت پزشکان */}
+              <div className="pt-2 flex flex-col sm:flex-row lg:flex-col gap-2">
+                <Link
+                  to="/doctor-join"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 hover:text-emerald-100 rounded-xl text-xs font-semibold border border-emerald-800/60 transition-colors"
+                >
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>عضویت و ثبت‌نام دندانپزشکان</span>
+                </Link>
+                <button
+                  onClick={onOpenAdmin}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-800 transition-colors cursor-pointer"
+                >
+                  <Lock className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>ورود به پنل مدیریت دنتال‌مپ</span>
+                </button>
               </div>
             </div>
 
-            {/* ورود ادمین و عضویت پزشکان */}
-            <div className="pt-2 flex flex-col sm:flex-row lg:flex-col gap-2">
-              <a
-                href="/doctor-join"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 hover:text-emerald-100 rounded-xl text-xs font-semibold border border-emerald-800/60 transition-colors"
-              >
-                <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>عضویت و ثبت‌نام دندانپزشکان</span>
-              </a>
+            {/* Col 2: دسته‌بندی قطعات */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-4">
+                <Layers className="w-4 h-4 text-emerald-400" />
+                <h4 className="text-sm font-bold text-white">دسته‌بندی قطعات</h4>
+              </div>
+              <ul className="space-y-1.5 text-xs text-slate-400">
+                {categories.map((cat) => (
+                  <li key={cat.id}>
+                    <Link
+                      to={`/parts/${cat.id}`}
+                      className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                    >
+                      <span className="group-hover:translate-x-[-2px] transition-transform">
+                        {cat.name}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono group-hover:text-emerald-400">
+                        #{cat.num}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+                <li className="pt-2">
+                  <Link
+                    to="/parts"
+                    className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-1 text-xs"
+                  >
+                    <span>کاتالوگ جامع همه قطعات (REF)</span>
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: خدمات و ابزارها */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <h4 className="text-sm font-bold text-white">خدمات و ابزارها</h4>
+              </div>
+              <ul className="space-y-1.5 text-xs text-slate-400">
+                {services.map((srv, idx) => {
+                  const IconComponent = srv.icon;
+                  return (
+                    <li key={idx}>
+                      <Link
+                        to={srv.href}
+                        className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                      >
+                        <IconComponent className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 shrink-0" />
+                        <span className="line-clamp-1 group-hover:translate-x-[-2px] transition-transform">
+                          {srv.title}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {/* Col 4: دانشنامه و وبلاگ تخصصی */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen className="w-4 h-4 text-emerald-400" />
+                <h4 className="text-sm font-bold text-white">دانشنامه و وبلاگ</h4>
+              </div>
+              <ul className="space-y-2 text-xs text-slate-400">
+                <li>
+                  <Link
+                    to="/blog"
+                    className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                  >
+                    <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
+                      مقالات و آموزش‌های تخصصی ایمپلنتولوژی
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      بررسی سیستم‌های ایمپلنت و استانداردهای سطحی
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/quiz"
+                    className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
+                  >
+                    <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
+                      آزمون هوشمند انتخاب سیستم ایمپلنت
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      مشاوره بر اساس تراکم استخوان، بودجه و شرایط فک
+                    </span>
+                  </Link>
+                </li>
+                <li className="pt-2">
+                  <Link
+                    to="/blog"
+                    className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-1 text-xs"
+                  >
+                    <span>ورود به دانشنامه و همه مقالات</span>
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div className="flex flex-wrap items-center gap-4">
+              <span>تمام حقوق مادی و معنوی این پلتفرم متعلق به سامانه شفافیت تجهیزات دندانپزشکی «دنتال مَپ» می‌باشد. © ۱۴۰۳</span>
+              <span className="hidden md:inline">|</span>
+              <div className="flex items-center gap-3 text-slate-400">
+                <Link to="/page/about-us" className="hover:text-emerald-400 transition-colors">درباره ما</Link>
+                <span>•</span>
+                <Link to="/page/terms" className="hover:text-emerald-400 transition-colors">قوانین و مقررات</Link>
+                <span>•</span>
+                <Link to="/page/contact" className="hover:text-emerald-400 transition-colors">تماس با ما</Link>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
               <button
-                onClick={onOpenAdmin}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-800 transition-colors cursor-pointer"
+                onClick={scrollToTop}
+                className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
               >
-                <Lock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>ورود به پنل مدیریت دنتال‌مپ</span>
+                <span>بازگشت به بالا</span>
+                <ArrowUp className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
-
-          {/* Col 2: دسته‌بندی قطعات */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-4">
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <h4 className="text-sm font-bold text-white">دسته‌بندی قطعات</h4>
-            </div>
-            <ul className="space-y-1.5 text-xs text-slate-400">
-              {categories.map((cat) => (
-                <li key={cat.id}>
-                  <a
-                    href={`/parts/${cat.id}`}
-                    className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
-                  >
-                    <span className="group-hover:translate-x-[-2px] transition-transform">
-                      {cat.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono group-hover:text-emerald-400">
-                      #{cat.num}
-                    </span>
-                  </a>
-                </li>
-              ))}
-              <li className="pt-2">
-                <a
-                  href="/parts"
-                  className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-1 text-xs"
-                >
-                  <span>کاتالوگ جامع همه قطعات (REF)</span>
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: خدمات و ابزارها */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <h4 className="text-sm font-bold text-white">خدمات و ابزارها</h4>
-            </div>
-            <ul className="space-y-1.5 text-xs text-slate-400">
-              {services.map((srv, idx) => {
-                const IconComponent = srv.icon;
-                return (
-                  <li key={idx}>
-                    <a
-                      href={srv.href}
-                      className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
-                    >
-                      <IconComponent className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 shrink-0" />
-                      <span className="line-clamp-1 group-hover:translate-x-[-2px] transition-transform">
-                        {srv.title}
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          {/* Col 4: دانشنامه و وبلاگ تخصصی */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-4 h-4 text-emerald-400" />
-              <h4 className="text-sm font-bold text-white">دانشنامه و وبلاگ</h4>
-            </div>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li>
-                <a
-                  href="/blog"
-                  className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
-                >
-                  <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
-                    آخرین مقالات و آموزش‌های تخصصی وردپرس
-                  </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
-                    بررسی سیستم‌های ایمپلنت و استانداردهای متالورژی
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/quiz"
-                  className="block py-1.5 px-2 rounded-lg hover:bg-slate-900 hover:text-emerald-400 transition-colors group"
-                >
-                  <span className="block font-medium text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-transform">
-                    آزمون هوشمند انتخاب سیستم ایمپلنت
-                  </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
-                    مشاوره بر اساس تراکم استخوان و بودجه
-                  </span>
-                </a>
-              </li>
-              <li className="pt-2">
-                <a
-                  href="/blog"
-                  className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-1 text-xs"
-                >
-                  <span>ورود به دانشنامه و همه مقالات</span>
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex flex-wrap items-center gap-4">
-            <span>تمام حقوق مادی و معنوی این پلتفرم متعلق به سامانه شفافیت تجهیزات دندانپزشکی «دنتال مَپ» می‌باشد. © ۱۴۰۳</span>
-            <span className="hidden md:inline">|</span>
-            <div className="flex items-center gap-3 text-slate-400">
-              <a href="/page/about-us" className="hover:text-emerald-400 transition-colors">درباره ما</a>
-              <span>•</span>
-              <a href="/page/terms" className="hover:text-emerald-400 transition-colors">قوانین و مقررات</a>
-              <span>•</span>
-              <a href="/page/contact" className="hover:text-emerald-400 transition-colors">تماس با ما</a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              onClick={scrollToTop}
-              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
-            >
-              <span>بازگشت به بالا</span>
-              <ArrowUp className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
       </div>
     </footer>
   );
