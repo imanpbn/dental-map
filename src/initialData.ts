@@ -302,6 +302,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 248,
     experience_years: 17,
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
+    technologies: ['digital_guided', 'all_on_4', 'bone_graft', 'sleep_dentistry'],
     verified: true
   },
   {
@@ -319,6 +320,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 189,
     experience_years: 14,
     avatar: 'https://images.unsplash.com/photo-1594824813589-9133ca0f074d?auto=format&fit=crop&q=80&w=256',
+    technologies: ['digital_guided', 'immediate_loading', 'installment_plan'],
     verified: true
   },
   {
@@ -336,6 +338,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 312,
     experience_years: 19,
     avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256',
+    technologies: ['immediate_loading', 'bone_graft', 'digital_guided'],
     verified: true
   },
   {
@@ -353,6 +356,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 164,
     experience_years: 12,
     avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256',
+    technologies: ['all_on_4', 'installment_plan', 'immediate_loading'],
     verified: true
   },
   {
@@ -370,6 +374,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 98,
     experience_years: 9,
     avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=256',
+    technologies: ['digital_guided', 'installment_plan'],
     verified: true
   },
   {
@@ -387,6 +392,7 @@ export const initialDoctors: Doctor[] = [
     reviews_count: 142,
     experience_years: 11,
     avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256',
+    technologies: ['sleep_dentistry'],
     verified: true
   }
 ];
@@ -419,6 +425,7 @@ export const initialClinics: Clinic[] = [
       all: '۲۴ ساعته حتی در ایام تعطیل رسمی'
     },
     is_free_tariff_only: false,
+    technologies: ['digital_guided', 'immediate_loading', 'sleep_dentistry', 'all_on_4', 'bone_graft', 'installment_plan'],
     image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=400'
   },
   {
@@ -439,6 +446,7 @@ export const initialClinics: Clinic[] = [
       آنکال: 'پاسخگویی شبانه‌روزی اورژانس جراحی'
     },
     is_free_tariff_only: false,
+    technologies: ['digital_guided', 'immediate_loading', 'installment_plan'],
     image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400'
   },
   {
@@ -457,6 +465,7 @@ export const initialClinics: Clinic[] = [
       شنبه_تا_چهارشنبه: '۱۰:۰۰ الی ۱۹:۰۰'
     },
     is_free_tariff_only: true, // صرفا تعرفه آزاد
+    technologies: ['digital_guided', 'all_on_4', 'bone_graft', 'sleep_dentistry'],
     image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=400'
   },
   {
@@ -475,6 +484,7 @@ export const initialClinics: Clinic[] = [
       all: '۲۴ ساعته شبانه‌روزی با بخش اورژانس و بیهوشی دندانپزشکی'
     },
     is_free_tariff_only: false,
+    technologies: ['sleep_dentistry', 'bone_graft', 'all_on_4', 'digital_guided'],
     image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400'
   },
   {
@@ -493,6 +503,7 @@ export const initialClinics: Clinic[] = [
       شنبه_تا_پنجشنبه: '۰۹:۰۰ الی ۲۱:۰۰'
     },
     is_free_tariff_only: false,
+    technologies: ['digital_guided', 'immediate_loading', 'installment_plan'],
     image: 'https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&q=80&w=400'
   }
 ];

@@ -87,6 +87,14 @@ export interface Specialty {
   slug: string;
 }
 
+export type ClinicalTechnology =
+  | 'digital_guided'      // ایمپلنت دیجیتال و هدایت‌شده (پانچ / Guided)
+  | 'immediate_loading'   // ایمپلنت فوری یک‌روزه (Same-Day)
+  | 'sleep_dentistry'     // سدیشن و جراحی در خواب (Sleep Dentistry)
+  | 'all_on_4'            // بازسازی کامل فک (All-on-4 / All-on-6)
+  | 'bone_graft'          // پیوند استخوان پیشرفته و سینوس لیفت
+  | 'installment_plan';   // شرایط اقساطی و پرداخت چکی
+
 export interface Doctor {
   id: number;
   first_name: string;
@@ -103,6 +111,7 @@ export interface Doctor {
   experience_years: number;
   avatar: string;
   verified: boolean;
+  technologies?: ClinicalTechnology[];
   created_at?: string;
 }
 
@@ -128,6 +137,7 @@ export interface Clinic {
   is_24_7: boolean;
   working_hours?: Record<string, string>;
   is_free_tariff_only: boolean;
+  technologies?: ClinicalTechnology[];
   image?: string;
   created_at?: string;
 }

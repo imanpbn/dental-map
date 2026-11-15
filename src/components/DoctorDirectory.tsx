@@ -40,8 +40,10 @@ import {
   DoctorImplantType,
   LeadValuationRecord,
   Gender,
-  CenterType
+  CenterType,
+  ClinicalTechnology
 } from '../types';
+import { CLINICAL_TECHNOLOGIES, CLINICAL_TECHNOLOGY_LIST } from '../utils/clinicalTechnologies';
 
 interface DoctorDirectoryProps {
   doctors: Doctor[];
@@ -93,6 +95,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
   const [passportCommittedOnly, setPassportCommittedOnly] = useState(false);
   const [genderFilter, setGenderFilter] = useState<Gender | 'all'>('all');
   const [centerTypeFilter, setCenterTypeFilter] = useState<CenterType | 'all'>('all');
+  const [selectedTechnology, setSelectedTechnology] = useState<ClinicalTechnology | 'all'>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
@@ -129,6 +132,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     setSelectedCityId('all');
     setSelectedDistrictId('all');
     setSelectedInsuranceId('all');
+    setSelectedTechnology('all');
     setAppointmentMode('office');
     setSortMode('default');
     setSearchQuery('');
@@ -192,7 +196,14 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
         if (!matchesType && docClinics.length > 0) return false;
       }
 
-      // 5. Search Query (name, bio, medical council code)
+      // 5. Clinical Technology filter
+      if (selectedTechnology !== 'all') {
+        const docHasTech = doc.technologies?.includes(selectedTechnology);
+        const clinicHasTech = docClinics.some((c) => c.technologies?.includes(selectedTechnology));
+        if (!docHasTech && !clinicHasTech) return false;
+      }
+
+      // 6. Search Query (name, bio, medical council code)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const fullName = `${doc.first_name} ${doc.last_name}`.toLowerCase();
@@ -214,6 +225,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     selectedCityId,
     selectedDistrictId,
     selectedInsuranceId,
+    selectedTechnology,
     genderFilter,
     passportCommittedOnly,
     is24_7Only,
@@ -251,6 +263,10 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
         if (!hasIns) return false;
       }
 
+      if (selectedTechnology !== 'all' && !clinic.technologies?.includes(selectedTechnology)) {
+        return false;
+      }
+
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         if (!clinic.name.toLowerCase().includes(q) && !clinic.address.toLowerCase().includes(q)) {
@@ -268,6 +284,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     is24_7Only,
     centerTypeFilter,
     selectedInsuranceId,
+    selectedTechnology,
     searchQuery
   ]);
 
@@ -569,7 +586,29 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                   </div>
                 </div>
 
-                {/* 4. جستجوی متنی نام پزشک یا کلینیک */}
+                {/* 4. متد و تکنولوژی درمانی */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                    تکنولوژی و متد درمان
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedTechnology}
+                      onChange={(e) => setSelectedTechnology(e.target.value as any)}
+                      className="w-full py-2.5 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="all">همه تکنولوژی‌ها و متدها</option>
+                      {CLINICAL_TECHNOLOGY_LIST.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.shortTitle}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* 5. جستجوی متنی نام پزشک یا کلینیک */}
                 <div>
                   <label className="block text-xs font-bold text-slate-800 mb-1.5">
                     نام پزشک یا مرکز درمانی
@@ -789,6 +828,56 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
               </div>
             )}
 
+            {/* Clinical Technology Quick Filter Chips (Global Directory Standard - Zocdoc / RealSelf) */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-3 sm:p-3.5 shadow-2xs">
+              <div className="flex items-center justify-between mb-2.5 px-1">
+                <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>فیلتر بر اساس متد جراحی و تکنولوژی درمان:</span>
+                </span>
+                {selectedTechnology !== 'all' && (
+                  <button
+                    onClick={() => setSelectedTechnology('all')}
+                    className="text-[11px] text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>حذف فیلتر تکنولوژی</span>
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+                <button
+                  onClick={() => setSelectedTechnology('all')}
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                    selectedTechnology === 'all'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                >
+                  <span>همه متدها</span>
+                </button>
+                {CLINICAL_TECHNOLOGY_LIST.map((tech) => {
+                  const Icon = tech.icon;
+                  const isSelected = selectedTechnology === tech.id;
+                  return (
+                    <button
+                      key={tech.id}
+                      onClick={() => setSelectedTechnology(isSelected ? 'all' : tech.id)}
+                      title={tech.description}
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                        isSelected
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                          : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-emerald-600'}`} />
+                      <span>{tech.shortTitle}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Results Count & Tabs */}
             <div className="flex items-center justify-between text-xs text-slate-500 px-1">
               <span>
@@ -966,6 +1055,32 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                                   )}
                                 </div>
                               )}
+
+                              {/* Clinical Technology Badges */}
+                              {((doc.technologies && doc.technologies.length > 0) ||
+                                (primaryClinic?.technologies && primaryClinic.technologies.length > 0)) && (
+                                <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                                  {Array.from(
+                                    new Set([...(doc.technologies || []), ...(primaryClinic?.technologies || [])])
+                                  )
+                                    .slice(0, 4)
+                                    .map((techKey) => {
+                                      const tech = CLINICAL_TECHNOLOGIES[techKey];
+                                      if (!tech) return null;
+                                      const TechIcon = tech.icon;
+                                      return (
+                                        <span
+                                          key={techKey}
+                                          title={tech.description}
+                                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${tech.badgeBg} ${tech.badgeText} ${tech.badgeBorder}`}
+                                        >
+                                          <TechIcon className="w-3 h-3 shrink-0" />
+                                          <span>{tech.badgeLabel}</span>
+                                        </span>
+                                      );
+                                    })}
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -1091,6 +1206,27 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                                     {ins.name}
                                   </span>
                                 ))}
+                              </div>
+                            )}
+
+                            {/* Clinic Technologies */}
+                            {clinic.technologies && clinic.technologies.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                                {clinic.technologies.slice(0, 4).map((techKey) => {
+                                  const tech = CLINICAL_TECHNOLOGIES[techKey];
+                                  if (!tech) return null;
+                                  const TechIcon = tech.icon;
+                                  return (
+                                    <span
+                                      key={techKey}
+                                      title={tech.description}
+                                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${tech.badgeBg} ${tech.badgeText} ${tech.badgeBorder}`}
+                                    >
+                                      <TechIcon className="w-3 h-3 shrink-0" />
+                                      <span>{tech.badgeLabel}</span>
+                                    </span>
+                                  );
+                                })}
                               </div>
                             )}
                           </div>

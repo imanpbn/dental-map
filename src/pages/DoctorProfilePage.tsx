@@ -24,7 +24,8 @@ import {
   Activity,
   HeartHandshake
 } from 'lucide-react';
-import { Doctor, Specialty, Clinic, ImplantBrand, ClinicDoctor } from '../types';
+import { Doctor, Specialty, Clinic, ImplantBrand, ClinicDoctor, ClinicalTechnology } from '../types';
+import { CLINICAL_TECHNOLOGIES } from '../utils/clinicalTechnologies';
 import { DentalMapRoutes } from '../utils/urlBuilder';
 import { SmsService } from '../utils/smsService';
 import { buildPhysicianSchema, buildBreadcrumbSchema } from '../utils/schemaBuilder';
@@ -222,6 +223,10 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
     setNewReviewName('');
     setNewReviewComment('');
   };
+
+  const doctorTechs = (doctor.technologies && doctor.technologies.length > 0)
+    ? doctor.technologies
+    : (['digital_guided', 'immediate_loading', 'installment_plan'] as ClinicalTechnology[]);
 
   const canonicalUrl = `https://dentalmap.ir/doctor/${doctor.medical_council_code}-${doctor.slug}`;
 
@@ -422,6 +427,59 @@ export const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
                 دیجیتال سه‌بعدی (Guided Surgery).
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* ============================================================ */}
+        {/* CLINICAL TECHNOLOGIES & SURGICAL METHODS (Global Directory Standard) */}
+        {/* ============================================================ */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+            <div>
+              <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                <span>متدها و تکنولوژی‌های جراحی تحت پوشش این پزشک:</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                بهره‌گیری از پروتکل‌های درمانی مدرن دندانپزشکی بر اساس استانداردهای بین‌المللی (FDI)
+              </p>
+            </div>
+            <span className="text-xs font-mono font-bold text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-xl">
+              تجهیزات و متدهای بالینی
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {doctorTechs.map((techKey) => {
+              const tech = CLINICAL_TECHNOLOGIES[techKey];
+              if (!tech) return null;
+              const TechIcon = tech.icon;
+              return (
+                <div
+                  key={techKey}
+                  className="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-emerald-400 transition-all space-y-2.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-black text-slate-900 text-sm">
+                      <div className={`p-2 rounded-xl border ${tech.badgeBg} ${tech.badgeText} ${tech.badgeBorder}`}>
+                        <TechIcon className="w-4 h-4" />
+                      </div>
+                      <span>{tech.shortTitle}</span>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${tech.badgeBg} ${tech.badgeText} ${tech.badgeBorder}`}>
+                      {tech.badgeLabel}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {tech.description}
+                  </p>
+                  <div className="text-[11px] text-emerald-700 font-bold pt-2 border-t border-slate-200/60 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>ارائه خدمات در نوبت‌های بالینی</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
