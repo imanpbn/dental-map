@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
+import { HeroSection } from '../components/HeroSection';
 import { BlogSection } from '../components/BlogSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
+import { DentalMapRoutes } from '../utils/urlBuilder';
 import {
   buildWebSiteSchema,
   buildOrganizationSchema,
@@ -51,6 +53,7 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
+  components = [],
   blogPosts = []
 }) => {
   const navigate = useNavigate();
@@ -81,10 +84,18 @@ export const HomePage: React.FC<HomePageProps> = ({
         ]}
       />
 
-      {/* Blog Section (Dynamic Headless WordPress) */}
+      {/* 1. Main Hero Section (نخستین پلتفرم جامع شفافیت ایمپلنتولوژی و تجهیزات دندانپزشکی کشور) */}
+      <HeroSection
+        onSearchClick={() => navigate('/parts')}
+        onOpenPassport={() => navigate('/passport')}
+        onSelectComponent={(comp) => navigate(DentalMapRoutes.partByRef(comp.ref_code))}
+        featuredComponent={components[0]}
+      />
+
+      {/* 2. Blog Section (Dynamic Headless WordPress) */}
       <BlogSection posts={blogPosts} onOpenNaxisGuide={() => navigate('/blog')} />
 
-      {/* Testimonials Section */}
+      {/* 3. Testimonials Section */}
       <TestimonialsSection />
     </div>
   );
