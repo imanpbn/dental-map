@@ -371,6 +371,40 @@ export const SupabaseSyncService = {
     }
   },
 
+  // --- Patient Leads Sync ---
+  async syncPatientLead(lead: {
+    mobile: string;
+    score: number;
+    profile_title: string;
+    preferred_brand?: string;
+  }): Promise<boolean> {
+    if (!supabase) return false;
+    try {
+      const { error } = await supabase.from('patient_leads').insert([lead]);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.warn('Supabase syncPatientLead failed:', err);
+      return false;
+    }
+  },
+
+  async fetchPatientLeads(): Promise<any[]> {
+    if (!supabase) return [];
+    try {
+      const { data, error } = await supabase
+        .from('patient_leads')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.warn('Supabase fetchPatientLeads failed:', err);
+      return [];
+    }
+  },
+
   /**
    * Migrate/Sync all local memory data into Supabase
    */

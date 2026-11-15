@@ -6,6 +6,75 @@ export { normalizeIranMobile, isValidIranMobile };
 const STORAGE_KEY_SETTINGS = 'dentalmap_sms_settings';
 const STORAGE_KEY_LOGS = 'dentalmap_sms_logs';
 
+const memoryStore: Record<string, string> = {};
+const sessionStore: Record<string, string> = {};
+
+const safeStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+      return memoryStore[key] || null;
+    } catch {
+      return memoryStore[key] || null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch {
+      // ignore
+    }
+    memoryStore[key] = value;
+  },
+  removeItem(key: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {
+      // ignore
+    }
+    delete memoryStore[key];
+  }
+};
+
+const safeSession = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        return window.sessionStorage.getItem(key);
+      }
+      return sessionStore[key] || null;
+    } catch {
+      return sessionStore[key] || null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.setItem(key, value);
+      }
+    } catch {
+      // ignore
+    }
+    sessionStore[key] = value;
+  },
+  removeItem(key: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.removeItem(key);
+      }
+    } catch {
+      // ignore
+    }
+    delete sessionStore[key];
+  }
+};
+
 export const DEFAULT_SMS_SETTINGS: SmsSettings = {
   provider: 'melipayamak',
   apiKey: '', // کلید وب‌سرویس در گیت‌وی سرورلس محافظت می‌شود و از متغیرهای محیطی لود می‌شود
@@ -20,7 +89,7 @@ export const DEFAULT_SMS_SETTINGS: SmsSettings = {
 export const SmsService = {
   getSettings(): SmsSettings {
     try {
-      const data = localStorage.getItem(STORAGE_KEY_SETTINGS);
+      const data = safeStorage.getItem(STORAGE_KEY_SETTINGS);
       if (data) {
         const parsed = JSON.parse(data);
         return { ...DEFAULT_SMS_SETTINGS, ...parsed };
@@ -50,13 +119,13 @@ export const SmsService = {
   saveSettings(settings: Partial<SmsSettings>): SmsSettings {
     const current = this.getSettings();
     const updated = { ...current, ...settings };
-    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
+    safeStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
     return updated;
   },
 
   getLogs(): SmsLogRecord[] {
     try {
-      const data = localStorage.getItem(STORAGE_KEY_LOGS);
+      const data = safeStorage.getItem(STORAGE_KEY_LOGS);
       if (data) {
         return JSON.parse(data);
       }
@@ -76,12 +145,12 @@ export const SmsService = {
     logs.unshift(record);
     // Keep last 100 logs
     const trimmed = logs.slice(0, 100);
-    localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(trimmed));
+    safeStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(trimmed));
     return record;
   },
 
   clearLogs(): void {
-    localStorage.removeItem(STORAGE_KEY_LOGS);
+    safeStorage.removeItem(STORAGE_KEY_LOGS);
   },
 
   /**
@@ -265,7 +334,7 @@ export const SmsService = {
     const expiresAt = Date.now() + 3 * 60 * 1000; // 3 minutes validity
 
     try {
-      sessionStorage.setItem(`dm_otp_${cleanMobile}`, JSON.stringify({ code, expiresAt }));
+      safeSession.setItem(`dm_otp_${cleanMobile}`, JSON.stringify({ code, expiresAt }));
     } catch {
       // fallback
     }
@@ -307,7 +376,7 @@ export const SmsService = {
     }
 
     try {
-      const stored = sessionStorage.getItem(`dm_otp_${cleanMobile}`);
+      const stored = safeSession.getItem(`dm_otp_${cleanMobile}`);
       if (!stored) {
         return {
           success: false,
@@ -316,7 +385,7 @@ export const SmsService = {
       }
       const data = JSON.parse(stored);
       if (Date.now() > data.expiresAt) {
-        sessionStorage.removeItem(`dm_otp_${cleanMobile}`);
+        safeSession.removeItem(`dm_otp_${cleanMobile}`);
         return {
           success: false,
           message: 'مهلت استفاده از کد تایید به پایان رسیده است. لطفاً کد جدید دریافت کنید.'
@@ -330,8 +399,8 @@ export const SmsService = {
       }
 
       // Successful OTP
-      sessionStorage.removeItem(`dm_otp_${cleanMobile}`);
-      localStorage.setItem('dm_verified_mobile', cleanMobile);
+      safeSession.removeItem(`dm_otp_${cleanMobile}`);
+      safeStorage.setItem('dm_verified_mobile', cleanMobile);
       return { success: true, message: 'شماره تلفن همراه شما با موفقیت تایید و اعتبارسنجی شد ✓' };
     } catch {
       return { success: false, message: 'خطا در بررسی کد تایید پیامکی.' };
@@ -340,7 +409,7 @@ export const SmsService = {
 
   getVerifiedMobile(): string | null {
     try {
-      return localStorage.getItem('dm_verified_mobile');
+      return safeStorage.getItem('dm_verified_mobile');
     } catch {
       return null;
     }

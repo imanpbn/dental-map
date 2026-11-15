@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SmsService } from '../utils/smsService';
+import { SupabaseSyncService } from '../utils/supabaseClient';
 import { faNum, normalizeIranMobile, isValidIranMobile } from '../utils/formatters';
 
 interface QuestionOption {
@@ -402,18 +403,27 @@ export const ImplantTestPage: React.FC = () => {
         showToast(res.message);
         playBeep(750, 0.18);
 
-        // Record verified lead locally for CRM
+        // Record verified lead locally for CRM & sync to Supabase
         try {
           const profile = PROFILES[calculatedProfile];
           const lead = {
             mobile: clean,
             score: normScore,
             profile: profile?.t,
-            createdAt: new Date().toISOString()
+            profile_title: profile?.t,
+            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString()
           };
           const existingLeads = JSON.parse(localStorage.getItem('dentalmap_verified_leads') || '[]');
           existingLeads.unshift(lead);
           localStorage.setItem('dentalmap_verified_leads', JSON.stringify(existingLeads.slice(0, 100)));
+
+          // Sync to Supabase in background
+          SupabaseSyncService.syncPatientLead({
+            mobile: clean,
+            score: normScore,
+            profile_title: profile?.t || 'کاربر آزمون'
+          }).catch(() => {});
         } catch {
           // ignore
         }

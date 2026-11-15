@@ -151,6 +151,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     CmsStorageService.getIssuedPassports()
   );
 
+  // Verified Patient Leads from Quiz
+  const [patientLeads, setPatientLeads] = useState<any[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('dentalmap_verified_leads') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    SupabaseSyncService.fetchPatientLeads().then((remoteLeads) => {
+      if (remoteLeads && remoteLeads.length > 0) {
+        setPatientLeads((local) => {
+          const remoteMobiles = new Set(remoteLeads.map((r: any) => r.mobile));
+          const uniqueLocal = local.filter((l: any) => !remoteMobiles.has(l.mobile));
+          return [...remoteLeads, ...uniqueLocal];
+        });
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (doctorApplications) {
       setApplications(doctorApplications);
@@ -2018,6 +2039,74 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           {/* ---------------------------------------------------------------- */}
           {activeSection === 'leads' && (
             <div className="space-y-6">
+              {/* 1. Verified Patient Leads (سرنخ‌های واقعی بیماران حاصل از آزمون هوشمند) */}
+              <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
+                      <Smartphone className="w-5 h-5 text-emerald-600" />
+                      <span>سرنخ‌های تاییدشده بیماران (آزمون هوشمند هیرو):</span>
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1">
+                      بیمارانی که آزمون ۲ دقیقه‌ای انتخاب برند را در صفحه اصلی با پیامک OTP تکمیل و اعتبارسنجی کرده‌اند.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 self-start sm:self-auto">
+                    {patientLeads.length} سرنخ ثبت‌شده
+                  </span>
+                </div>
+
+                {patientLeads.length === 0 ? (
+                  <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-xs text-slate-500">
+                    هنوز سرنخ بیماری ثبت نشده است. با تکمیل آزمون ۲ دقیقه‌ای در صفحه اصلی، اطلاعات در این جدول ظاهر می‌شوند.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-right text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-200 text-slate-500 bg-slate-50/50">
+                          <th className="p-3 font-bold">شماره همراه</th>
+                          <th className="p-3 font-bold">امتیاز آگاهی</th>
+                          <th className="p-3 font-bold">تیپ شخصیتی / شرایط فک</th>
+                          <th className="p-3 font-bold">تاریخ ثبت</th>
+                          <th className="p-3 font-bold text-center">اقدام</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {patientLeads.map((lead: any, idx: number) => (
+                          <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3 font-mono font-bold text-slate-900 dir-ltr text-right">
+                              {lead.mobile}
+                            </td>
+                            <td className="p-3">
+                              <span className="inline-flex items-center gap-1 font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                {lead.score} / ۱۰۰
+                              </span>
+                            </td>
+                            <td className="p-3 font-medium text-slate-700">
+                              {lead.profile || lead.profile_title || 'آینده‌نگر'}
+                            </td>
+                            <td className="p-3 font-mono text-[11px] text-slate-500">
+                              {lead.createdAt || lead.created_at ? new Date(lead.createdAt || lead.created_at).toLocaleString('fa-IR') : 'به‌تازگی'}
+                            </td>
+                            <td className="p-3 text-center">
+                              <a
+                                href={`tel:${lead.mobile}`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition-colors"
+                              >
+                                <PhoneCall className="w-3 h-3" />
+                                <span>تماس جهت مشاوره</span>
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* 2. M&A Lead Engine (ارزش‌گذاری اقتصادی مراکز درمانی) */}
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-black text-slate-900">

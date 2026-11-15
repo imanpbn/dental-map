@@ -380,3 +380,14 @@ export interface IssuedPassport {
   notes?: string;
   status: 'active' | 'revoked';
 }
+
+// Patient Lead generated from Quiz & Consultations
+export interface PatientLead {
+  id?: number | string;
+  mobile: string;
+  score: number;
+  profile_title: string;
+  preferred_brand?: string;
+  created_at: string;
+}
+

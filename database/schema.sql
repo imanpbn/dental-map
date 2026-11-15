@@ -1,6 +1,7 @@
 -- ==========================================
 -- 0. CLEAN RESET (FOR RE-RUNNABILITY & IDEMPOTENCY)
 -- ==========================================
+DROP TABLE IF EXISTS patient_leads CASCADE;
 DROP TABLE IF EXISTS lead_valuations CASCADE;
 DROP TABLE IF EXISTS admin_users CASCADE;
 DROP TABLE IF EXISTS site_settings CASCADE;
@@ -288,6 +289,17 @@ CREATE TABLE lead_valuations (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE patient_leads (
+    id SERIAL PRIMARY KEY,
+    mobile VARCHAR(20) NOT NULL,
+    score INT NOT NULL,
+    profile_title VARCHAR(150),
+    preferred_brand VARCHAR(100),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_patient_leads_created_at ON patient_leads(created_at DESC);
+
 -- ==========================================
 -- 6.5. ADMIN & AUTHENTICATION DOMAIN
 -- ==========================================
@@ -382,6 +394,7 @@ ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lead_valuations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE patient_leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- 2. Public Read Policies (Allow anyone, anon & authenticated, to browse public dental portal data)
@@ -407,6 +420,7 @@ CREATE POLICY "Public read site_settings" ON site_settings FOR SELECT USING (tru
 
 -- 3. Public Insert for Patient Leads (Patients can submit lead/appointment requests, but cannot read others)
 CREATE POLICY "Public create lead valuations" ON lead_valuations FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Public create patient leads" ON patient_leads FOR INSERT TO anon, authenticated WITH CHECK (true);
 
 -- 4. Admin Write Policies (Only authenticated administrative sessions or service_role can modify or delete)
 CREATE POLICY "Admin write countries" ON countries FOR ALL TO authenticated USING (true) WITH CHECK (true);
@@ -429,5 +443,6 @@ CREATE POLICY "Admin write blog_posts" ON blog_posts FOR ALL TO authenticated US
 CREATE POLICY "Admin write pages" ON pages FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write site_settings" ON site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin manage lead valuations" ON lead_valuations FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin manage patient leads" ON patient_leads FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin manage admin_users" ON admin_users FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
