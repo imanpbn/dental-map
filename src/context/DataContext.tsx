@@ -8,6 +8,7 @@ import {
   ClinicalPackage,
   ImplantBrand,
   SiteSettings,
+  PinnedDoctorsConfig,
   DoctorApplication,
   ClinicInsurance,
   ToothPassportRecord,
@@ -51,6 +52,13 @@ export interface DataContextType {
   setLeadValuations: React.Dispatch<React.SetStateAction<Record<number, LeadValuationRecord>>>;
   selectedCategory: string;
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  pinnedDoctorsConfig: PinnedDoctorsConfig;
+  setPinnedDoctorsConfig: (config: PinnedDoctorsConfig) => void;
+  handleSetDoctorPinPlacement: (
+    doctorId: number,
+    placement: 'top' | 'bottom' | 'none',
+    slotIndex?: number
+  ) => void;
 
   // Actions
   handleAddDoctorApplication: (newApp: DoctorApplication) => void;
@@ -152,6 +160,63 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTeethPassport((prev) =>
       prev.map((t) => (t.tooth_number === updated.tooth_number ? updated : t))
     );
+  };
+
+  // Pinned Doctors Configuration for Directory
+  const pinnedDoctorsConfig: PinnedDoctorsConfig = siteSettings.pinned_doctors || {
+    is_active: false,
+    top_doctor_ids: [],
+    bottom_doctor_ids: []
+  };
+
+  const setPinnedDoctorsConfig = (config: PinnedDoctorsConfig) => {
+    setSiteSettings((prev) => {
+      const updated = { ...prev, pinned_doctors: config };
+      CmsStorageService.saveSettings(updated);
+      return updated;
+    });
+  };
+
+  const handleSetDoctorPinPlacement = (
+    doctorId: number,
+    placement: 'top' | 'bottom' | 'none',
+    slotIndex?: number
+  ) => {
+    const current = {
+      ...(siteSettings.pinned_doctors || {
+        is_active: true,
+        top_doctor_ids: [],
+        bottom_doctor_ids: []
+      })
+    };
+
+    // Remove doctor from both top and bottom first to avoid duplicates
+    let newTop = (current.top_doctor_ids || []).filter((id) => id !== doctorId);
+    let newBottom = (current.bottom_doctor_ids || []).filter((id) => id !== doctorId);
+
+    if (placement === 'top') {
+      if (typeof slotIndex === 'number' && slotIndex >= 0 && slotIndex < 3) {
+        newTop.splice(slotIndex, 0, doctorId);
+      } else {
+        newTop.push(doctorId);
+      }
+      newTop = newTop.slice(0, 3); // Max 3 at top
+    } else if (placement === 'bottom') {
+      if (typeof slotIndex === 'number' && slotIndex >= 0 && slotIndex < 2) {
+        newBottom.splice(slotIndex, 0, doctorId);
+      } else {
+        newBottom.push(doctorId);
+      }
+      newBottom = newBottom.slice(0, 2); // Max 2 at bottom
+    }
+
+    const updatedConfig: PinnedDoctorsConfig = {
+      is_active: true,
+      top_doctor_ids: newTop,
+      bottom_doctor_ids: newBottom
+    };
+
+    setPinnedDoctorsConfig(updatedConfig);
   };
 
   // Refresh WordPress Data (with TTL caching support)
@@ -263,6 +328,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLeadValuations,
         selectedCategory,
         setSelectedCategory,
+        pinnedDoctorsConfig,
+        setPinnedDoctorsConfig,
+        handleSetDoctorPinPlacement,
         handleAddDoctorApplication,
         handleRecordLead,
         handleToggleDoctorVerification,

@@ -7,6 +7,7 @@ import {
   ClinicalPackage,
   ImplantBrand,
   SiteSettings,
+  PinnedDoctorsConfig,
   DoctorApplication,
   IssuedPassport
 } from '../types';
@@ -42,7 +43,12 @@ export const defaultSiteSettings: SiteSettings = {
   announcement: 'سامانه استعلام اصالت کد رفرنس و گارانتی اصالت ایمپلنت در سراسر کشور فعال است.',
   meta_description: 'نخستین سامانه شفافیت قطعات ایمپلنت، صدور پاسپورت دیجیتال ۳۲ دندان، کاتالوگ ۸ گانه و دایرکتوری جراحان دارای کد نظام پزشکی ایران.',
   canonical_domain: 'https://dentalmap.ir',
-  is_lead_engine_active: true
+  is_lead_engine_active: true,
+  pinned_doctors: {
+    is_active: false,
+    top_doctor_ids: [],
+    bottom_doctor_ids: []
+  }
 };
 
 export const CmsStorageService = {
@@ -163,6 +169,21 @@ export const CmsStorageService = {
   },
   saveSettings(settings: SiteSettings): void {
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+  },
+  getPinnedDoctorsConfig(): PinnedDoctorsConfig {
+    const settings = this.getSettings();
+    return (
+      settings.pinned_doctors || {
+        is_active: false,
+        top_doctor_ids: [],
+        bottom_doctor_ids: []
+      }
+    );
+  },
+  savePinnedDoctorsConfig(config: PinnedDoctorsConfig): void {
+    const settings = this.getSettings();
+    const updated = { ...settings, pinned_doctors: config };
+    this.saveSettings(updated);
   },
 
   // Doctor & Clinic Onboarding Applications

@@ -83,6 +83,7 @@ import { DoctorImportService } from '../utils/doctorImportService';
 import { DoctorApplicationsSection } from './admin/DoctorApplicationsSection';
 import { PassportsSection } from './admin/PassportsSection';
 import { SettingsSection } from './admin/SettingsSection';
+import { DirectoryPinManager } from './admin/DirectoryPinManager';
 
 interface AdminPageProps {
   doctors: Doctor[];
@@ -1454,6 +1455,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                 </div>
 
+                {/* Directory Pin Manager */}
+                <DirectoryPinManager
+                  doctors={doctors}
+                  specialties={initialSpecialties}
+                  showToast={showToast}
+                />
+
                 {/* Statistics Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
@@ -1602,6 +1610,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                                     <span className="text-[10px] text-slate-500 block">
                                       {doc.gender === 'male' ? 'آقا' : 'خانم'} • رده سنی: {doc.patient_age_group}
                                     </span>
+                                    {siteSettings.pinned_doctors?.is_active && siteSettings.pinned_doctors.top_doctor_ids?.includes(doc.id) && (
+                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[9px] font-bold mt-1 w-fit">
+                                        📌 پین بالا (جایگاه {siteSettings.pinned_doctors.top_doctor_ids.indexOf(doc.id) + 1})
+                                      </span>
+                                    )}
+                                    {siteSettings.pinned_doctors?.is_active && siteSettings.pinned_doctors.bottom_doctor_ids?.includes(doc.id) && (
+                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 text-[9px] font-bold mt-1 w-fit">
+                                        📌 پین پایین (جایگاه {siteSettings.pinned_doctors.bottom_doctor_ids.indexOf(doc.id) + 1})
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
                               </td>

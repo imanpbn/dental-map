@@ -112,6 +112,8 @@ export interface Doctor {
   avatar: string;
   verified: boolean;
   technologies?: ClinicalTechnology[];
+  pin_placement?: 'top' | 'bottom' | 'none'; // جایگاه پین در دایرکتوری
+  pin_order?: number; // اولویت در جایگاه پین (1, 2, 3)
   created_at?: string;
 }
 
@@ -325,6 +327,13 @@ export interface SmsLogRecord {
   created_at: string;
 }
 
+// Pinned Doctors Configuration for Directory (حداکثر ۳ پزشک در بالا و ۲ پزشک در انتها)
+export interface PinnedDoctorsConfig {
+  is_active: boolean; // فعال بودن قابلیت پین
+  top_doctor_ids: number[]; // آرایه حداکثر ۳ شناسه پزشک برای ردیف‌های اول دایرکتوری
+  bottom_doctor_ids: number[]; // آرایه حداکثر ۲ شناسه پزشک برای ردیف‌های آخر دایرکتوری
+}
+
 // Global Site Settings for WordPress-style CMS
 export interface SiteSettings {
   hotline: string;
@@ -334,6 +343,7 @@ export interface SiteSettings {
   canonical_domain: string;
   is_lead_engine_active: boolean;
   sms_settings?: SmsSettings;
+  pinned_doctors?: PinnedDoctorsConfig;
 }
 
 // Doctor & Clinic Self-Serve Onboarding Application Model

@@ -44,6 +44,7 @@ import {
   ClinicalTechnology
 } from '../types';
 import { CLINICAL_TECHNOLOGIES, CLINICAL_TECHNOLOGY_LIST } from '../utils/clinicalTechnologies';
+import { useData } from '../context/DataContext';
 
 interface DoctorDirectoryProps {
   doctors: Doctor[];
@@ -247,6 +248,64 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
     }
     return list; // default
   }, [filteredDoctors, sortMode]);
+
+  // DataContext access for Pinned Doctors Configuration (Directory Pinning)
+  const { pinnedDoctorsConfig } = useData();
+
+  const isPinActive = Boolean(pinnedDoctorsConfig?.is_active);
+  const topPinnedIds = useMemo(() => {
+    return isPinActive ? (pinnedDoctorsConfig?.top_doctor_ids || []).slice(0, 3) : [];
+  }, [isPinActive, pinnedDoctorsConfig?.top_doctor_ids]);
+
+  const bottomPinnedIds = useMemo(() => {
+    return isPinActive ? (pinnedDoctorsConfig?.bottom_doctor_ids || []).slice(0, 2) : [];
+  }, [isPinActive, pinnedDoctorsConfig?.bottom_doctor_ids]);
+
+  // Compose displayed doctors:
+  // Up to 3 top pinned + organic middle (excluding top & bottom) + up to 2 bottom pinned
+  const displayedDoctors = useMemo(() => {
+    if (!isPinActive || (topPinnedIds.length === 0 && bottomPinnedIds.length === 0)) {
+      return sortedDoctors.slice(0, visibleDoctorCount);
+    }
+
+    const pinnedSet = new Set([...topPinnedIds, ...bottomPinnedIds]);
+
+    // Top pinned doctors (in designated slot order)
+    const topDoctors: Doctor[] = [];
+    for (const id of topPinnedIds) {
+      const doc = doctors.find((d) => d.id === id);
+      if (doc && (searchQuery.trim() === '' || filteredDoctors.some((fd) => fd.id === doc.id))) {
+        topDoctors.push(doc);
+      }
+    }
+
+    // Bottom pinned doctors (in designated slot order)
+    const bottomDoctors: Doctor[] = [];
+    for (const id of bottomPinnedIds) {
+      const doc = doctors.find((d) => d.id === id);
+      if (doc && (searchQuery.trim() === '' || filteredDoctors.some((fd) => fd.id === doc.id))) {
+        bottomDoctors.push(doc);
+      }
+    }
+
+    // Organic middle doctors (without pinned items)
+    const organicMiddle = sortedDoctors.filter((d) => !pinnedSet.has(d.id));
+
+    // Calculate middle slice size based on visibleDoctorCount
+    const middleCount = Math.max(1, visibleDoctorCount - topDoctors.length - bottomDoctors.length);
+    const middleSlice = organicMiddle.slice(0, middleCount);
+
+    return [...topDoctors, ...middleSlice, ...bottomDoctors];
+  }, [
+    isPinActive,
+    topPinnedIds,
+    bottomPinnedIds,
+    sortedDoctors,
+    doctors,
+    visibleDoctorCount,
+    searchQuery,
+    filteredDoctors
+  ]);
 
   // Filtered Clinics
   const filteredClinics = useMemo(() => {
@@ -914,7 +973,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
             {/* ============================================================== */}
             {viewEntity === 'doctors' && (
               <div className="space-y-3.5">
-                {sortedDoctors.length === 0 ? (
+                {displayedDoctors.length === 0 ? (
                   <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center">
                     <AlertCircle className="w-10 h-10 text-amber-500 mx-auto mb-2" />
                     <h4 className="font-bold text-slate-800 text-sm">
@@ -931,9 +990,13 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                     </button>
                   </div>
                 ) : (
-                  sortedDoctors.slice(0, visibleDoctorCount).map((doc) => {
+                  displayedDoctors.map((doc) => {
                     const specialty = specialties.find((s) => s.id === doc.specialty_id);
                     const isSaved = savedDoctorIds.has(doc.id);
+
+                    // Pinned status for this doctor
+                    const isTopPinned = isPinActive && topPinnedIds.includes(doc.id);
+                    const isBottomPinned = isPinActive && bottomPinnedIds.includes(doc.id);
                     
                     // Doctor clinics
                     const docClinicIds = clinicDoctors
@@ -958,7 +1021,13 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                     return (
                       <div
                         key={doc.id}
-                        className="bg-white rounded-2xl border border-slate-200/90 hover:border-emerald-500/50 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all duration-200 group"
+                        className={`bg-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all duration-200 group ${
+                          isTopPinned
+                            ? 'border-2 border-amber-400/90 bg-gradient-to-l from-amber-50/20 via-white to-white'
+                            : isBottomPinned
+                            ? 'border-2 border-teal-400/90 bg-gradient-to-l from-teal-50/20 via-white to-white'
+                            : 'border border-slate-200/90 hover:border-emerald-500/50'
+                        }`}
                       >
                         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                           
@@ -983,14 +1052,26 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
 
                             {/* Doctor Details */}
                             <div className="space-y-1.5 flex-1 min-w-0">
-                              {/* Name */}
-                              <div className="flex items-center gap-2">
+                              {/* Name & Badges */}
+                              <div className="flex flex-wrap items-center gap-2">
                                 <h3
                                   onClick={() => onSelectDoctor(doc)}
                                   className="text-base sm:text-lg font-black text-slate-900 hover:text-emerald-700 transition-colors cursor-pointer"
                                 >
                                   {doc.first_name} {doc.last_name}
                                 </h3>
+                                {isTopPinned && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-[10px] font-bold shadow-xs">
+                                    <Sparkles className="w-3 h-3 text-amber-500 fill-amber-400" />
+                                    <span>پزشک ویژه دایرکتوری</span>
+                                  </span>
+                                )}
+                                {isBottomPinned && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-300 text-teal-900 text-[10px] font-bold shadow-xs">
+                                    <ShieldCheck className="w-3 h-3 text-teal-600" />
+                                    <span>منتخب دایرکتوری</span>
+                                  </span>
+                                )}
                                 {doc.passport_committed && (
                                   <span className="hidden md:inline-flex px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
                                     پاسپورت ۳۲ دندان
@@ -1126,7 +1207,7 @@ export const DoctorDirectory: React.FC<DoctorDirectoryProps> = ({
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
                     <div>
                       <span>نمایش </span>
-                      <strong className="text-slate-800 font-bold">{Math.min(visibleDoctorCount, sortedDoctors.length)}</strong>
+                      <strong className="text-slate-800 font-bold">{Math.min(displayedDoctors.length, sortedDoctors.length)}</strong>
                       <span> از </span>
                       <strong className="text-slate-800 font-bold">{sortedDoctors.length}</strong>
                       <span> پزشک متخصص</span>
