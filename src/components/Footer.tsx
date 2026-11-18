@@ -92,13 +92,6 @@ export const Footer: React.FC<FooterProps> = ({
                 <UserCheck className="w-3.5 h-3.5" />
                 <span>عضویت دندانپزشکان</span>
               </Link>
-              <button
-                onClick={onOpenAdmin}
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-medium border border-slate-800 transition-colors cursor-pointer"
-              >
-                <Lock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>ورود مدیریت</span>
-              </button>
             </div>
           </div>
 

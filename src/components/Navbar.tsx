@@ -10,7 +10,6 @@ import {
   ChevronDown,
   Layers,
   Sparkles,
-  Settings,
   UserCheck,
   Home,
   Building2,
@@ -22,8 +21,8 @@ import { DentalComponent, Doctor, ImplantBrand } from '../types';
 import { formatPrice } from '../utils/formatters';
 
 interface NavbarProps {
-  isAdminOpen: boolean;
-  onToggleAdmin: () => void;
+  isAdminOpen?: boolean;
+  onToggleAdmin?: () => void;
   onOpenNaxisGuide: () => void;
   components: DentalComponent[];
   doctors: Doctor[];
@@ -34,33 +33,33 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  isAdminOpen,
-  onToggleAdmin,
   onOpenNaxisGuide,
   components,
   doctors,
   brands,
   onSelectComponent,
-  onSelectDoctor,
-  onSelectCategory
+  onSelectDoctor
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isBrandsMenuOpen, setIsBrandsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileBrandsOpen, setIsMobileBrandsOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(0);
 
   const headerRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
   const brandsMenuRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
 
-  // Close mobile drawer on route change
+  // Close mobile drawer and mobile search on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsMobileSearchOpen(false);
   }, [location.pathname]);
 
   // Lock body scroll when mobile drawer is open
@@ -85,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     updateHeight();
     window.addEventListener('resize', updateHeight);
     return () => window.removeEventListener('resize', updateHeight);
-  }, []);
+  }, [isMobileSearchOpen]);
 
   // Smart Header Scroll Effect: Hide on scroll down, show immediately on scroll up
   useEffect(() => {
@@ -101,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           // Always visible near top of page
           if (currentScrollY <= 15) {
             setIsVisible(true);
-          } else if (diff > 6 && currentScrollY > 70 && !isMobileMenuOpen) {
+          } else if (diff > 6 && currentScrollY > 70 && !isMobileMenuOpen && !isMobileSearchOpen) {
             // User scrolled down -> hide header and dismiss active dropdowns
             setIsVisible(false);
             setIsBrandsMenuOpen(false);
@@ -120,7 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, isMobileSearchOpen]);
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -181,12 +180,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center justify-between gap-2 sm:gap-4">
             
             {/* Right: Hamburger button (Mobile only) + Brand Logo */}
-            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {/* Hamburger Button (Mobile only) */}
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="md:hidden p-2 -mr-1 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-slate-100 transition-colors cursor-pointer"
                 aria-label="باز کردن منو"
               >
                 <Menu className="w-5 h-5" />
@@ -210,8 +209,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Link>
             </div>
 
-            {/* Center: Live Search Bar */}
-            <div className="flex-1 max-w-xl min-w-0 relative" ref={searchRef}>
+            {/* Center: Live Search Bar (Desktop only) */}
+            <div className="hidden md:block flex-1 max-w-xl min-w-0 relative" ref={searchRef}>
               <div className="relative">
                 <input
                   type="text"
@@ -235,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
-              {/* Live Search Dropdown */}
+              {/* Desktop Live Search Dropdown */}
               {isSearchOpen && hasResults && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100">
                   {matchedComponents.length > 0 && (
@@ -325,6 +324,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Left: Quick Actions */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Mobile Search Icon Button (تبدیل سرچ بار به علامت ذره‌بین در موبایل) */}
+              <button
+                type="button"
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                className={`md:hidden p-2 rounded-xl transition-colors cursor-pointer ${
+                  isMobileSearchOpen
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-100'
+                }`}
+                aria-label="جستجو"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+
               {/* Doctor Registration (Desktop/Tablet) */}
               <Link
                 to="/doctor-join"
@@ -334,32 +347,142 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>ثبت‌نام پزشکان</span>
               </Link>
 
-              {/* Quiz Button (Visible on all sizes, compact on mobile) */}
+              {/* Quiz Button */}
               <Link
                 to="/quiz"
-                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all whitespace-nowrap"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 transition-all whitespace-nowrap"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline sm:inline">آزمون ایمپلنت</span>
-                <span className="xs:hidden">آزمون</span>
+                <span>آزمون ایمپلنت</span>
               </Link>
-
-              {/* Admin Toggle */}
-              <button
-                onClick={onToggleAdmin}
-                className={`p-1.5 sm:p-2 rounded-xl border text-xs font-medium transition-colors shrink-0 cursor-pointer ${
-                  isAdminOpen
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
-                }`}
-                title="پنل مدیریت و ارزیابی لید"
-                aria-label="پنل مدیریت"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Search Bar Dropdown (نمایش سرچ بار کشویی در موبایل با کلیک روی ذره‌بین) */}
+        {isMobileSearchOpen && (
+          <div
+            ref={mobileSearchRef}
+            className="md:hidden border-t border-slate-200 bg-white px-3 py-2.5 shadow-md animate-in slide-in-from-top-2 duration-200"
+          >
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchOpen(true);
+                }}
+                autoFocus
+                placeholder="جستجوی کد REF، برند یا پزشک..."
+                className="w-full pl-9 pr-9 py-2 bg-slate-100 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl text-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/15 transition-all"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
+              {searchQuery ? (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute left-2.5 top-2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsMobileSearchOpen(false)}
+                  className="absolute left-2.5 top-2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Search Live Results */}
+            {hasResults && (
+              <div className="mt-2 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden divide-y divide-slate-100 max-h-80 overflow-y-auto">
+                {matchedComponents.length > 0 && (
+                  <div className="p-2">
+                    <div className="text-[11px] font-bold text-slate-400 px-2 py-1 flex items-center gap-1">
+                      <Layers className="w-3 h-3 text-emerald-500" />
+                      قطعات و فیکسچرهای ایمپلنت
+                    </div>
+                    {matchedComponents.map((comp) => (
+                      <button
+                        key={comp.id}
+                        onClick={() => {
+                          onSelectComponent(comp);
+                          setIsMobileSearchOpen(false);
+                        }}
+                        className="w-full text-right px-2.5 py-1.5 hover:bg-emerald-50/70 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800">{comp.name_fa}</span>
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            REF: {comp.ref_code} | {comp.platform_size}
+                          </span>
+                        </div>
+                        <span className="text-emerald-700 font-bold font-mono">
+                          {formatPrice(comp.price_toman)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {matchedDoctors.length > 0 && (
+                  <div className="p-2">
+                    <div className="text-[11px] font-bold text-slate-400 px-2 py-1 flex items-center gap-1">
+                      <Stethoscope className="w-3 h-3 text-teal-500" />
+                      پزشکان و جراحان
+                    </div>
+                    {matchedDoctors.map((doc) => (
+                      <button
+                        key={doc.id}
+                        onClick={() => {
+                          onSelectDoctor(doc);
+                          setIsMobileSearchOpen(false);
+                        }}
+                        className="w-full text-right px-2.5 py-1.5 hover:bg-teal-50/70 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer"
+                      >
+                        <div>
+                          <span className="font-semibold text-slate-800">
+                            {doc.first_name} {doc.last_name}
+                          </span>
+                          <span className="text-[10px] text-slate-500 mr-2">
+                            (کد نظام: {doc.medical_council_code})
+                          </span>
+                        </div>
+                        <span className="text-teal-700 text-[11px] font-medium">مشاهده کارنامه</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {matchedBrands.length > 0 && (
+                  <div className="p-2">
+                    <div className="text-[11px] font-bold text-slate-400 px-2 py-1 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                      برندها و کمپانی‌های سازنده
+                    </div>
+                    {matchedBrands.map((brand) => (
+                      <Link
+                        key={brand.id}
+                        to={brand.slug === 'naxis' ? '/naxis-guide' : `/brands/${brand.slug}`}
+                        onClick={() => setIsMobileSearchOpen(false)}
+                        className="px-2.5 py-1.5 flex items-center justify-between text-xs text-slate-700 hover:bg-amber-50/60 rounded-lg transition-colors"
+                      >
+                        <span className="font-medium">
+                          {brand.logo} {brand.name}
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          {brand.warranty_description}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Desktop Navigation Menu Bar (Hidden on Mobile) */}
         <nav className="hidden md:block bg-white border-t border-slate-200 text-xs sm:text-sm font-semibold relative z-40">
@@ -705,19 +828,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
 
-            {/* Drawer Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 text-xs text-slate-500 flex items-center justify-between">
-              <span>دنتال‌مپ • نسخه ۳.۰</span>
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onToggleAdmin();
-                }}
-                className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-700 font-bold cursor-pointer"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                <span>ورود مدیریت</span>
-              </button>
+            {/* Drawer Footer (بدون دکمه لاگین ادمین) */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-xs text-slate-500 text-center">
+              <span>دنتال‌مپ • سامانه شفافیت و اصالت ایمپلنتولوژی</span>
             </div>
           </div>
         </div>
