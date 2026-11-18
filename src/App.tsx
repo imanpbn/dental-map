@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 
@@ -534,6 +534,13 @@ const AppContent: React.FC = () => {
 
           {/* Headless WordPress Custom Pages (برگه‌ها / صفحات ایستا) */}
           <Route path="/page/:pageSlug" element={<CustomPageView pages={pages} />} />
+
+          {/* Backward compatibility redirects for direct & menu page URLs */}
+          <Route path="/about-us" element={<Navigate to="/page/about-us" replace />} />
+          <Route path="/terms" element={<Navigate to="/page/terms" replace />} />
+          <Route path="/contact" element={<Navigate to="/page/contact" replace />} />
+          <Route path="/treatment" element={<Navigate to="/page/treatment" replace />} />
+          <Route path="/dentists" element={<Navigate to="/directory" replace />} />
 
           {/* Doctor/Clinic Registration Onboarding (ثبت‌نام پزشکان و مراکز درمانی) */}
           <Route
